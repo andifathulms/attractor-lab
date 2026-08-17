@@ -3,15 +3,23 @@ import { AppNav } from '@/components/nav/AppNav';
 import { Equation } from '@/components/equation/Equation';
 import { MapPreview } from '@/components/maps/MapPreview';
 import type { MapId } from '@/lib/dynamics/maps';
+import { dictionaries, type Locale } from '@/lib/i18n/dictionaries';
 import { getSystemReference, systemReferences } from '../data';
 
 export function generateStaticParams(): { slug: string }[] {
   return systemReferences.map((s) => ({ slug: s.slug }));
 }
 
-export default function SistemSlugPage({ params }: { readonly params: { readonly slug: string } }) {
+export default function SistemSlugPage({
+  params,
+}: {
+  readonly params: { readonly locale: string; readonly slug: string };
+}) {
   const reference = getSystemReference(params.slug);
   if (!reference) notFound();
+
+  const locale: Locale = params.locale === 'en' ? 'en' : 'id';
+  const t = dictionaries[locale];
 
   return (
     <main className="relative min-h-dvh bg-night px-6 py-16 text-readout">
@@ -37,7 +45,7 @@ export default function SistemSlugPage({ params }: { readonly params: { readonly
         )}
 
         <section className="mb-10">
-          <h2 className="mb-3 font-display text-lg font-medium">Parameter</h2>
+          <h2 className="mb-3 font-display text-lg font-medium">{t.sistem.parameters}</h2>
           <table className="w-full border-collapse font-mono text-sm">
             <tbody>
               {reference.params.map((p) => (
@@ -54,7 +62,7 @@ export default function SistemSlugPage({ params }: { readonly params: { readonly
         </section>
 
         <section className="mb-10">
-          <h2 className="mb-3 font-display text-lg font-medium">Yang membedakannya</h2>
+          <h2 className="mb-3 font-display text-lg font-medium">{t.sistem.distinctiveness}</h2>
           <p className="font-sans text-base leading-relaxed">{reference.distinctiveness}</p>
         </section>
 
