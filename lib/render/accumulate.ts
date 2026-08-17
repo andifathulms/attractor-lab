@@ -23,20 +23,19 @@ export function drawSegment(
   ctx.stroke();
 }
 
-/** Full redraw from stored trajectory chunks at the current projection — used after orbit/zoom. */
-export function redrawTrajectory(
-  ctx: CanvasRenderingContext2D,
-  chunks: readonly Float64Array[],
-  config: ProjectionConfig,
-  color: string
-): void {
-  clearBuffer(ctx, config.width, config.height);
+export type TrajectoryLayer = {
+  readonly chunks: readonly Float64Array[];
+  readonly color: string;
+};
+
+/** Draws one trajectory's chunks additively at the current projection, without clearing first. */
+function drawLayer(ctx: CanvasRenderingContext2D, layer: TrajectoryLayer, config: ProjectionConfig): void {
   ctx.globalCompositeOperation = 'lighter';
-  ctx.strokeStyle = color;
+  ctx.strokeStyle = layer.color;
   ctx.lineWidth = 1;
 
   let prev: ScreenPoint | null = null;
-  for (const chunk of chunks) {
+  for (const chunk of layer.chunks) {
     for (let i = 0; i + 2 < chunk.length; i += 3) {
       const point = chunk.subarray(i, i + 3);
       const screen = project(point, config);
@@ -49,4 +48,30 @@ export function redrawTrajectory(
       prev = screen;
     }
   }
+}
+
+/**
+ * Full redraw of one or more trajectory layers at the current projection —
+ * used after orbit/zoom, and for the divergence pair's two colours sharing
+ * one buffer.
+ */
+export function redrawLayers(
+  ctx: CanvasRenderingContext2D,
+  layers: readonly TrajectoryLayer[],
+  config: ProjectionConfig
+): void {
+  clearBuffer(ctx, config.width, config.height);
+  for (const layer of layers) {
+    drawLayer(ctx, layer, config);
+  }
+}
+
+/** Full redraw from stored trajectory chunks at the current projection — used after orbit/zoom. */
+export function redrawTrajectory(
+  ctx: CanvasRenderingContext2D,
+  chunks: readonly Float64Array[],
+  config: ProjectionConfig,
+  color: string
+): void {
+  redrawLayers(ctx, [{ chunks, color }], config);
 }
