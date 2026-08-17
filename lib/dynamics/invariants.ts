@@ -39,7 +39,7 @@ const lorenz: SystemInvariants = {
     const origin: FixedPoint = {
       point: [0, 0, 0],
       // Origin is stable iff rho < 1 (the only fixed point in that regime).
-      stableFor: (p) => p.rho < 1,
+      stableFor: (p) => p.rho !== undefined && p.rho < 1,
     };
     if (rho === undefined || beta === undefined || rho < 1) {
       return [origin];
