@@ -23,16 +23,43 @@ export function drawSegment(
   ctx.stroke();
 }
 
+/** Draws one point marker additively — used for discrete events like plane crossings. */
+export function drawMarker(ctx: CanvasRenderingContext2D, at: ScreenPoint, color: string): void {
+  ctx.globalCompositeOperation = 'lighter';
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.arc(at.x, at.y, MARKER_RADIUS, 0, Math.PI * 2);
+  ctx.fill();
+}
+
 export type TrajectoryLayer = {
   readonly chunks: readonly Float64Array[];
   readonly color: string;
+  /** 'line' connects consecutive points (a trajectory); 'points' marks each one discretely (e.g. plane crossings). */
+  readonly kind?: 'line' | 'points';
 };
+
+const MARKER_RADIUS = 2;
 
 /** Draws one trajectory's chunks additively at the current projection, without clearing first. */
 function drawLayer(ctx: CanvasRenderingContext2D, layer: TrajectoryLayer, config: ProjectionConfig): void {
   ctx.globalCompositeOperation = 'lighter';
   ctx.strokeStyle = layer.color;
+  ctx.fillStyle = layer.color;
   ctx.lineWidth = 1;
+
+  if (layer.kind === 'points') {
+    for (const chunk of layer.chunks) {
+      for (let i = 0; i + 2 < chunk.length; i += 3) {
+        const point = chunk.subarray(i, i + 3);
+        const screen = project(point, config);
+        ctx.beginPath();
+        ctx.arc(screen.x, screen.y, MARKER_RADIUS, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+    return;
+  }
 
   let prev: ScreenPoint | null = null;
   for (const chunk of layer.chunks) {
