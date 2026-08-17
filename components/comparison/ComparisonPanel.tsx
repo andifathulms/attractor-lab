@@ -1,0 +1,163 @@
+import type { ConvergenceOrders } from '@/lib/dynamics/convergence';
+import type { SystemId } from '@/lib/dynamics/systems';
+import { EULER_COLOR, RK2_COLOR, RK4_COLOR } from './ComparisonCanvas';
+
+const SYSTEM_LABEL: Record<SystemId, string> = {
+  lorenz: 'Lorenz',
+  rossler: 'Rössler',
+  thomas: 'Thomas',
+  halvorsen: 'Halvorsen',
+  aizawa: 'Aizawa',
+};
+
+export type ComparisonPanelProps = {
+  readonly systemId: SystemId;
+  readonly onSystemChange: (id: SystemId) => void;
+  readonly params: Record<string, number>;
+  readonly onParamsChange: (params: Record<string, number>) => void;
+  readonly dt: number;
+  readonly onDtChange: (dt: number) => void;
+  readonly convergence: ConvergenceOrders | undefined;
+  readonly onCheckConvergence: () => void;
+  readonly collapsed: boolean;
+  readonly onToggleCollapsed: () => void;
+};
+
+export function ComparisonPanel({
+  systemId,
+  onSystemChange,
+  params,
+  onParamsChange,
+  dt,
+  onDtChange,
+  convergence,
+  onCheckConvergence,
+  collapsed,
+  onToggleCollapsed,
+}: ComparisonPanelProps) {
+  if (collapsed) {
+    return (
+      <button
+        type="button"
+        onClick={onToggleCollapsed}
+        aria-label="Buka panel kontrol"
+        className="absolute right-0 top-8 rounded-l border border-r-0 border-rule bg-night/90 px-2 py-4 font-sans text-sm text-readout transition-colors duration-fast hover:bg-graticule"
+      >
+        ⟨
+      </button>
+    );
+  }
+
+  return (
+    <div className="absolute right-4 top-8 w-72 rounded border border-rule bg-night/90 p-4 font-sans text-sm text-readout backdrop-blur-sm">
+      <div className="mb-4 flex items-center justify-between">
+        <h2 className="font-display text-lg font-medium">Kontrol</h2>
+        <button
+          type="button"
+          onClick={onToggleCollapsed}
+          aria-label="Tutup panel kontrol"
+          className="text-readout transition-colors duration-fast hover:text-bloom"
+        >
+          ⟩
+        </button>
+      </div>
+
+      <label className="mb-4 block">
+        <span className="mb-1 block text-xs text-rule">Sistem</span>
+        <select
+          value={systemId}
+          onChange={(event) => onSystemChange(event.target.value as SystemId)}
+          className="w-full rounded border border-rule bg-graticule px-2 py-1 text-readout"
+        >
+          {(Object.keys(SYSTEM_LABEL) as SystemId[]).map((id) => (
+            <option key={id} value={id}>
+              {SYSTEM_LABEL[id]}
+            </option>
+          ))}
+        </select>
+      </label>
+
+      <label className="mb-4 block">
+        <span className="mb-1 block text-xs text-rule">Langkah (dt)</span>
+        <input
+          type="number"
+          value={dt}
+          step={0.001}
+          min={0.001}
+          max={0.05}
+          onChange={(event) => onDtChange(Number(event.target.value))}
+          className="w-full rounded border border-rule bg-graticule px-2 py-1 font-mono text-readout"
+        />
+      </label>
+
+      <fieldset className="mb-4 space-y-2">
+        <legend className="mb-1 text-xs text-rule">Parameter</legend>
+        {Object.entries(params).map(([key, value]) => (
+          <label key={key} className="flex items-center justify-between gap-2">
+            <span className="font-display italic">{key}</span>
+            <input
+              type="number"
+              value={value}
+              step={0.01}
+              onChange={(event) =>
+                onParamsChange({ ...params, [key]: Number(event.target.value) })
+              }
+              className="w-24 rounded border border-rule bg-graticule px-2 py-1 font-mono text-readout"
+            />
+          </label>
+        ))}
+      </fieldset>
+
+      <div className="mb-3 space-y-1 font-mono text-xs">
+        <Legend color={RK4_COLOR} label="RK4" />
+        <Legend color={RK2_COLOR} label="RK2" />
+        <Legend color={EULER_COLOR} label="Euler" />
+      </div>
+
+      <button
+        type="button"
+        onClick={onCheckConvergence}
+        className="mb-3 w-full rounded border border-rule bg-graticule px-2 py-1.5 text-readout transition-colors duration-fast hover:bg-rule"
+      >
+        Cek konvergensi
+      </button>
+
+      {convergence && (
+        <div className="space-y-1 font-mono text-xs [font-variant-numeric:tabular-nums]">
+          <div className="mb-1 text-rule">orde konvergensi (dt → dt/2)</div>
+          <ConvergenceRow label="Euler" expected={1} observed={convergence.euler} />
+          <ConvergenceRow label="RK2" expected={2} observed={convergence.rk2} />
+          <ConvergenceRow label="RK4" expected={4} observed={convergence.rk4} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Legend({ color, label }: { readonly color: string; readonly label: string }) {
+  return (
+    <div className="flex items-center gap-2">
+      <span className="inline-block h-2 w-4 rounded-full" style={{ background: color }} />
+      <span>{label}</span>
+    </div>
+  );
+}
+
+function ConvergenceRow({
+  label,
+  expected,
+  observed,
+}: {
+  readonly label: string;
+  readonly expected: number;
+  readonly observed: number;
+}) {
+  return (
+    <div className="flex items-baseline justify-between">
+      <span className="text-rule">{label}</span>
+      <span>
+        {observed.toFixed(2)} <span className="text-rule">(≈{expected})</span>
+      </span>
+    </div>
+  );
+}
