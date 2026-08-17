@@ -1,3 +1,4 @@
+import { useT } from '@/lib/i18n/LocaleProvider';
 import type { IntegratorId } from '@/lib/dynamics/integrate';
 
 export type ReadoutStripProps = {
@@ -7,12 +8,6 @@ export type ReadoutStripProps = {
   readonly lyapunovMax: number | undefined;
   readonly pairMode?: boolean;
   readonly epsilon?: number;
-};
-
-const INTEGRATOR_LABEL: Record<IntegratorId, string> = {
-  euler: 'Euler',
-  rk2: 'RK2',
-  rk4: 'RK4',
 };
 
 // The readout strip is never collapsible and never optional — an unlabelled
@@ -25,15 +20,20 @@ export function ReadoutStrip({
   pairMode,
   epsilon,
 }: ReadoutStripProps) {
+  const t = useT();
+
   return (
     <div className="flex w-full flex-wrap items-center gap-6 border-t border-rule bg-night px-4 py-3 font-mono text-xs text-readout [font-variant-numeric:tabular-nums]">
-      <Field label="integrator" value={INTEGRATOR_LABEL[integrator]} />
-      <Field label="langkah (dt)" value={dt.toExponential(1)} />
-      <Field label="waktu sistem" value={elapsed.toFixed(2)} />
-      <Field label="λ maks" value={lyapunovMax !== undefined ? lyapunovMax.toFixed(4) : '—'} />
+      <Field label={t.readout.integrator} value={t.integratorNames[integrator]} />
+      <Field label={t.readout.step} value={dt.toExponential(1)} />
+      <Field label={t.readout.elapsedTime} value={elapsed.toFixed(2)} />
+      <Field
+        label={t.readout.lyapunovMax}
+        value={lyapunovMax !== undefined ? lyapunovMax.toFixed(4) : '—'}
+      />
       {pairMode && epsilon !== undefined && (
         <>
-          <Field label="ε" value={epsilon.toExponential(1)} />
+          <Field label={t.readout.epsilon} value={epsilon.toExponential(1)} />
           <span className="flex items-center gap-3">
             <TrajectoryTag color="#F0C05A" label="A" />
             <TrajectoryTag color="#5FB0D9" label="B" />

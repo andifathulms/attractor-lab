@@ -1,3 +1,4 @@
+import { useT } from '@/lib/i18n/LocaleProvider';
 import type { IntegratorId } from '@/lib/dynamics/integrate';
 import type { SystemId } from '@/lib/dynamics/systems';
 
@@ -50,12 +51,14 @@ export function ControlPanel({
   onToggleCollapsed,
   onExport,
 }: ControlPanelProps) {
+  const t = useT();
+
   if (collapsed) {
     return (
       <button
         type="button"
         onClick={onToggleCollapsed}
-        aria-label="Buka panel kontrol"
+        aria-label={t.panel.openPanel}
         className="absolute right-0 top-8 rounded-l border border-r-0 border-rule bg-night/90 px-2 py-4 font-sans text-sm text-readout transition-colors duration-fast hover:bg-graticule"
       >
         ⟨
@@ -66,11 +69,11 @@ export function ControlPanel({
   return (
     <div className="absolute right-4 top-8 w-72 rounded border border-rule bg-night/90 p-4 font-sans text-sm text-readout backdrop-blur-sm">
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="font-display text-lg font-medium">Kontrol</h2>
+        <h2 className="font-display text-lg font-medium">{t.panel.title}</h2>
         <button
           type="button"
           onClick={onToggleCollapsed}
-          aria-label="Tutup panel kontrol"
+          aria-label={t.panel.closePanel}
           className="text-readout transition-colors duration-fast hover:text-bloom"
         >
           ⟩
@@ -78,7 +81,7 @@ export function ControlPanel({
       </div>
 
       <label className="mb-4 block">
-        <span className="mb-1 block text-xs text-rule">Sistem</span>
+        <span className="mb-1 block text-xs text-rule">{t.panel.system}</span>
         <select
           value={systemId}
           onChange={(event) => onSystemChange(event.target.value as SystemId)}
@@ -86,14 +89,14 @@ export function ControlPanel({
         >
           {(Object.keys(SYSTEM_LABEL) as SystemId[]).map((id) => (
             <option key={id} value={id}>
-              {SYSTEM_LABEL[id]}
+              {t.systemNames[id]}
             </option>
           ))}
         </select>
       </label>
 
       <label className="mb-4 block">
-        <span className="mb-1 block text-xs text-rule">Integrator</span>
+        <span className="mb-1 block text-xs text-rule">{t.panel.integrator}</span>
         <select
           value={integrator}
           onChange={(event) => onIntegratorChange(event.target.value as IntegratorId)}
@@ -101,14 +104,14 @@ export function ControlPanel({
         >
           {(Object.keys(INTEGRATOR_LABEL) as IntegratorId[]).map((id) => (
             <option key={id} value={id}>
-              {INTEGRATOR_LABEL[id]}
+              {t.integratorNames[id]}
             </option>
           ))}
         </select>
       </label>
 
       <label className="mb-4 block">
-        <span className="mb-1 block text-xs text-rule">Langkah (dt)</span>
+        <span className="mb-1 block text-xs text-rule">{t.panel.step}</span>
         <input
           type="number"
           value={dt}
@@ -121,7 +124,7 @@ export function ControlPanel({
       </label>
 
       <label className="mb-4 flex items-center justify-between">
-        <span className="text-xs text-rule">Pasangan divergensi</span>
+        <span className="text-xs text-rule">{t.panel.pairMode}</span>
         <input
           type="checkbox"
           checked={pairMode}
@@ -132,7 +135,7 @@ export function ControlPanel({
 
       {pairMode && (
         <label className="mb-4 block">
-          <span className="mb-1 block text-xs text-rule">Epsilon (ε)</span>
+          <span className="mb-1 block text-xs text-rule">{t.panel.epsilon}</span>
           <input
             type="number"
             value={epsilon}
@@ -146,7 +149,7 @@ export function ControlPanel({
       )}
 
       <fieldset className="space-y-2">
-        <legend className="mb-1 text-xs text-rule">Parameter</legend>
+        <legend className="mb-1 text-xs text-rule">{t.panel.parameters}</legend>
         {Object.entries(params).map(([key, value]) => (
           <label key={key} className="flex items-center justify-between gap-2">
             <span className="font-display italic">{key}</span>
@@ -168,7 +171,7 @@ export function ControlPanel({
         onClick={onExport}
         className="mt-4 w-full rounded border border-rule bg-graticule px-2 py-1.5 text-readout transition-colors duration-fast hover:bg-rule"
       >
-        Ekspor SVG
+        {t.panel.exportSvg}
       </button>
     </div>
   );
