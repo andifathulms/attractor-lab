@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
 import type { Integrator } from '@/lib/dynamics/integrate';
 import type { System } from '@/lib/dynamics/systems';
+import type { ExportSnapshot } from '@/lib/export/plotter';
 import { clearBuffer, redrawLayers, type TrajectoryLayer } from '@/lib/render/accumulate';
 import { project, type Rotation } from '@/lib/render/projection';
 import type {
@@ -27,6 +28,10 @@ export type DivergencePairCanvasProps = {
   readonly onReset: () => void;
 };
 
+export type DivergencePairCanvasHandle = {
+  readonly getSnapshot: () => ExportSnapshot;
+};
+
 const TRAIL_A = 'rgba(240, 192, 90, 0.14)';
 const TRAIL_B = 'rgba(95, 176, 217, 0.14)';
 const INITIAL_STATE: readonly [number, number, number] = [0.1, 0.1, 0.1];
@@ -35,15 +40,13 @@ const ZOOM_MAX = 60;
 const DRAG_SENSITIVITY = 0.005;
 const PITCH_LIMIT = Math.PI / 2 - 0.05;
 
-export function DivergencePairCanvas({
-  system,
-  integrator,
-  dt,
-  epsilon,
-  onMetrics,
-  onSeparationBatch,
-  onReset,
-}: DivergencePairCanvasProps) {
+export const DivergencePairCanvas = forwardRef<
+  DivergencePairCanvasHandle,
+  DivergencePairCanvasProps
+>(function DivergencePairCanvas(
+  { system, integrator, dt, epsilon, onMetrics, onSeparationBatch, onReset },
+  ref
+) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const chunksARef = useRef<Float64Array[]>([]);
   const chunksBRef = useRef<Float64Array[]>([]);
@@ -55,6 +58,17 @@ export function DivergencePairCanvas({
   const lastPointerRef = useRef({ x: 0, y: 0 });
   const redrawPendingRef = useRef(false);
   const lastLyapunovRef = useRef<number | undefined>(undefined);
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      getSnapshot: () => ({
+        trajectories: [chunksARef.current, chunksBRef.current],
+        rotation: rotationRef.current,
+      }),
+    }),
+    []
+  );
 
   const layers = (): TrajectoryLayer[] => [
     { chunks: chunksARef.current, color: TRAIL_A },
@@ -214,7 +228,7 @@ export function DivergencePairCanvas({
       onPointerLeave={onPointerUp}
     />
   );
-}
+});
 
 function drawIncremental(
   ctx: CanvasRenderingContext2D,
