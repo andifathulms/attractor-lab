@@ -38,11 +38,22 @@ self.onmessage = (event: MessageEvent<WorkerInboundMessage>) => {
   }
 };
 
+const BURN_IN_STEPS = 2000;
+
 async function run(message: StartMessage, myGeneration: number): Promise<void> {
   const { system, dt, initial, plane } = message;
   const f = (state: Float64Array, out: Float64Array): void => derivative(system, state, out);
 
   let state = new Float64Array(initial);
+
+  // Settle onto the attractor before recording anything — starting from an
+  // arbitrary initial condition, the transient's crossings sit far from the
+  // attractor's characteristic range and would stretch the section plot's
+  // auto-scale, squeezing the actual structure into a corner.
+  for (let i = 0; i < BURN_IN_STEPS; i++) {
+    state = rk4Step(state, dt, f);
+  }
+
   let elapsed = 0;
 
   while (generation === myGeneration) {
