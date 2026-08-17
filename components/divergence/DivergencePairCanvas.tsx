@@ -24,6 +24,7 @@ export type DivergencePairCanvasProps = {
   readonly epsilon: number;
   readonly onMetrics: (metrics: DivergenceMetrics) => void;
   readonly onSeparationBatch: (times: readonly number[], separations: readonly number[]) => void;
+  readonly onReset: () => void;
 };
 
 const TRAIL_A = 'rgba(240, 192, 90, 0.14)';
@@ -41,6 +42,7 @@ export function DivergencePairCanvas({
   epsilon,
   onMetrics,
   onSeparationBatch,
+  onReset,
 }: DivergencePairCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const chunksARef = useRef<Float64Array[]>([]);
@@ -88,6 +90,7 @@ export function DivergencePairCanvas({
     lastPointBRef.current = null;
     lastLyapunovRef.current = undefined;
     clearBuffer(ctx, canvas.width, canvas.height);
+    onReset();
 
     const worker = new Worker(new URL('../../workers/divergence.worker.ts', import.meta.url));
 

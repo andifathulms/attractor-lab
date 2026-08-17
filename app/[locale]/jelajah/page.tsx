@@ -1,7 +1,12 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { AttractorCanvas, type CanvasMetrics } from '@/components/canvas/AttractorCanvas';
+import {
+  DivergencePairCanvas,
+  type DivergenceMetrics,
+} from '@/components/divergence/DivergencePairCanvas';
+import { SeparationPlot, type SeparationPlotHandle } from '@/components/divergence/SeparationPlot';
 import { ControlPanel } from '@/components/panel/ControlPanel';
 import { ReadoutStrip } from '@/components/readout/ReadoutStrip';
 import type { IntegratorId } from '@/lib/dynamics/integrate';
@@ -14,8 +19,14 @@ export default function JelajahPage() {
   });
   const [integrator, setIntegrator] = useState<IntegratorId>('rk4');
   const [dt, setDt] = useState(0.005);
+  const [pairMode, setPairMode] = useState(true);
+  const [epsilon, setEpsilon] = useState(1e-8);
   const [collapsed, setCollapsed] = useState(false);
-  const [metrics, setMetrics] = useState<CanvasMetrics>({ elapsed: 0, lyapunovMax: undefined });
+  const [metrics, setMetrics] = useState<CanvasMetrics | DivergenceMetrics>({
+    elapsed: 0,
+    lyapunovMax: undefined,
+  });
+  const separationPlotRef = useRef<SeparationPlotHandle | null>(null);
 
   const handleSystemChange = (id: SystemId) => {
     setSystemId(id);
@@ -28,12 +39,26 @@ export default function JelajahPage() {
   return (
     <main className="flex h-dvh flex-col bg-night">
       <div className="relative flex-1">
-        <AttractorCanvas
-          system={system}
-          integrator={integratorConfig}
-          dt={dt}
-          onMetrics={setMetrics}
-        />
+        {pairMode ? (
+          <DivergencePairCanvas
+            system={system}
+            integrator={integratorConfig}
+            dt={dt}
+            epsilon={epsilon}
+            onMetrics={setMetrics}
+            onSeparationBatch={(times, separations) =>
+              separationPlotRef.current?.pushSamples(times, separations)
+            }
+            onReset={() => separationPlotRef.current?.reset()}
+          />
+        ) : (
+          <AttractorCanvas
+            system={system}
+            integrator={integratorConfig}
+            dt={dt}
+            onMetrics={setMetrics}
+          />
+        )}
         <ControlPanel
           systemId={systemId}
           onSystemChange={handleSystemChange}
@@ -43,15 +68,22 @@ export default function JelajahPage() {
           onIntegratorChange={setIntegrator}
           dt={dt}
           onDtChange={setDt}
+          pairMode={pairMode}
+          onPairModeChange={setPairMode}
+          epsilon={epsilon}
+          onEpsilonChange={setEpsilon}
           collapsed={collapsed}
           onToggleCollapsed={() => setCollapsed((c) => !c)}
         />
       </div>
+      {pairMode && <SeparationPlot ref={separationPlotRef} epsilon={epsilon} />}
       <ReadoutStrip
         integrator={integrator}
         dt={dt}
         elapsed={metrics.elapsed}
         lyapunovMax={metrics.lyapunovMax}
+        pairMode={pairMode}
+        epsilon={epsilon}
       />
     </main>
   );
