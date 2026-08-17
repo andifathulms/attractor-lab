@@ -1,7 +1,7 @@
 import type { IntegratorId } from '@/lib/dynamics/integrate';
 import type { SystemId } from '@/lib/dynamics/systems';
 
-const SYSTEM_LABEL: Record<SystemId, string> = {
+export const SYSTEM_LABEL: Record<SystemId, string> = {
   lorenz: 'Lorenz',
   rossler: 'Rössler',
   thomas: 'Thomas',
@@ -9,7 +9,7 @@ const SYSTEM_LABEL: Record<SystemId, string> = {
   aizawa: 'Aizawa',
 };
 
-const INTEGRATOR_LABEL: Record<IntegratorId, string> = {
+export const INTEGRATOR_LABEL: Record<IntegratorId, string> = {
   euler: 'Euler',
   rk2: 'RK2',
   rk4: 'RK4',
@@ -30,6 +30,7 @@ export type ControlPanelProps = {
   readonly onEpsilonChange: (epsilon: number) => void;
   readonly collapsed: boolean;
   readonly onToggleCollapsed: () => void;
+  readonly onExport: () => void;
 };
 
 export function ControlPanel({
@@ -47,6 +48,7 @@ export function ControlPanel({
   onEpsilonChange,
   collapsed,
   onToggleCollapsed,
+  onExport,
 }: ControlPanelProps) {
   if (collapsed) {
     return (
@@ -160,6 +162,14 @@ export function ControlPanel({
           </label>
         ))}
       </fieldset>
+
+      <button
+        type="button"
+        onClick={onExport}
+        className="mt-4 w-full rounded border border-rule bg-graticule px-2 py-1.5 text-readout transition-colors duration-fast hover:bg-rule"
+      >
+        Ekspor SVG
+      </button>
     </div>
   );
 }

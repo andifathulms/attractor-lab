@@ -8,6 +8,12 @@ export type PlotterExportMeta = {
   readonly dt: number;
 };
 
+/** What a canvas component exposes for export — its accumulated trajectories and current viewing angle. */
+export type ExportSnapshot = {
+  readonly trajectories: readonly (readonly Float64Array[])[];
+  readonly rotation: Rotation;
+};
+
 export type PlotterExportConfig = {
   readonly paperWidthMm: number;
   readonly paperHeightMm: number;
