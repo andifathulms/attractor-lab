@@ -40,6 +40,7 @@ export function AttractorCanvas({ system, integrator, dt, onMetrics }: Attractor
   const draggingRef = useRef(false);
   const lastPointerRef = useRef({ x: 0, y: 0 });
   const redrawPendingRef = useRef(false);
+  const lastLyapunovRef = useRef<number | undefined>(undefined);
 
   const scheduleRedraw = () => {
     if (redrawPendingRef.current) return;
@@ -71,6 +72,7 @@ export function AttractorCanvas({ system, integrator, dt, onMetrics }: Attractor
 
     chunksRef.current = [];
     lastPointRef.current = null;
+    lastLyapunovRef.current = undefined;
     clearBuffer(ctx, canvas.width, canvas.height);
 
     const worker = new Worker(new URL('../../workers/integrate.worker.ts', import.meta.url));
@@ -107,10 +109,11 @@ export function AttractorCanvas({ system, integrator, dt, onMetrics }: Attractor
         }
       }
 
-      onMetrics({ elapsed: message.elapsed, lyapunovMax: undefined });
+      onMetrics({ elapsed: message.elapsed, lyapunovMax: lastLyapunovRef.current });
     };
 
     const handleMetrics = (message: MetricsMessage) => {
+      lastLyapunovRef.current = message.lyapunovMax;
       onMetrics({ elapsed: message.elapsed, lyapunovMax: message.lyapunovMax });
     };
 
@@ -140,6 +143,25 @@ export function AttractorCanvas({ system, integrator, dt, onMetrics }: Attractor
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // React attaches wheel listeners as passive by default, so preventDefault
+  // (needed to stop the page from scrolling under the canvas) requires a
+  // native listener registered with { passive: false }.
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const onWheelNative = (event: WheelEvent) => {
+      event.preventDefault();
+      const factor = Math.exp(-event.deltaY * 0.001);
+      zoomRef.current = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, zoomRef.current * factor));
+      scheduleRedraw();
+    };
+
+    canvas.addEventListener('wheel', onWheelNative, { passive: false });
+    return () => canvas.removeEventListener('wheel', onWheelNative);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const onPointerDown = (event: React.PointerEvent<HTMLCanvasElement>) => {
     draggingRef.current = true;
     lastPointerRef.current = { x: event.clientX, y: event.clientY };
@@ -166,13 +188,6 @@ export function AttractorCanvas({ system, integrator, dt, onMetrics }: Attractor
     event.currentTarget.releasePointerCapture(event.pointerId);
   };
 
-  const onWheel = (event: React.WheelEvent<HTMLCanvasElement>) => {
-    event.preventDefault();
-    const factor = Math.exp(-event.deltaY * 0.001);
-    zoomRef.current = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, zoomRef.current * factor));
-    scheduleRedraw();
-  };
-
   return (
     <canvas
       ref={canvasRef}
@@ -181,7 +196,6 @@ export function AttractorCanvas({ system, integrator, dt, onMetrics }: Attractor
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
       onPointerLeave={onPointerUp}
-      onWheel={onWheel}
     />
   );
 }
