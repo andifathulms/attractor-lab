@@ -26,9 +26,9 @@ const config: Config = {
       '3xl': '46px',
     },
     fontFamily: {
-      display: ['Crimson Pro', 'serif'],
-      sans: ['DM Sans', 'sans-serif'],
-      mono: ['JetBrains Mono', 'monospace'],
+      display: ['var(--font-display)', 'serif'],
+      sans: ['var(--font-sans)', 'sans-serif'],
+      mono: ['var(--font-mono)', 'monospace'],
     },
     borderRadius: {
       none: '0px',

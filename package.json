@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "preview": "next build && npx serve out",
+    "build": "next build && touch out/.nojekyll",
+    "preview": "pnpm build && npx serve out",
     "test": "vitest",
     "test:run": "vitest run",
     "test:analytic": "vitest run tests/analytic",
