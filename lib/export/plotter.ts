@@ -35,14 +35,9 @@ function pathData(points: readonly Point2D[]): string {
   return `M ${first.x.toFixed(3)} ${first.y.toFixed(3)} ${rest}`.trim();
 }
 
-/**
- * Fits a set of raw (unscaled) 2D points into the printable area, preserving
- * aspect ratio and centering — the printable area is the paper minus its
- * margin on every side.
- */
-function fitToPage(points: readonly Point2D[], config: PlotterExportConfig): Point2D[] {
-  if (points.length === 0) return [];
+type Bounds = { readonly minX: number; readonly maxX: number; readonly minY: number; readonly maxY: number };
 
+function boundsOf(points: readonly Point2D[]): Bounds {
   let minX = Infinity;
   let maxX = -Infinity;
   let minY = Infinity;
@@ -53,19 +48,32 @@ function fitToPage(points: readonly Point2D[], config: PlotterExportConfig): Poi
     if (p.y < minY) minY = p.y;
     if (p.y > maxY) maxY = p.y;
   }
+  return { minX, maxX, minY, maxY };
+}
+
+/**
+ * Fits a set of raw (unscaled) 2D points into the printable area using a
+ * shared `bounds` — passing every trajectory's combined bounds, rather than
+ * each one's own, keeps multiple trajectories (the divergence pair, the
+ * integrator comparison) in the same coordinate frame instead of each being
+ * independently stretched to fill the page and losing their relative
+ * positions. The printable area is the paper minus its margin on every side.
+ */
+function fitToPage(points: readonly Point2D[], bounds: Bounds, config: PlotterExportConfig): Point2D[] {
+  if (points.length === 0) return [];
 
   const printableWidth = config.paperWidthMm - 2 * config.marginMm;
   const printableHeight = config.paperHeightMm - 2 * config.marginMm;
-  const spanX = Math.max(maxX - minX, 1e-9);
-  const spanY = Math.max(maxY - minY, 1e-9);
+  const spanX = Math.max(bounds.maxX - bounds.minX, 1e-9);
+  const spanY = Math.max(bounds.maxY - bounds.minY, 1e-9);
   const scale = Math.min(printableWidth / spanX, printableHeight / spanY);
 
   const offsetX = config.marginMm + (printableWidth - spanX * scale) / 2;
   const offsetY = config.marginMm + (printableHeight - spanY * scale) / 2;
 
   return points.map((p) => ({
-    x: offsetX + (p.x - minX) * scale,
-    y: offsetY + (p.y - minY) * scale,
+    x: offsetX + (p.x - bounds.minX) * scale,
+    y: offsetY + (p.y - bounds.minY) * scale,
   }));
 }
 
@@ -79,32 +87,33 @@ function formatParams(params: Readonly<Record<string, number>>): string {
  * Trajectory (or trajectories, for the divergence pair / integrator
  * comparison) → plotter-ready SVG: no fills, no opacity, one stroke weight,
  * path-simplified, sized in millimetres. PRD.md §4.7, DESIGN.md §9.
+ *
+ * Each trajectory is a list of Float64Arrays whose length is a multiple of
+ * 3 — either one array per point, or larger concatenated xyz-triple
+ * batches (the shape the canvas components accumulate points in) — so
+ * callers can pass either representation without conversion.
  */
 export function exportPlotterSvg(
   trajectories: readonly (readonly Float64Array[])[],
   meta: PlotterExportMeta,
   config: PlotterExportConfig
 ): string {
-  const projected = trajectories.map((trajectory) =>
-    trajectory.map((point) => project(point, { rotation: config.rotation, zoom: 1, width: 0, height: 0 }))
-  );
-  const allPoints = projected.flat();
-
-  let minX = Infinity;
-  let maxX = -Infinity;
-  let minY = Infinity;
-  let maxY = -Infinity;
-  for (const p of allPoints) {
-    if (p.x < minX) minX = p.x;
-    if (p.x > maxX) maxX = p.x;
-    if (p.y < minY) minY = p.y;
-    if (p.y > maxY) maxY = p.y;
-  }
+  const projectionConfig = { rotation: config.rotation, zoom: 1, width: 0, height: 0 };
+  const projected = trajectories.map((trajectory) => {
+    const points: Point2D[] = [];
+    for (const chunk of trajectory) {
+      for (let i = 0; i + 2 < chunk.length; i += 3) {
+        points.push(project(chunk.subarray(i, i + 3), projectionConfig));
+      }
+    }
+    return points;
+  });
+  const sharedBounds = boundsOf(projected.flat());
 
   const perPathBudget = Math.max(2, Math.floor(config.maxNodes / Math.max(1, projected.length)));
   const paths = projected
     .map((trajectory) => {
-      const fitted = fitToPage(trajectory, config);
+      const fitted = fitToPage(trajectory, sharedBounds, config);
       const simplified = simplifyToBudget(fitted, perPathBudget);
       return pathData(simplified);
     })

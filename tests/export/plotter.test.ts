@@ -76,4 +76,33 @@ describe('plotter SVG export', () => {
     const empty = exportPlotterSvg([[]], meta, config);
     expect(empty).not.toContain('<path');
   });
+
+  it('fits multiple trajectories to a shared coordinate frame, not independently', () => {
+    // Two trajectories occupying very different regions of space: a small
+    // cluster near the origin, and one far away. Fit independently, both
+    // would be stretched to fill the whole page and land on top of each
+    // other. Fit to a shared frame, the far-away one must land near one
+    // edge of the page while the small cluster stays compact near the
+    // other edge — proof the two share one coordinate system.
+    const near: Float64Array[] = [
+      new Float64Array([0, 0, 0]),
+      new Float64Array([0.001, 0.001, 0]),
+    ];
+    const far: Float64Array[] = [
+      new Float64Array([100, 100, 0]),
+      new Float64Array([100.001, 100.001, 0]),
+    ];
+
+    const svg = exportPlotterSvg([near, far], meta, { ...config, maxNodes: 20 });
+    const paths = [...svg.matchAll(/<path d="([^"]*)"/g)].map((m) => m[1] as string);
+    expect(paths.length).toBe(2);
+
+    const firstCoord = (d: string): number => Number(d.match(/M ([\d.]+) ([\d.]+)/)?.[1]);
+    const nearX = firstCoord(paths[0] as string);
+    const farX = firstCoord(paths[1] as string);
+    // If each trajectory were fit independently, both would sit near the
+    // page center regardless of their real separation. Fit to a shared
+    // frame, "near" (close to the origin) must land far from "far".
+    expect(Math.abs(nearX - farX)).toBeGreaterThan(50);
+  });
 });
