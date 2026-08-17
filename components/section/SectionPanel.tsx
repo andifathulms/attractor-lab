@@ -1,3 +1,4 @@
+import { useT } from '@/lib/i18n/LocaleProvider';
 import type { Plane } from '@/lib/dynamics/section';
 import type { SystemId } from '@/lib/dynamics/systems';
 
@@ -36,12 +37,14 @@ export function SectionPanel({
   collapsed,
   onToggleCollapsed,
 }: SectionPanelProps) {
+  const t = useT();
+
   if (collapsed) {
     return (
       <button
         type="button"
         onClick={onToggleCollapsed}
-        aria-label="Buka panel kontrol"
+        aria-label={t.panel.openPanel}
         className="absolute right-0 top-8 rounded-l border border-r-0 border-rule bg-night/90 px-2 py-4 font-sans text-sm text-readout transition-colors duration-fast hover:bg-graticule"
       >
         ⟨
@@ -52,11 +55,11 @@ export function SectionPanel({
   return (
     <div className="absolute right-4 top-8 w-72 rounded border border-rule bg-night/90 p-4 font-sans text-sm text-readout backdrop-blur-sm">
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="font-display text-lg font-medium">Kontrol</h2>
+        <h2 className="font-display text-lg font-medium">{t.panel.title}</h2>
         <button
           type="button"
           onClick={onToggleCollapsed}
-          aria-label="Tutup panel kontrol"
+          aria-label={t.panel.closePanel}
           className="text-readout transition-colors duration-fast hover:text-bloom"
         >
           ⟩
@@ -64,7 +67,7 @@ export function SectionPanel({
       </div>
 
       <label className="mb-4 block">
-        <span className="mb-1 block text-xs text-rule">Sistem</span>
+        <span className="mb-1 block text-xs text-rule">{t.panel.system}</span>
         <select
           value={systemId}
           onChange={(event) => onSystemChange(event.target.value as SystemId)}
@@ -72,14 +75,14 @@ export function SectionPanel({
         >
           {(Object.keys(SYSTEM_LABEL) as SystemId[]).map((id) => (
             <option key={id} value={id}>
-              {SYSTEM_LABEL[id]}
+              {t.systemNames[id]}
             </option>
           ))}
         </select>
       </label>
 
       <label className="mb-4 block">
-        <span className="mb-1 block text-xs text-rule">Langkah (dt)</span>
+        <span className="mb-1 block text-xs text-rule">{t.panel.step}</span>
         <input
           type="number"
           value={dt}
@@ -92,9 +95,9 @@ export function SectionPanel({
       </label>
 
       <div className="mb-4 rounded border border-rule p-2">
-        <span className="mb-2 block text-xs text-rule">Bidang irisan</span>
+        <span className="mb-2 block text-xs text-rule">{t.panel.plane}</span>
         <label className="mb-2 block">
-          <span className="mb-1 block text-xs text-rule">Sumbu</span>
+          <span className="mb-1 block text-xs text-rule">{t.panel.axis}</span>
           <select
             value={plane.axis}
             onChange={(event) =>
@@ -110,7 +113,7 @@ export function SectionPanel({
           </select>
         </label>
         <label className="block">
-          <span className="mb-1 block text-xs text-rule">Offset</span>
+          <span className="mb-1 block text-xs text-rule">{t.panel.offset}</span>
           <input
             type="number"
             value={plane.offset}
@@ -122,7 +125,7 @@ export function SectionPanel({
       </div>
 
       <fieldset className="space-y-2">
-        <legend className="mb-1 text-xs text-rule">Parameter</legend>
+        <legend className="mb-1 text-xs text-rule">{t.panel.parameters}</legend>
         {Object.entries(params).map(([key, value]) => (
           <label key={key} className="flex items-center justify-between gap-2">
             <span className="font-display italic">{key}</span>
