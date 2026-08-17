@@ -95,10 +95,14 @@ export function lyapunovSpectrum(
     elapsed += dt;
 
     if ((i + 1) % renormalizeEvery === 0) {
+      // Work in epsilon-normalized units so dot products are O(1) — doing
+      // Gram-Schmidt directly on O(epsilon) vectors makes cross terms
+      // negligible next to floating-point noise and orthogonalization silently
+      // no-ops.
       const vectors: Float64Array[] = shadows.map((shadow) => {
         const diff = new Float64Array(STATE_DIM);
         for (let d = 0; d < STATE_DIM; d++) {
-          diff[d] = (shadow[d] as number) - (fiducial[d] as number);
+          diff[d] = ((shadow[d] as number) - (fiducial[d] as number)) / epsilon;
         }
         return diff;
       });
@@ -115,15 +119,15 @@ export function lyapunovSpectrum(
         }
         const length = norm(va);
         if (length > 0) {
-          logSums[a] = (logSums[a] as number) + Math.log(length / epsilon);
-          for (let d = 0; d < STATE_DIM; d++) va[d] = ((va[d] as number) / length) * epsilon;
+          logSums[a] = (logSums[a] as number) + Math.log(length);
+          for (let d = 0; d < STATE_DIM; d++) va[d] = (va[d] as number) / length;
         }
       }
 
       for (let d = 0; d < STATE_DIM; d++) {
         for (let a = 0; a < STATE_DIM; a++) {
           const va = vectors[a] as Float64Array;
-          (shadows[a] as Float64Array)[d] = (fiducial[d] as number) + (va[d] as number);
+          (shadows[a] as Float64Array)[d] = (fiducial[d] as number) + epsilon * (va[d] as number);
         }
       }
     }
