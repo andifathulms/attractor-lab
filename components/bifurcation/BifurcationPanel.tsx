@@ -1,3 +1,4 @@
+import { useT } from '@/lib/i18n/LocaleProvider';
 import type { SystemId } from '@/lib/dynamics/systems';
 
 const SYSTEM_LABEL: Record<SystemId, string> = {
@@ -49,12 +50,14 @@ export function BifurcationPanel({
   collapsed,
   onToggleCollapsed,
 }: BifurcationPanelProps) {
+  const t = useT();
+
   if (collapsed) {
     return (
       <button
         type="button"
         onClick={onToggleCollapsed}
-        aria-label="Buka panel kontrol"
+        aria-label={t.panel.openPanel}
         className="absolute right-0 top-8 rounded-l border border-r-0 border-rule bg-night/90 px-2 py-4 font-sans text-sm text-readout transition-colors duration-fast hover:bg-graticule"
       >
         ⟨
@@ -65,11 +68,11 @@ export function BifurcationPanel({
   return (
     <div className="absolute right-4 top-8 w-72 rounded border border-rule bg-night/90 p-4 font-sans text-sm text-readout backdrop-blur-sm">
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="font-display text-lg font-medium">Kontrol</h2>
+        <h2 className="font-display text-lg font-medium">{t.panel.title}</h2>
         <button
           type="button"
           onClick={onToggleCollapsed}
-          aria-label="Tutup panel kontrol"
+          aria-label={t.panel.closePanel}
           className="text-readout transition-colors duration-fast hover:text-bloom"
         >
           ⟩
@@ -77,7 +80,7 @@ export function BifurcationPanel({
       </div>
 
       <label className="mb-4 block">
-        <span className="mb-1 block text-xs text-rule">Sistem</span>
+        <span className="mb-1 block text-xs text-rule">{t.panel.system}</span>
         <select
           value={systemId}
           onChange={(event) => onSystemChange(event.target.value as SystemId)}
@@ -85,14 +88,14 @@ export function BifurcationPanel({
         >
           {(Object.keys(SYSTEM_LABEL) as SystemId[]).map((id) => (
             <option key={id} value={id}>
-              {SYSTEM_LABEL[id]}
+              {t.systemNames[id]}
             </option>
           ))}
         </select>
       </label>
 
       <label className="mb-4 block">
-        <span className="mb-1 block text-xs text-rule">Parameter yang disapu</span>
+        <span className="mb-1 block text-xs text-rule">{t.panel.sweptParameter}</span>
         <select
           value={paramName}
           onChange={(event) => onParamNameChange(event.target.value)}
@@ -108,7 +111,7 @@ export function BifurcationPanel({
 
       <div className="mb-4 flex gap-2">
         <label className="flex-1">
-          <span className="mb-1 block text-xs text-rule">Min</span>
+          <span className="mb-1 block text-xs text-rule">{t.panel.min}</span>
           <input
             type="number"
             value={paramMin}
@@ -117,7 +120,7 @@ export function BifurcationPanel({
           />
         </label>
         <label className="flex-1">
-          <span className="mb-1 block text-xs text-rule">Maks</span>
+          <span className="mb-1 block text-xs text-rule">{t.panel.max}</span>
           <input
             type="number"
             value={paramMax}
@@ -128,7 +131,7 @@ export function BifurcationPanel({
       </div>
 
       <label className="mb-4 block">
-        <span className="mb-1 block text-xs text-rule">Jumlah sampel</span>
+        <span className="mb-1 block text-xs text-rule">{t.panel.sampleCount}</span>
         <input
           type="number"
           value={sampleCount}
@@ -140,7 +143,7 @@ export function BifurcationPanel({
       </label>
 
       <label className="mb-4 block">
-        <span className="mb-1 block text-xs text-rule">Sumbu maksima lokal</span>
+        <span className="mb-1 block text-xs text-rule">{t.panel.localMaximaAxis}</span>
         <select
           value={axis}
           onChange={(event) => onAxisChange(Number(event.target.value) as 0 | 1 | 2)}
@@ -155,7 +158,7 @@ export function BifurcationPanel({
       </label>
 
       <label className="block">
-        <span className="mb-1 block text-xs text-rule">Langkah (dt)</span>
+        <span className="mb-1 block text-xs text-rule">{t.panel.step}</span>
         <input
           type="number"
           value={dt}

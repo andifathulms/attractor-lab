@@ -1,3 +1,5 @@
+import { useT } from '@/lib/i18n/LocaleProvider';
+
 export type BifurcationReadoutStripProps = {
   readonly dt: number;
   readonly paramName: string;
@@ -19,14 +21,16 @@ export function BifurcationReadoutStrip({
   sampleCount,
   done,
 }: BifurcationReadoutStripProps) {
+  const t = useT();
+
   return (
     <div className="flex w-full flex-wrap items-center gap-6 border-t border-rule bg-night px-4 py-3 font-mono text-xs text-readout [font-variant-numeric:tabular-nums]">
-      <Field label="integrator" value="RK4" />
-      <Field label="langkah (dt)" value={dt.toExponential(1)} />
-      <Field label="sapuan" value={`${paramName} ∈ [${paramMin}, ${paramMax}]`} />
+      <Field label={t.readout.integrator} value={t.integratorNames.rk4} />
+      <Field label={t.readout.step} value={dt.toExponential(1)} />
+      <Field label={t.readout.sweep} value={`${paramName} ∈ [${paramMin}, ${paramMax}]`} />
       <Field
-        label="kemajuan"
-        value={done ? `${sampleCount}/${sampleCount} selesai` : `${sampleIndex}/${sampleCount}`}
+        label={t.readout.progress}
+        value={done ? `${sampleCount}/${sampleCount} ${t.readout.done}` : `${sampleIndex}/${sampleCount}`}
       />
     </div>
   );
