@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import { ComparisonCanvas, type ComparisonMetrics } from '@/components/comparison/ComparisonCanvas';
 import { ComparisonPanel } from '@/components/comparison/ComparisonPanel';
 import { ComparisonReadoutStrip } from '@/components/comparison/ComparisonReadoutStrip';
+import { AppNav } from '@/components/nav/AppNav';
 import { estimateConvergenceOrders, type ConvergenceOrders } from '@/lib/dynamics/convergence';
 import { classicSystem, type System, type SystemId } from '@/lib/dynamics/systems';
 
@@ -39,6 +40,7 @@ export default function BandingPage() {
   return (
     <main className="flex h-dvh flex-col bg-night">
       <div className="relative flex-1">
+        <AppNav />
         <ComparisonCanvas system={system} dt={dt} onMetrics={setMetrics} />
         <ComparisonPanel
           systemId={systemId}

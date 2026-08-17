@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useRef, useState } from 'react';
+import { AppNav } from '@/components/nav/AppNav';
 import { SectionCanvas, type SectionMetrics } from '@/components/section/SectionCanvas';
 import { SectionPanel } from '@/components/section/SectionPanel';
 import { SectionPlot, type SectionPlotHandle } from '@/components/section/SectionPlot';
@@ -42,6 +43,7 @@ export default function IrisanPage() {
   return (
     <main className="flex h-dvh flex-col bg-night">
       <div className="relative flex-1">
+        <AppNav />
         <SectionCanvas
           system={system}
           dt={dt}

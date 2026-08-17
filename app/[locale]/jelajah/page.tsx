@@ -7,6 +7,7 @@ import {
   type DivergenceMetrics,
 } from '@/components/divergence/DivergencePairCanvas';
 import { SeparationPlot, type SeparationPlotHandle } from '@/components/divergence/SeparationPlot';
+import { AppNav } from '@/components/nav/AppNav';
 import { ControlPanel } from '@/components/panel/ControlPanel';
 import { ReadoutStrip } from '@/components/readout/ReadoutStrip';
 import type { IntegratorId } from '@/lib/dynamics/integrate';
@@ -39,6 +40,7 @@ export default function JelajahPage() {
   return (
     <main className="flex h-dvh flex-col bg-night">
       <div className="relative flex-1">
+        <AppNav />
         {pairMode ? (
           <DivergencePairCanvas
             system={system}

@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import { BifurcationPanel } from '@/components/bifurcation/BifurcationPanel';
 import { BifurcationPlot, type BifurcationProgress } from '@/components/bifurcation/BifurcationPlot';
 import { BifurcationReadoutStrip } from '@/components/bifurcation/BifurcationReadoutStrip';
+import { AppNav } from '@/components/nav/AppNav';
 import type { LocalMaximaConfig } from '@/lib/dynamics/bifurcation';
 import { classicSystem, type SystemId } from '@/lib/dynamics/systems';
 
@@ -40,6 +41,7 @@ export default function CabangPage() {
   return (
     <main className="flex h-dvh flex-col bg-night">
       <div className="relative flex-1">
+        <AppNav />
         <BifurcationPlot
           system={system}
           paramName={paramName}
