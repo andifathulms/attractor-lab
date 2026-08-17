@@ -1,3 +1,4 @@
+import { useT } from '@/lib/i18n/LocaleProvider';
 import type { ConvergenceOrders } from '@/lib/dynamics/convergence';
 import type { SystemId } from '@/lib/dynamics/systems';
 import { EULER_COLOR, RK2_COLOR, RK4_COLOR } from './ComparisonCanvas';
@@ -35,12 +36,14 @@ export function ComparisonPanel({
   collapsed,
   onToggleCollapsed,
 }: ComparisonPanelProps) {
+  const t = useT();
+
   if (collapsed) {
     return (
       <button
         type="button"
         onClick={onToggleCollapsed}
-        aria-label="Buka panel kontrol"
+        aria-label={t.panel.openPanel}
         className="absolute right-0 top-8 rounded-l border border-r-0 border-rule bg-night/90 px-2 py-4 font-sans text-sm text-readout transition-colors duration-fast hover:bg-graticule"
       >
         ⟨
@@ -51,11 +54,11 @@ export function ComparisonPanel({
   return (
     <div className="absolute right-4 top-8 w-72 rounded border border-rule bg-night/90 p-4 font-sans text-sm text-readout backdrop-blur-sm">
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="font-display text-lg font-medium">Kontrol</h2>
+        <h2 className="font-display text-lg font-medium">{t.panel.title}</h2>
         <button
           type="button"
           onClick={onToggleCollapsed}
-          aria-label="Tutup panel kontrol"
+          aria-label={t.panel.closePanel}
           className="text-readout transition-colors duration-fast hover:text-bloom"
         >
           ⟩
@@ -63,7 +66,7 @@ export function ComparisonPanel({
       </div>
 
       <label className="mb-4 block">
-        <span className="mb-1 block text-xs text-rule">Sistem</span>
+        <span className="mb-1 block text-xs text-rule">{t.panel.system}</span>
         <select
           value={systemId}
           onChange={(event) => onSystemChange(event.target.value as SystemId)}
@@ -71,14 +74,14 @@ export function ComparisonPanel({
         >
           {(Object.keys(SYSTEM_LABEL) as SystemId[]).map((id) => (
             <option key={id} value={id}>
-              {SYSTEM_LABEL[id]}
+              {t.systemNames[id]}
             </option>
           ))}
         </select>
       </label>
 
       <label className="mb-4 block">
-        <span className="mb-1 block text-xs text-rule">Langkah (dt)</span>
+        <span className="mb-1 block text-xs text-rule">{t.panel.step}</span>
         <input
           type="number"
           value={dt}
@@ -91,7 +94,7 @@ export function ComparisonPanel({
       </label>
 
       <fieldset className="mb-4 space-y-2">
-        <legend className="mb-1 text-xs text-rule">Parameter</legend>
+        <legend className="mb-1 text-xs text-rule">{t.panel.parameters}</legend>
         {Object.entries(params).map(([key, value]) => (
           <label key={key} className="flex items-center justify-between gap-2">
             <span className="font-display italic">{key}</span>
@@ -109,9 +112,9 @@ export function ComparisonPanel({
       </fieldset>
 
       <div className="mb-3 space-y-1 font-mono text-xs">
-        <Legend color={RK4_COLOR} label="RK4" />
-        <Legend color={RK2_COLOR} label="RK2" />
-        <Legend color={EULER_COLOR} label="Euler" />
+        <Legend color={RK4_COLOR} label={t.integratorNames.rk4} />
+        <Legend color={RK2_COLOR} label={t.integratorNames.rk2} />
+        <Legend color={EULER_COLOR} label={t.integratorNames.euler} />
       </div>
 
       <button
@@ -119,15 +122,15 @@ export function ComparisonPanel({
         onClick={onCheckConvergence}
         className="mb-3 w-full rounded border border-rule bg-graticule px-2 py-1.5 text-readout transition-colors duration-fast hover:bg-rule"
       >
-        Cek konvergensi
+        {t.panel.checkConvergence}
       </button>
 
       {convergence && (
         <div className="space-y-1 font-mono text-xs [font-variant-numeric:tabular-nums]">
-          <div className="mb-1 text-rule">orde konvergensi (dt → dt/2)</div>
-          <ConvergenceRow label="Euler" expected={1} observed={convergence.euler} />
-          <ConvergenceRow label="RK2" expected={2} observed={convergence.rk2} />
-          <ConvergenceRow label="RK4" expected={4} observed={convergence.rk4} />
+          <div className="mb-1 text-rule">{t.panel.convergenceOrder}</div>
+          <ConvergenceRow label={t.integratorNames.euler} expected={1} observed={convergence.euler} />
+          <ConvergenceRow label={t.integratorNames.rk2} expected={2} observed={convergence.rk2} />
+          <ConvergenceRow label={t.integratorNames.rk4} expected={4} observed={convergence.rk4} />
         </div>
       )}
     </div>

@@ -1,3 +1,5 @@
+import { useT } from '@/lib/i18n/LocaleProvider';
+
 export type ComparisonReadoutStripProps = {
   readonly dt: number;
   readonly elapsed: number;
@@ -13,16 +15,18 @@ export function ComparisonReadoutStrip({
   eulerVsRk4,
   rk2VsRk4,
 }: ComparisonReadoutStripProps) {
+  const t = useT();
+
   return (
     <div className="flex w-full flex-wrap items-center gap-6 border-t border-rule bg-night px-4 py-3 font-mono text-xs text-readout [font-variant-numeric:tabular-nums]">
-      <Field label="langkah (dt)" value={dt.toExponential(1)} />
-      <Field label="waktu sistem" value={elapsed.toFixed(2)} />
+      <Field label={t.readout.step} value={dt.toExponential(1)} />
+      <Field label={t.readout.elapsedTime} value={elapsed.toFixed(2)} />
       <Field
-        label="|euler − rk4|"
+        label={t.readout.separationA}
         value={eulerVsRk4 !== undefined ? eulerVsRk4.toExponential(2) : '—'}
       />
       <Field
-        label="|rk2 − rk4|"
+        label={t.readout.separationB}
         value={rk2VsRk4 !== undefined ? rk2VsRk4.toExponential(2) : '—'}
       />
     </div>
