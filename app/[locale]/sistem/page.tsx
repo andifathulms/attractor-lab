@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { AppNav } from '@/components/nav/AppNav';
 import { dictionaries, type Locale } from '@/lib/i18n/dictionaries';
-import { systemReferences } from './data';
+import { pick, systemReferences } from './data';
 
 export default function SistemIndexPage({
   params,
@@ -26,7 +26,7 @@ export default function SistemIndexPage({
                 {s.name}
               </Link>
               <p className="mt-1 font-mono text-xs text-rule">
-                {s.discoverer} · {s.year} · {s.kind === 'flow' ? t.sistem.flow : t.sistem.map}
+                {pick(s.discoverer, locale)} · {s.year} · {s.kind === 'flow' ? t.sistem.flow : t.sistem.map}
               </p>
             </li>
           ))}

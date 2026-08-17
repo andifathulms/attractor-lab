@@ -4,7 +4,7 @@ import { Equation } from '@/components/equation/Equation';
 import { MapPreview } from '@/components/maps/MapPreview';
 import type { MapId } from '@/lib/dynamics/maps';
 import { dictionaries, type Locale } from '@/lib/i18n/dictionaries';
-import { getSystemReference, systemReferences } from '../data';
+import { getSystemReference, pick, systemReferences } from '../data';
 
 export function generateStaticParams(): { slug: string }[] {
   return systemReferences.map((s) => ({ slug: s.slug }));
@@ -27,7 +27,7 @@ export default function SistemSlugPage({
       <article className="mx-auto max-w-2xl">
         <h1 className="mb-1 font-display text-3xl font-medium">{reference.name}</h1>
         <p className="mb-8 font-mono text-xs text-rule">
-          {reference.discoverer} · {reference.year}
+          {pick(reference.discoverer, locale)} · {reference.year}
         </p>
 
         <section className="mb-10 space-y-3">
@@ -51,7 +51,7 @@ export default function SistemSlugPage({
               {reference.params.map((p) => (
                 <tr key={p.symbol} className="border-b border-rule">
                   <td className="py-2 pr-4 font-display italic">{p.symbol}</td>
-                  <td className="py-2 pr-4 font-sans text-readout">{p.meaning}</td>
+                  <td className="py-2 pr-4 font-sans text-readout">{pick(p.meaning, locale)}</td>
                   <td className="py-2 text-right [font-variant-numeric:tabular-nums]">
                     {p.classicValue}
                   </td>
@@ -63,10 +63,10 @@ export default function SistemSlugPage({
 
         <section className="mb-10">
           <h2 className="mb-3 font-display text-lg font-medium">{t.sistem.distinctiveness}</h2>
-          <p className="font-sans text-base leading-relaxed">{reference.distinctiveness}</p>
+          <p className="font-sans text-base leading-relaxed">{pick(reference.distinctiveness, locale)}</p>
         </section>
 
-        <p className="font-mono text-xs text-rule">{reference.citation}</p>
+        <p className="font-mono text-xs text-rule">{pick(reference.citation, locale)}</p>
       </article>
     </main>
   );
