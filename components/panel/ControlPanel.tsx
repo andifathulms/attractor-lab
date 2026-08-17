@@ -24,6 +24,10 @@ export type ControlPanelProps = {
   readonly onIntegratorChange: (id: IntegratorId) => void;
   readonly dt: number;
   readonly onDtChange: (dt: number) => void;
+  readonly pairMode: boolean;
+  readonly onPairModeChange: (pairMode: boolean) => void;
+  readonly epsilon: number;
+  readonly onEpsilonChange: (epsilon: number) => void;
   readonly collapsed: boolean;
   readonly onToggleCollapsed: () => void;
 };
@@ -37,6 +41,10 @@ export function ControlPanel({
   onIntegratorChange,
   dt,
   onDtChange,
+  pairMode,
+  onPairModeChange,
+  epsilon,
+  onEpsilonChange,
   collapsed,
   onToggleCollapsed,
 }: ControlPanelProps) {
@@ -109,6 +117,31 @@ export function ControlPanel({
           className="w-full rounded border border-rule bg-graticule px-2 py-1 font-mono text-readout"
         />
       </label>
+
+      <label className="mb-4 flex items-center justify-between">
+        <span className="text-xs text-rule">Pasangan divergensi</span>
+        <input
+          type="checkbox"
+          checked={pairMode}
+          onChange={(event) => onPairModeChange(event.target.checked)}
+          className="h-4 w-4 accent-trail-a"
+        />
+      </label>
+
+      {pairMode && (
+        <label className="mb-4 block">
+          <span className="mb-1 block text-xs text-rule">Epsilon (ε)</span>
+          <input
+            type="number"
+            value={epsilon}
+            step={epsilon / 10}
+            min={1e-15}
+            max={1}
+            onChange={(event) => onEpsilonChange(Number(event.target.value))}
+            className="w-full rounded border border-rule bg-graticule px-2 py-1 font-mono text-readout"
+          />
+        </label>
+      )}
 
       <fieldset className="space-y-2">
         <legend className="mb-1 text-xs text-rule">Parameter</legend>
