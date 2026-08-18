@@ -1,6 +1,10 @@
 export type Locale = 'id' | 'en';
 
 export type Dictionary = {
+  readonly brand: {
+    readonly name: string;
+    readonly tagline: string;
+  };
   readonly nav: {
     readonly jelajah: string;
     readonly banding: string;
@@ -64,12 +68,17 @@ export type Dictionary = {
     readonly map: string;
   };
   readonly onboarding: {
+    readonly intro: string;
     readonly divergenceHint: string;
     readonly dismiss: string;
   };
 };
 
 const id: Dictionary = {
+  brand: {
+    name: 'Attractor Lab',
+    tagline: 'Atraktor aneh, diintegrasi langkah demi langkah — amati dua lintasan nyaris identik menyimpang.',
+  },
   nav: {
     jelajah: 'Jelajah',
     banding: 'Banding',
@@ -133,6 +142,7 @@ const id: Dictionary = {
     map: 'peta terulang',
   },
   onboarding: {
+    intro: 'Atraktor aneh, dihitung langkah demi langkah oleh integrator tulisan tangan.',
     divergenceHint:
       'Dua lintasan identik, dimulai dengan perbedaan sekecil 10⁻⁸. Amati saat keduanya menyimpang — ini kekacauan deterministik, bukan noise acak.',
     dismiss: 'Mengerti',
@@ -140,6 +150,10 @@ const id: Dictionary = {
 };
 
 const en: Dictionary = {
+  brand: {
+    name: 'Attractor Lab',
+    tagline: 'Strange attractors, integrated step by step — watch two near-identical trajectories diverge.',
+  },
   nav: {
     jelajah: 'Explore',
     banding: 'Compare',
@@ -203,6 +217,7 @@ const en: Dictionary = {
     map: 'iterated map',
   },
   onboarding: {
+    intro: 'A strange attractor, computed step by step by a hand-written integrator.',
     divergenceHint:
       "Two identical trajectories, started 10⁻⁸ apart. Watch them diverge — that's deterministic chaos, not random noise.",
     dismiss: 'Got it',
