@@ -28,7 +28,7 @@ export default function SistemSlugPage({
       <AppNav />
       <article className="mx-auto max-w-2xl">
         <h1 className="mb-1 font-display text-3xl font-medium">{reference.name}</h1>
-        <p className="mb-8 font-mono text-xs text-caption">
+        <p className="mb-8 font-mono text-sm text-caption">
           {pick(reference.discoverer, locale)} · {reference.year}
         </p>
 
@@ -70,7 +70,7 @@ export default function SistemSlugPage({
           <p className="font-sans text-base leading-relaxed">{pick(reference.distinctiveness, locale)}</p>
         </section>
 
-        <p className="font-mono text-xs text-caption">{pick(reference.citation, locale)}</p>
+        <p className="font-mono text-sm text-caption">{pick(reference.citation, locale)}</p>
       </article>
     </main>
   );

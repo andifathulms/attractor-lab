@@ -23,7 +23,7 @@ export function AppNav() {
     <div className="absolute left-4 top-4 z-10 flex max-w-[calc(100vw-2rem)] flex-col gap-2">
       <Link href={`/${locale}/jelajah`} className="block">
         <p className="font-display text-lg font-medium leading-tight text-bloom">{t.brand.name}</p>
-        <p className="max-w-xs font-sans text-xs leading-snug text-caption">{t.brand.tagline}</p>
+        <p className="max-w-xs font-sans text-sm leading-snug text-caption">{t.brand.tagline}</p>
       </Link>
       <nav className="flex flex-wrap gap-3 font-mono text-sm text-caption">
         {links.map((link) => (

@@ -74,7 +74,7 @@ export default function CabangPage() {
           onProgress={setProgress}
           onParamPick={handleParamPick}
         />
-        <p className="pointer-events-none absolute bottom-4 left-4 z-10 font-mono text-xs text-caption">
+        <p className="pointer-events-none absolute bottom-4 left-4 z-10 font-mono text-sm text-caption">
           {t.panel.clickToJump}
         </p>
         <BifurcationPanel

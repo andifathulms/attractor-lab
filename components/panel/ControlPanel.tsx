@@ -204,7 +204,7 @@ export function ControlPanel({
         {verifying ? t.panel.verifying : t.panel.verify}
       </button>
       {verifyDelta !== undefined && (
-        <p className="mt-2 text-right font-mono text-xs text-caption [font-variant-numeric:tabular-nums]">
+        <p className="mt-2 text-right font-mono text-sm text-caption [font-variant-numeric:tabular-nums]">
           {t.panel.verifyDeltaLabel}: {verifyDelta.toExponential(2)}
         </p>
       )}
