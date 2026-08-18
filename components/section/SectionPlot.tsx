@@ -2,6 +2,7 @@
 
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
 import { inPlaneAxes, type Plane } from '@/lib/dynamics/section';
+import { useT } from '@/lib/i18n/LocaleProvider';
 import { drawSectionPlot, type SectionPoint } from '@/lib/render/section-plot';
 
 export type SectionPlotHandle = {
@@ -22,6 +23,7 @@ export const SectionPlot = forwardRef<SectionPlotHandle, SectionPlotProps>(funct
   { plane },
   ref
 ) {
+  const t = useT();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const pointsRef = useRef<SectionPoint[]>([]);
 
@@ -74,11 +76,16 @@ export const SectionPlot = forwardRef<SectionPlotHandle, SectionPlotProps>(funct
   }, []);
 
   return (
-    <div className="flex h-28 w-full items-center gap-4 border-t border-rule bg-night px-4">
-      <span className="shrink-0 font-mono text-sm text-caption">irisan Poincaré</span>
-      <div className="h-full flex-1 py-2">
-        <canvas ref={canvasRef} className="h-full w-full" />
+    <div className="w-full border-t border-rule bg-night px-4 py-2">
+      <div className="flex h-28 w-full items-center gap-4">
+        <span className="shrink-0 font-mono text-sm text-caption">irisan Poincaré</span>
+        <div className="h-full flex-1 py-2">
+          <canvas ref={canvasRef} className="h-full w-full" />
+        </div>
       </div>
+      {/* PRD.md §4.4's own claim — cited where the reader can see it happen,
+          not asserted in a doc they'd have to go find. */}
+      <p className="mt-1 font-mono text-sm leading-snug text-caption">{t.panel.sectionExplain}</p>
     </div>
   );
 });

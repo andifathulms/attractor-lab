@@ -56,6 +56,7 @@ export type Dictionary = {
     readonly clickToJump: string;
     readonly jumpToTrajectory: string;
     readonly bifurcationExplain: string;
+    readonly sectionExplain: string;
     readonly checkConvergence: string;
     readonly convergenceOrder: string;
     readonly convergenceExplain: string;
@@ -166,6 +167,8 @@ const id: Dictionary = {
     jumpToTrajectory: 'Lompat ke lintasan',
     bifurcationExplain:
       'Setiap titik adalah satu maksimum lokal sumbu {axis} sepanjang lintasan, pada nilai parameter itu — bukan lintasan penuh, hanya puncaknya. Satu titik di atas satu nilai parameter berarti periodik; sebaran vertikal (smear) berarti kacau.',
+    sectionExplain:
+      'Setiap kali lintasan menembus bidang irisan (dari satu sisi), posisi (u, v)-nya pada bidang itu digambar di sini — tangle 3D yang rumit menjadi peta yang hampir satu dimensi. Ini adalah wawasan yang membuat kekacauan bisa dipelajari: struktur yang tersembunyi dalam kekusutan menjadi terlihat begitu diiris.',
     checkConvergence: 'Cek konvergensi',
     convergenceOrder: 'orde konvergensi (dt → dt/2)',
     convergenceExplain:
@@ -278,6 +281,8 @@ const en: Dictionary = {
     jumpToTrajectory: 'Jump to trajectory',
     bifurcationExplain:
       'Each dot is one local maximum of the {axis} axis along the trajectory, at that parameter value — not the full trajectory, just its peaks. One dot above a single parameter value means periodic; a vertical smear means chaotic.',
+    sectionExplain:
+      "Each time the trajectory pierces the section plane (from one side), its (u, v) position on that plane is drawn here — a tangled 3D curve becomes a nearly one-dimensional map. This is the insight that made chaos tractable to study: structure hidden in the tangle becomes visible once it's sliced.",
     checkConvergence: 'Check convergence',
     convergenceOrder: 'convergence order (dt → dt/2)',
     convergenceExplain:
