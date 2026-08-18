@@ -19,6 +19,13 @@ import type { IntegratorId } from '@/lib/dynamics/integrate';
 import { classicSystem, type System, type SystemId } from '@/lib/dynamics/systems';
 import { decodeJelajahState, encodeJelajahState } from '@/lib/permalink';
 import { predictabilityHorizon, separationThreshold } from '@/lib/predictability';
+import type { ResultMessage, StartMessage as VerifyStartMessage, WorkerOutboundMessage as VerifyOutboundMessage } from '@/workers/verify.worker';
+
+const VERIFY_INITIAL_STATE: readonly [number, number, number] = [0.1, 0.1, 0.1];
+// Bounds the worker's compute: re-running at dt and dt/2 costs ~3x the
+// steps taken so far, and this is a one-shot check, not the streaming
+// render — no need to match the full run for the claim to be meaningful.
+const MAX_VERIFY_STEPS = 20000;
 
 export default function JelajahPage() {
   const t = useT();
@@ -32,6 +39,8 @@ export default function JelajahPage() {
   const [epsilon, setEpsilon] = useState(1e-8);
   const [collapsed, setCollapsed] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [verifying, setVerifying] = useState(false);
+  const [verifyDelta, setVerifyDelta] = useState<number | undefined>(undefined);
   const [metrics, setMetrics] = useState<CanvasMetrics | DivergenceMetrics>({
     elapsed: 0,
     lyapunovMax: undefined,
@@ -79,6 +88,33 @@ export default function JelajahPage() {
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     });
+  };
+
+  // Reruns the current run at dt/2 for the same elapsed time and reports how
+  // far the endpoint moves — makes the readout strip's "integrator: RK4,
+  // step: 5e-3" a checkable claim about the picture on screen, not just a
+  // label. CLAUDE.md §1.2.
+  const handleVerify = () => {
+    const steps = Math.min(Math.round(metrics.elapsed / dt), MAX_VERIFY_STEPS);
+    if (steps <= 0) return;
+    setVerifying(true);
+    setVerifyDelta(undefined);
+    const worker = new Worker(new URL('../../../workers/verify.worker.ts', import.meta.url));
+    worker.onmessage = (event: MessageEvent<VerifyOutboundMessage>) => {
+      const message: ResultMessage = event.data;
+      setVerifyDelta(message.delta);
+      setVerifying(false);
+      worker.terminate();
+    };
+    const startMessage: VerifyStartMessage = {
+      type: 'start',
+      system,
+      integrator: integratorConfig,
+      initial: VERIFY_INITIAL_STATE,
+      dt,
+      steps,
+    };
+    worker.postMessage(startMessage);
   };
 
   const system = useMemo(() => ({ type: systemId, params }) as System, [systemId, params]);
@@ -160,6 +196,10 @@ export default function JelajahPage() {
           onExport={handleExport}
           onCopyLink={handleCopyLink}
           copied={copied}
+          onVerify={handleVerify}
+          verifying={verifying}
+          verifyDelta={verifyDelta}
+          canVerify={metrics.elapsed > 0}
         />
       </div>
       {pairMode && <SeparationPlot ref={separationPlotRef} epsilon={epsilon} />}

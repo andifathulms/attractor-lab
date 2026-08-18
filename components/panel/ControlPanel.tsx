@@ -34,6 +34,10 @@ export type ControlPanelProps = {
   readonly onExport: () => void;
   readonly onCopyLink: () => void;
   readonly copied: boolean;
+  readonly onVerify: () => void;
+  readonly verifying: boolean;
+  readonly verifyDelta: number | undefined;
+  readonly canVerify: boolean;
 };
 
 export function ControlPanel({
@@ -54,6 +58,10 @@ export function ControlPanel({
   onExport,
   onCopyLink,
   copied,
+  onVerify,
+  verifying,
+  verifyDelta,
+  canVerify,
 }: ControlPanelProps) {
   const t = useT();
 
@@ -186,6 +194,20 @@ export function ControlPanel({
       >
         {copied ? t.panel.linkCopied : t.panel.copyLink}
       </button>
+
+      <button
+        type="button"
+        onClick={onVerify}
+        disabled={!canVerify || verifying}
+        className="mt-2 w-full rounded border border-rule bg-graticule px-2 py-1.5 text-readout transition-colors duration-fast hover:bg-rule disabled:opacity-50"
+      >
+        {verifying ? t.panel.verifying : t.panel.verify}
+      </button>
+      {verifyDelta !== undefined && (
+        <p className="mt-2 text-right font-mono text-xs text-caption [font-variant-numeric:tabular-nums]">
+          {t.panel.verifyDeltaLabel}: {verifyDelta.toExponential(2)}
+        </p>
+      )}
     </div>
   );
 }
