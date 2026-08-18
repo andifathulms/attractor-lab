@@ -63,6 +63,10 @@ export type Dictionary = {
     readonly flow: string;
     readonly map: string;
   };
+  readonly onboarding: {
+    readonly divergenceHint: string;
+    readonly dismiss: string;
+  };
 };
 
 const id: Dictionary = {
@@ -128,6 +132,11 @@ const id: Dictionary = {
     flow: 'aliran (ODE)',
     map: 'peta terulang',
   },
+  onboarding: {
+    divergenceHint:
+      'Dua lintasan identik, dimulai dengan perbedaan sekecil 10⁻⁸. Amati saat keduanya menyimpang — ini kekacauan deterministik, bukan noise acak.',
+    dismiss: 'Mengerti',
+  },
 };
 
 const en: Dictionary = {
@@ -192,6 +201,11 @@ const en: Dictionary = {
     distinctiveness: 'What sets it apart',
     flow: 'flow (ODE)',
     map: 'iterated map',
+  },
+  onboarding: {
+    divergenceHint:
+      "Two identical trajectories, started 10⁻⁸ apart. Watch them diverge — that's deterministic chaos, not random noise.",
+    dismiss: 'Got it',
   },
 };
 

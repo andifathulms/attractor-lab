@@ -9,14 +9,17 @@ import {
 } from '@/components/divergence/DivergencePairCanvas';
 import { SeparationPlot, type SeparationPlotHandle } from '@/components/divergence/SeparationPlot';
 import { AppNav } from '@/components/nav/AppNav';
+import { OnboardingHint } from '@/components/onboarding/OnboardingHint';
 import { ControlPanel, INTEGRATOR_LABEL, SYSTEM_LABEL } from '@/components/panel/ControlPanel';
 import { ReadoutStrip } from '@/components/readout/ReadoutStrip';
 import { exportPlotterSvg } from '@/lib/export/plotter';
 import { downloadSvg } from '@/lib/export/download';
+import { useT } from '@/lib/i18n/LocaleProvider';
 import type { IntegratorId } from '@/lib/dynamics/integrate';
 import { classicSystem, type System, type SystemId } from '@/lib/dynamics/systems';
 
 export default function JelajahPage() {
+  const t = useT();
   const [systemId, setSystemId] = useState<SystemId>('lorenz');
   const [params, setParams] = useState<Record<string, number>>({
     ...classicSystem.lorenz.params,
@@ -70,6 +73,9 @@ export default function JelajahPage() {
     <main className="flex h-dvh flex-col bg-night">
       <div className="relative h-[60vh] sm:h-auto sm:flex-1">
         <AppNav />
+        {pairMode && (
+          <OnboardingHint storageKey="attractor-lab-onboarding-divergence" message={t.onboarding.divergenceHint} />
+        )}
         {pairMode ? (
           <DivergencePairCanvas
             ref={pairCanvasRef}
