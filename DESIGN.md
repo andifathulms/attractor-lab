@@ -85,11 +85,12 @@ Violet for the section because it is a *different kind of object* — a construc
 ## 5. Type
 
 ```
-Crimson Pro       display, headings, the equations, controls, labels, prose
+Crimson Pro       display, headings, the equations, prose
+DM Sans           controls, labels
 JetBrains Mono    parameters, Lyapunov values, step sizes, coordinates
 ```
 
-**Two families.** Crimson Pro covers both display and UI/prose text — one text serif doing double duty rather than pairing it with a separate grotesque, which also keeps the "hold a paper beside the code" reading this project asks for. JetBrains Mono is kept apart because its role is functional, not decorative: tabular figures for values that update continuously and must not jitter.
+**Three families — a reopened judgement call, revertible in one line.** A two-family pass (Crimson Pro doing double duty for both display and UI/prose) briefly shipped, on the reasoning that one text serif reads as "hold a paper beside the code." Reverted: dense form controls (selects, checkboxes, small numeric inputs) read less crisp in a serif at 14–16px than in a grotesque. DM Sans is back for controls and labels; Crimson Pro keeps display, the equations, and body prose, where a serif reads well at paragraph sizes. The one-line revert lives in `app/layout.tsx` and `tailwind.config.ts`, both marked `JUDGEMENT CALL`. JetBrains Mono is kept apart regardless of which way this goes, because its role is functional, not decorative: tabular figures for values that update continuously and must not jitter.
 
 **Crimson Pro is a functional choice for the equations specifically.** The equations are content, and they need real italics for variables — `σ`, `ρ`, `β`, `ẋ` set in a face with a proper italic, not a slanted roman.
 

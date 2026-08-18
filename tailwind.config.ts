@@ -26,11 +26,14 @@ const config: Config = {
       '3xl': '46px',
     },
     fontFamily: {
-      // Two loaded families, not three — font-sans aliases to the same
-      // face as font-display (Crimson Pro) so existing className usage
-      // is unaffected. See app/layout.tsx and DESIGN.md §5.
+      // JUDGEMENT CALL (revertible in one line — see app/layout.tsx): back
+      // to three loaded families. font-sans points at its own --font-sans
+      // (DM Sans) again instead of aliasing to --font-display, so dense UI
+      // controls (selects, checkboxes, numeric inputs) get a grotesque
+      // instead of a text serif. Revert: change 'var(--font-sans)' back to
+      // 'var(--font-display)' here and drop the DM Sans loader.
       display: ['var(--font-display)', 'serif'],
-      sans: ['var(--font-display)', 'serif'],
+      sans: ['var(--font-sans)', 'sans-serif'],
       mono: ['var(--font-mono)', 'monospace'],
     },
     borderRadius: {
