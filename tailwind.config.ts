@@ -26,8 +26,11 @@ const config: Config = {
       '3xl': '46px',
     },
     fontFamily: {
+      // Two loaded families, not three — font-sans aliases to the same
+      // face as font-display (Crimson Pro) so existing className usage
+      // is unaffected. See app/layout.tsx and DESIGN.md §5.
       display: ['var(--font-display)', 'serif'],
-      sans: ['var(--font-sans)', 'sans-serif'],
+      sans: ['var(--font-display)', 'serif'],
       mono: ['var(--font-mono)', 'monospace'],
     },
     borderRadius: {

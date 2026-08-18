@@ -85,12 +85,13 @@ Violet for the section because it is a *different kind of object* — a construc
 ## 5. Type
 
 ```
-Crimson Pro       display, headings, and the equations
-DM Sans           controls, labels, prose
+Crimson Pro       display, headings, the equations, controls, labels, prose
 JetBrains Mono    parameters, Lyapunov values, step sizes, coordinates
 ```
 
-**Crimson Pro is a functional choice.** The equations are content, and they need real italics for variables — `σ`, `ρ`, `β`, `ẋ` set in a face with a proper italic, not a slanted roman.
+**Two families.** Crimson Pro covers both display and UI/prose text — one text serif doing double duty rather than pairing it with a separate grotesque, which also keeps the "hold a paper beside the code" reading this project asks for. JetBrains Mono is kept apart because its role is functional, not decorative: tabular figures for values that update continuously and must not jitter.
+
+**Crimson Pro is a functional choice for the equations specifically.** The equations are content, and they need real italics for variables — `σ`, `ρ`, `β`, `ẋ` set in a face with a proper italic, not a slanted roman.
 
 **Equations are hand-set inline SVG, not KaTeX.** There are roughly twenty across all systems. Hand-setting them costs a day and avoids a 250 KB dependency with its own font payload — which would be most of the bundle budget for something used on seven pages.
 
