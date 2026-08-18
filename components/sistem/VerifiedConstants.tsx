@@ -43,6 +43,14 @@ export function VerifiedConstants({ systemId }: VerifiedConstantsProps) {
     <section className="mb-10">
       <h2 className="mb-3 font-display text-lg font-medium">{t.sistem.checkedConstants}</h2>
       <table className="w-full border-collapse font-mono text-sm">
+        <thead>
+          <tr className="border-b border-rule text-caption">
+            <th className="py-2 pr-4 text-left font-sans font-normal" />
+            <th className="py-2 pr-4 text-right font-sans font-normal">{t.sistem.published}</th>
+            <th className="py-2 pr-4 text-right font-sans font-normal">{t.sistem.computed}</th>
+            <th className="py-2 text-right font-sans font-normal" />
+          </tr>
+        </thead>
         <tbody>
           {published.lyapunovMax !== undefined && (
             <ConstantRow
@@ -86,13 +94,11 @@ function ConstantRow({
   return (
     <tr className="border-b border-rule">
       <td className="py-2 pr-4 font-sans italic text-readout">{label}</td>
-      <td className="py-2 pr-4 text-right [font-variant-numeric:tabular-nums]">
-        {t.sistem.published} {published}
+      <td className="py-2 pr-4 text-right text-readout [font-variant-numeric:tabular-nums]">{published}</td>
+      <td className="py-2 pr-4 text-right text-readout [font-variant-numeric:tabular-nums]">
+        {computed !== undefined ? computed.toFixed(4) : t.sistem.verifyingConstants}
       </td>
-      <td className="py-2 pr-4 text-right [font-variant-numeric:tabular-nums]">
-        {t.sistem.computed} {computed !== undefined ? computed.toFixed(4) : t.sistem.verifyingConstants}
-      </td>
-      <td className="py-2 text-right font-sans">
+      <td className="py-2 text-right font-sans text-caption">
         {withinTolerance === undefined ? '' : withinTolerance ? t.sistem.withinTolerance : t.sistem.outsideTolerance}
       </td>
     </tr>
