@@ -75,7 +75,7 @@ export const SectionPlot = forwardRef<SectionPlotHandle, SectionPlotProps>(funct
 
   return (
     <div className="flex h-28 w-full items-center gap-4 border-t border-rule bg-night px-4">
-      <span className="shrink-0 font-mono text-xs text-rule">irisan Poincaré</span>
+      <span className="shrink-0 font-mono text-sm text-rule">irisan Poincaré</span>
       <div className="h-full flex-1 py-2">
         <canvas ref={canvasRef} className="h-full w-full" />
       </div>

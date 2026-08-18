@@ -72,7 +72,7 @@ export const SeparationPlot = forwardRef<SeparationPlotHandle, SeparationPlotPro
 
     return (
       <div className="flex h-20 w-full items-center gap-4 border-t border-rule bg-night px-4">
-        <div className="flex shrink-0 flex-col gap-1 font-mono text-xs text-readout">
+        <div className="flex shrink-0 flex-col gap-1 font-mono text-sm text-readout">
           <span>
             <span className="mr-1 inline-block h-2 w-2 rounded-full" style={{ background: TRAIL_A }} />
             A
@@ -85,7 +85,7 @@ export const SeparationPlot = forwardRef<SeparationPlotHandle, SeparationPlotPro
         <div className="h-full flex-1">
           <canvas ref={canvasRef} className="h-full w-full" />
         </div>
-        <span className="shrink-0 font-mono text-xs text-rule">log₁₀|Δ|</span>
+        <span className="shrink-0 font-mono text-sm text-rule">log₁₀|Δ|</span>
       </div>
     );
   }

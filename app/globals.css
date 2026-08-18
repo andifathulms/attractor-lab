@@ -6,3 +6,10 @@ html,
 body {
   height: 100%;
 }
+
+/* DESIGN.md §8: focus visible at 3px. Browser default outlines aren't
+   guaranteed to be 3px or consistently visible against --night/--graticule. */
+:focus-visible {
+  outline: 3px solid #f0c05a;
+  outline-offset: 2px;
+}
