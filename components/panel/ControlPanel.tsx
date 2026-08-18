@@ -182,7 +182,7 @@ export function ControlPanel({
       <button
         type="button"
         onClick={onExport}
-        className="mt-4 w-full rounded border border-rule bg-graticule px-2 py-1.5 text-readout transition-colors duration-fast hover:bg-rule"
+        className="mt-4 w-full rounded border border-trail-a bg-trail-a px-2 py-1.5 font-medium text-night transition-colors duration-fast hover:border-bloom hover:bg-bloom"
       >
         {t.panel.exportSvg}
       </button>
