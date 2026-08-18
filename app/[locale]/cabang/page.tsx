@@ -11,6 +11,8 @@ import { classicSystem, type SystemId } from '@/lib/dynamics/systems';
 import { useLocale, useT } from '@/lib/i18n/LocaleProvider';
 import { encodeJelajahState } from '@/lib/permalink';
 
+const AXIS_LABEL = ['x', 'y', 'z'] as const;
+
 export default function CabangPage() {
   const router = useRouter();
   const locale = useLocale();
@@ -109,7 +111,14 @@ export default function CabangPage() {
           onToggleCollapsed={() => setCollapsed((c) => !c)}
         />
       </div>
-      <div className="flex w-full flex-wrap items-center gap-3 border-t border-rule bg-night px-4 py-3">
+      {/* What's actually plotted, cited where the reader is looking at it —
+          not an about page. Read literally, one local maximum per sweep
+          sample; a single dot vs. a smeared column is the whole story of
+          periodic-vs-chaotic this diagram exists to show. */}
+      <p className="w-full border-t border-rule bg-night px-4 pt-3 font-mono text-sm leading-snug text-caption">
+        {t.panel.bifurcationExplain.replace('{axis}', AXIS_LABEL[axis])}
+      </p>
+      <div className="flex w-full flex-wrap items-center gap-3 bg-night px-4 py-3">
         <label className="flex flex-1 items-center gap-3 font-mono text-sm text-readout">
           <span className="shrink-0 text-caption">
             {t.panel.sweptParameter} ({paramName})
