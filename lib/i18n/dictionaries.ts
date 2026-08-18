@@ -57,6 +57,8 @@ export type Dictionary = {
     readonly jumpToTrajectory: string;
     readonly bifurcationExplain: string;
     readonly sectionExplain: string;
+    readonly tryCompareCuePrefix: string;
+    readonly tryCompareCueSuffix: string;
     readonly checkConvergence: string;
     readonly convergenceOrder: string;
     readonly convergenceExplain: string;
@@ -169,6 +171,8 @@ const id: Dictionary = {
       'Setiap titik adalah satu maksimum lokal sumbu {axis} sepanjang lintasan, pada nilai parameter itu — bukan lintasan penuh, hanya puncaknya. Satu titik di atas satu nilai parameter berarti periodik; sebaran vertikal (smear) berarti kacau.',
     sectionExplain:
       'Setiap kali lintasan menembus bidang irisan (dari satu sisi), posisi (u, v)-nya pada bidang itu digambar di sini — tangle 3D yang rumit menjadi peta yang hampir satu dimensi. Ini adalah wawasan yang membuat kekacauan bisa dipelajari: struktur yang tersembunyi dalam kekusutan menjadi terlihat begitu diiris.',
+    tryCompareCuePrefix: 'Ingin lihat integrator gagal? Buka',
+    tryCompareCueSuffix: ', naikkan dt, dan bandingkan Euler, RK2, RK4 berdampingan.',
     checkConvergence: 'Cek konvergensi',
     convergenceOrder: 'orde konvergensi (dt → dt/2)',
     convergenceExplain:
@@ -283,6 +287,8 @@ const en: Dictionary = {
       'Each dot is one local maximum of the {axis} axis along the trajectory, at that parameter value — not the full trajectory, just its peaks. One dot above a single parameter value means periodic; a vertical smear means chaotic.',
     sectionExplain:
       "Each time the trajectory pierces the section plane (from one side), its (u, v) position on that plane is drawn here — a tangled 3D curve becomes a nearly one-dimensional map. This is the insight that made chaos tractable to study: structure hidden in the tangle becomes visible once it's sliced.",
+    tryCompareCuePrefix: 'Want to see an integrator fail? Open',
+    tryCompareCueSuffix: ', push dt up, and watch Euler, RK2, and RK4 side by side.',
     checkConvergence: 'Check convergence',
     convergenceOrder: 'convergence order (dt → dt/2)',
     convergenceExplain:

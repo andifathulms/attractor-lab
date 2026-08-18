@@ -1,4 +1,5 @@
-import { useT } from '@/lib/i18n/LocaleProvider';
+import Link from 'next/link';
+import { useLocale, useT } from '@/lib/i18n/LocaleProvider';
 import type { IntegratorId } from '@/lib/dynamics/integrate';
 import type { SystemId } from '@/lib/dynamics/systems';
 import { usePanelFocusOnToggle } from '@/lib/usePanelFocus';
@@ -67,6 +68,7 @@ export function ControlPanel({
   canVerify,
 }: ControlPanelProps) {
   const t = useT();
+  const locale = useLocale();
   const { openButtonRef, closeButtonRef } = usePanelFocusOnToggle(collapsed);
 
   if (collapsed) {
@@ -141,6 +143,17 @@ export function ControlPanel({
           className="w-full rounded border border-rule bg-graticule px-2 py-1 font-mono text-readout"
         />
       </label>
+
+      <p className="mb-4 text-sm leading-snug text-caption">
+        {t.panel.tryCompareCuePrefix}{' '}
+        <Link
+          href={`/${locale}/banding`}
+          className="text-readout underline decoration-rule underline-offset-2 transition-colors duration-fast hover:text-bloom hover:decoration-bloom"
+        >
+          {t.nav.banding}
+        </Link>
+        {t.panel.tryCompareCueSuffix}
+      </p>
 
       <label className="mb-4 flex items-center justify-between">
         <span className="text-sm text-caption">{t.panel.pairMode}</span>
