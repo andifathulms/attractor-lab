@@ -18,7 +18,7 @@ import { useT } from '@/lib/i18n/LocaleProvider';
 import type { IntegratorId } from '@/lib/dynamics/integrate';
 import { classicSystem, type System, type SystemId } from '@/lib/dynamics/systems';
 import { decodeJelajahState, encodeJelajahState } from '@/lib/permalink';
-import { predictabilityHorizon, separationThreshold } from '@/lib/predictability';
+import { boundingBoxDiagonal, predictabilityHorizon, separationThreshold } from '@/lib/predictability';
 import type { ResultMessage, StartMessage as VerifyStartMessage, WorkerOutboundMessage as VerifyOutboundMessage } from '@/workers/verify.worker';
 
 const VERIFY_INITIAL_STATE: readonly [number, number, number] = [0.1, 0.1, 0.1];
@@ -123,6 +123,14 @@ export default function JelajahPage() {
     if (metrics.lyapunovMax === undefined) return undefined;
     return predictabilityHorizon(metrics.lyapunovMax, epsilon, separationThreshold(systemId));
   }, [metrics.lyapunovMax, epsilon, systemId]);
+  // Frames the verify-check's raw distance against the attractor's own
+  // physical scale (CLAUDE.md invariant 12's bounding box), so the number
+  // reads as "how much of the picture" rather than an uninterpretable
+  // magnitude.
+  const verifyDeltaFraction = useMemo(() => {
+    if (verifyDelta === undefined) return undefined;
+    return verifyDelta / boundingBoxDiagonal(systemId);
+  }, [verifyDelta, systemId]);
 
   const handleExport = () => {
     const snapshot = pairMode ? pairCanvasRef.current?.getSnapshot() : attractorCanvasRef.current?.getSnapshot();
@@ -199,6 +207,7 @@ export default function JelajahPage() {
           onVerify={handleVerify}
           verifying={verifying}
           verifyDelta={verifyDelta}
+          verifyDeltaFraction={verifyDeltaFraction}
           canVerify={metrics.elapsed > 0}
         />
       </div>

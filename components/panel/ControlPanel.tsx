@@ -37,6 +37,7 @@ export type ControlPanelProps = {
   readonly onVerify: () => void;
   readonly verifying: boolean;
   readonly verifyDelta: number | undefined;
+  readonly verifyDeltaFraction: number | undefined;
   readonly canVerify: boolean;
 };
 
@@ -61,6 +62,7 @@ export function ControlPanel({
   onVerify,
   verifying,
   verifyDelta,
+  verifyDeltaFraction,
   canVerify,
 }: ControlPanelProps) {
   const t = useT();
@@ -206,6 +208,8 @@ export function ControlPanel({
       {verifyDelta !== undefined && (
         <p className="mt-2 text-right font-mono text-sm text-caption [font-variant-numeric:tabular-nums]">
           {t.panel.verifyDeltaLabel}: {verifyDelta.toExponential(2)}
+          {verifyDeltaFraction !== undefined &&
+            ` (${(verifyDeltaFraction * 100).toPrecision(2)}% ${t.panel.verifyDeltaScaleSuffix})`}
         </p>
       )}
     </div>

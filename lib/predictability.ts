@@ -2,21 +2,31 @@ import { invariants, type SystemInvariants } from './dynamics/invariants';
 import type { SystemId } from './dynamics/systems';
 
 /**
- * Fraction of a system's bounding-box diagonal (lib/dynamics/invariants.ts —
- * the same analytic bound the boundedness test asserts against) used as the
- * separation at which two trajectories count as "unrelated" rather than
- * still tracking together. An explicit rule tied to the system's own
- * physical scale, not a fitted or arbitrary constant.
+ * A system's bounding-box diagonal (lib/dynamics/invariants.ts — the same
+ * analytic bound the boundedness test asserts against): the natural
+ * physical scale to compare any separation distance in that system's own
+ * units against, whether that's the "unrelated" threshold below or a
+ * verify-check delta.
+ */
+export function boundingBoxDiagonal(systemId: SystemId): number {
+  const { min, max } = (invariants[systemId] as SystemInvariants).boundingBox;
+  const dx = (max[0] as number) - (min[0] as number);
+  const dy = (max[1] as number) - (min[1] as number);
+  const dz = (max[2] as number) - (min[2] as number);
+  return Math.sqrt(dx * dx + dy * dy + dz * dz);
+}
+
+/**
+ * Fraction of the bounding-box diagonal used as the separation at which two
+ * trajectories count as "unrelated" rather than still tracking together. An
+ * explicit rule tied to the system's own physical scale, not a fitted or
+ * arbitrary constant.
  */
 const HORIZON_THRESHOLD_FRACTION = 0.1;
 
 /** The separation threshold for `predictabilityHorizon`, in the system's own units. */
 export function separationThreshold(systemId: SystemId): number {
-  const { min, max } = (invariants[systemId] as SystemInvariants).boundingBox;
-  const dx = (max[0] as number) - (min[0] as number);
-  const dy = (max[1] as number) - (min[1] as number);
-  const dz = (max[2] as number) - (min[2] as number);
-  return Math.sqrt(dx * dx + dy * dy + dz * dz) * HORIZON_THRESHOLD_FRACTION;
+  return boundingBoxDiagonal(systemId) * HORIZON_THRESHOLD_FRACTION;
 }
 
 /**
