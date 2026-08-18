@@ -82,6 +82,7 @@ export type Dictionary = {
     readonly outsideTolerance: string;
     readonly verifyingConstants: string;
     readonly kaplanYorkeDimension: string;
+    readonly constantsReady: string;
   };
   readonly onboarding: {
     readonly intro: string;
@@ -172,6 +173,7 @@ const id: Dictionary = {
     outsideTolerance: 'di luar toleransi',
     verifyingConstants: 'menghitung…',
     kaplanYorkeDimension: 'dimensi Kaplan–Yorke',
+    constantsReady: 'Konstanta terverifikasi selesai dihitung.',
   },
   onboarding: {
     intro: 'Atraktor aneh, dihitung langkah demi langkah oleh integrator tulisan tangan.',
@@ -263,6 +265,7 @@ const en: Dictionary = {
     outsideTolerance: 'outside tolerance',
     verifyingConstants: 'computing…',
     kaplanYorkeDimension: 'Kaplan–Yorke dimension',
+    constantsReady: 'Verified constants finished computing.',
   },
   onboarding: {
     intro: 'A strange attractor, computed step by step by a hand-written integrator.',

@@ -42,6 +42,13 @@ export function VerifiedConstants({ systemId }: VerifiedConstantsProps) {
   return (
     <section className="mb-10">
       <h2 className="mb-3 font-display text-lg font-medium">{t.sistem.checkedConstants}</h2>
+      {/* Visually-hidden: the table cells update silently as the worker
+          resolves (WCAG 4.1.3), so a screen reader user has no way to know
+          the check finished short of re-reading the whole table. This
+          announces once, without changing anything visible. */}
+      <p role="status" className="sr-only">
+        {result !== null ? t.sistem.constantsReady : ''}
+      </p>
       <table className="w-full border-collapse font-mono text-sm">
         <thead>
           <tr className="border-b border-rule text-caption">
