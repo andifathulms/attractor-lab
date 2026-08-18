@@ -8,6 +8,8 @@ export type StartMessage = {
   readonly system: System;
   readonly dt: number;
   readonly initial: readonly [number, number, number];
+  /** One-shot: compute this many steps in one burst and stop, instead of streaming indefinitely. DESIGN.md §7. */
+  readonly reducedMotionSteps?: number;
 };
 
 export type WorkerInboundMessage = StartMessage;
@@ -49,8 +51,52 @@ function distance(a: Float64Array, b: Float64Array): number {
 }
 
 async function run(message: StartMessage, myGeneration: number): Promise<void> {
-  const { system, dt, initial } = message;
+  const { system, dt, initial, reducedMotionSteps } = message;
   const f = (state: Float64Array, out: Float64Array): void => derivative(system, state, out);
+
+  if (reducedMotionSteps) {
+    let stateEuler = new Float64Array(initial);
+    let stateRk2 = new Float64Array(initial);
+    let stateRk4 = new Float64Array(initial);
+    const pointsEuler = new Float64Array(reducedMotionSteps * 3);
+    const pointsRk2 = new Float64Array(reducedMotionSteps * 3);
+    const pointsRk4 = new Float64Array(reducedMotionSteps * 3);
+    let elapsed = 0;
+
+    for (let i = 0; i < reducedMotionSteps; i++) {
+      stateEuler = eulerStep(stateEuler, dt, f);
+      stateRk2 = rk2Step(stateRk2, dt, f);
+      stateRk4 = rk4Step(stateRk4, dt, f);
+      elapsed += dt;
+
+      pointsEuler[i * 3] = stateEuler[0] as number;
+      pointsEuler[i * 3 + 1] = stateEuler[1] as number;
+      pointsEuler[i * 3 + 2] = stateEuler[2] as number;
+      pointsRk2[i * 3] = stateRk2[0] as number;
+      pointsRk2[i * 3 + 1] = stateRk2[1] as number;
+      pointsRk2[i * 3 + 2] = stateRk2[2] as number;
+      pointsRk4[i * 3] = stateRk4[0] as number;
+      pointsRk4[i * 3 + 1] = stateRk4[1] as number;
+      pointsRk4[i * 3 + 2] = stateRk4[2] as number;
+    }
+
+    if (generation !== myGeneration) return;
+    const batchMessage: BatchMessage = {
+      type: 'batch',
+      pointsEuler,
+      pointsRk2,
+      pointsRk4,
+      eulerVsRk4: distance(stateEuler, stateRk4),
+      rk2VsRk4: distance(stateRk2, stateRk4),
+      elapsed,
+    };
+    (self as unknown as Worker).postMessage(batchMessage, [
+      pointsEuler.buffer,
+      pointsRk2.buffer,
+      pointsRk4.buffer,
+    ]);
+    return;
+  }
 
   let stateEuler = new Float64Array(initial);
   let stateRk2 = new Float64Array(initial);

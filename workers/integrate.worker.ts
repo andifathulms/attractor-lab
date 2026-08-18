@@ -8,6 +8,8 @@ export type StartMessage = {
   readonly integrator: Integrator;
   readonly dt: number;
   readonly initial: readonly [number, number, number];
+  /** One-shot: compute this many steps in one burst and stop, instead of streaming indefinitely. DESIGN.md §7. */
+  readonly reducedMotionSteps?: number;
 };
 
 export type WorkerInboundMessage = StartMessage;
@@ -42,8 +44,37 @@ self.onmessage = (event: MessageEvent<WorkerInboundMessage>) => {
 };
 
 async function run(message: StartMessage, myGeneration: number): Promise<void> {
-  const { system, integrator, dt, initial } = message;
+  const { system, integrator, dt, initial, reducedMotionSteps } = message;
   const f = (state: Float64Array, out: Float64Array): void => derivative(system, state, out);
+
+  if (reducedMotionSteps) {
+    let state = new Float64Array(initial);
+    const points = new Float64Array(reducedMotionSteps * 3);
+    let elapsed = 0;
+    for (let i = 0; i < reducedMotionSteps; i++) {
+      state = step(integrator, state, dt, f);
+      points[i * 3] = state[0] as number;
+      points[i * 3 + 1] = state[1] as number;
+      points[i * 3 + 2] = state[2] as number;
+      elapsed += dt;
+    }
+    if (generation !== myGeneration) return;
+    const batchMessage: BatchMessage = { type: 'batch', points, elapsed };
+    (self as unknown as Worker).postMessage(batchMessage, [points.buffer]);
+
+    const lyapunovMax = largestLyapunovExponent(
+      system,
+      integrator,
+      new Float64Array(initial),
+      dt,
+      reducedMotionSteps
+    );
+    if (generation === myGeneration) {
+      const metricsMessage: MetricsMessage = { type: 'metrics', lyapunovMax, elapsed };
+      (self as unknown as Worker).postMessage(metricsMessage);
+    }
+    return;
+  }
 
   let state = new Float64Array(initial);
   let elapsed = 0;
