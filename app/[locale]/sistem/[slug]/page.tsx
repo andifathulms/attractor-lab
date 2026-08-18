@@ -2,7 +2,9 @@ import { notFound } from 'next/navigation';
 import { AppNav } from '@/components/nav/AppNav';
 import { Equation } from '@/components/equation/Equation';
 import { MapPreview } from '@/components/maps/MapPreview';
+import { VerifiedConstants } from '@/components/sistem/VerifiedConstants';
 import type { MapId } from '@/lib/dynamics/maps';
+import type { SystemId } from '@/lib/dynamics/systems';
 import { dictionaries, type Locale } from '@/lib/i18n/dictionaries';
 import { getSystemReference, pick, systemReferences } from '../data';
 
@@ -60,6 +62,8 @@ export default function SistemSlugPage({
             </tbody>
           </table>
         </section>
+
+        {reference.kind === 'flow' && <VerifiedConstants systemId={reference.slug as SystemId} />}
 
         <section className="mb-10">
           <h2 className="mb-3 font-display text-lg font-medium">{t.sistem.distinctiveness}</h2>
