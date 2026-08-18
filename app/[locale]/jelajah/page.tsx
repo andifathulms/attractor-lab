@@ -48,6 +48,11 @@ export default function JelajahPage() {
   const separationPlotRef = useRef<SeparationPlotHandle | null>(null);
   const attractorCanvasRef = useRef<AttractorCanvasHandle | null>(null);
   const pairCanvasRef = useRef<DivergencePairCanvasHandle | null>(null);
+  // Dismissing the onboarding hint unmounts its own just-focused button;
+  // this gives focus somewhere sensible to land on afterward instead of
+  // dropping to <body>. tabIndex=-1 makes <main> programmatically
+  // focusable without adding it to the normal Tab order.
+  const mainRef = useRef<HTMLElement | null>(null);
 
   // A permalink is only meaningful if it can override every field it
   // encodes, once, before anything else touches state — applied here rather
@@ -157,12 +162,13 @@ export default function JelajahPage() {
   };
 
   return (
-    <main className="flex h-dvh flex-col bg-night">
+    <main ref={mainRef} tabIndex={-1} className="flex h-dvh flex-col bg-night">
       <div className="relative h-[60vh] sm:h-auto sm:flex-1">
         <AppNav />
         <OnboardingHint
           storageKey="attractor-lab-onboarding"
           message={pairMode ? `${t.onboarding.intro} ${t.onboarding.divergenceHint}` : t.onboarding.intro}
+          returnFocusRef={mainRef}
         />
         {pairMode ? (
           <DivergencePairCanvas
