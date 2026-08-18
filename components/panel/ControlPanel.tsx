@@ -192,6 +192,7 @@ export function ControlPanel({
       <button
         type="button"
         onClick={onCopyLink}
+        aria-live="polite"
         className="mt-2 w-full rounded border border-rule bg-graticule px-2 py-1.5 text-readout transition-colors duration-fast hover:bg-rule"
       >
         {copied ? t.panel.linkCopied : t.panel.copyLink}
@@ -201,12 +202,16 @@ export function ControlPanel({
         type="button"
         onClick={onVerify}
         disabled={!canVerify || verifying}
+        aria-live="polite"
         className="mt-2 w-full rounded border border-rule bg-graticule px-2 py-1.5 text-readout transition-colors duration-fast hover:bg-rule disabled:opacity-50"
       >
         {verifying ? t.panel.verifying : t.panel.verify}
       </button>
       {verifyDelta !== undefined && (
-        <p className="mt-2 text-right font-mono text-sm text-caption [font-variant-numeric:tabular-nums]">
+        <p
+          role="status"
+          className="mt-2 text-right font-mono text-sm text-caption [font-variant-numeric:tabular-nums]"
+        >
           {t.panel.verifyDeltaLabel}: {verifyDelta.toExponential(2)}
           {verifyDeltaFraction !== undefined &&
             ` (${(verifyDeltaFraction * 100).toPrecision(2)}% ${t.panel.verifyDeltaScaleSuffix})`}
