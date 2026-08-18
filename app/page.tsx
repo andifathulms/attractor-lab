@@ -1,14 +1,18 @@
-'use client';
+import Link from 'next/link';
+import { RootRedirect } from './RootRedirect';
 
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
-
+// The redirect itself is client-only (needs useRouter) — this stays a
+// Server Component so it can inherit the root layout's real metadata
+// (title/description/OG/canonical) and offer a real link for crawlers or
+// visitors without JS, instead of an empty page with a script tag. Link
+// (not a plain <a>) so the href picks up basePath correctly.
 export default function RootPage() {
-  const router = useRouter();
-
-  useEffect(() => {
-    router.replace('/id/jelajah');
-  }, [router]);
-
-  return null;
+  return (
+    <>
+      <RootRedirect />
+      <noscript>
+        <Link href="/id/jelajah">Attractor Lab</Link>
+      </noscript>
+    </>
+  );
 }
