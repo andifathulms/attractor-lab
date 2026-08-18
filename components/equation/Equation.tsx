@@ -19,17 +19,22 @@ export function Equation({ children, plain }: EquationProps) {
   // slack in), not the glyphs themselves.
   const width = Math.max(120, plain.length * 11 + 24);
 
+  // `h-8` (fixed height) and a width cap were previously combined via
+  // `w-auto max-w-full` — on a narrow viewport that clamps width below the
+  // equation's natural size, and since the SVG scales uniformly to fit, the
+  // *height* shrinks too, past legibility, exactly where equations are
+  // already dense (Aizawa's longest line). A dedicated scroll container
+  // keeps every equation at a fixed, always-legible size and scrolls
+  // horizontally only for that one line — the WCAG 1.4.10-compliant answer
+  // for content that can't reflow, instead of shrinking text to fit.
   return (
-    <svg
-      role="img"
-      aria-label={plain}
-      viewBox={`0 0 ${width} 32`}
-      className="h-8 w-auto max-w-full"
-    >
-      <text x="0" y="22" className="fill-readout font-display text-[22px] italic">
-        {children}
-      </text>
-    </svg>
+    <div className="max-w-full overflow-x-auto">
+      <svg role="img" aria-label={plain} viewBox={`0 0 ${width} 32`} className="h-8" style={{ width }}>
+        <text x="0" y="22" className="fill-readout font-display text-[22px] italic">
+          {children}
+        </text>
+      </svg>
+    </div>
   );
 }
 
