@@ -26,6 +26,7 @@ export type Dictionary = {
   };
   readonly panel: {
     readonly title: string;
+    readonly intro: string;
     readonly openPanel: string;
     readonly closePanel: string;
     readonly system: string;
@@ -100,6 +101,7 @@ const id: Dictionary = {
   },
   panel: {
     title: 'Kontrol',
+    intro: 'Setiap kombinasi sistem, integrator, dan langkah menghasilkan gambar yang berbeda.',
     openPanel: 'Buka panel kontrol',
     closePanel: 'Tutup panel kontrol',
     system: 'Sistem',
@@ -175,6 +177,7 @@ const en: Dictionary = {
   },
   panel: {
     title: 'Controls',
+    intro: 'Each combination of system, integrator, and step renders a different picture.',
     openPanel: 'Open control panel',
     closePanel: 'Close control panel',
     system: 'System',

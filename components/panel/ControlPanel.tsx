@@ -68,7 +68,7 @@ export function ControlPanel({
 
   return (
     <div className="fixed inset-x-0 bottom-24 z-20 max-h-[40vh] overflow-y-auto border-t border-rule bg-night/95 p-4 font-sans text-sm text-readout sm:absolute sm:inset-x-auto sm:right-4 sm:top-8 sm:bottom-auto sm:z-auto sm:max-h-none sm:w-72 sm:overflow-visible sm:rounded sm:border sm:bg-night/90 sm:backdrop-blur-sm">
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mb-1 flex items-center justify-between">
         <h2 className="font-display text-lg font-medium">{t.panel.title}</h2>
         <button
           type="button"
@@ -79,6 +79,7 @@ export function ControlPanel({
           ⟩
         </button>
       </div>
+      <p className="mb-4 text-sm leading-snug text-caption">{t.panel.intro}</p>
 
       <label className="mb-4 block">
         <span className="mb-1 block text-sm text-caption">{t.panel.system}</span>
