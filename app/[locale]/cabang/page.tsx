@@ -40,7 +40,7 @@ export default function CabangPage() {
 
   return (
     <main className="flex h-dvh flex-col bg-night">
-      <div className="relative flex-1">
+      <div className="relative h-[60vh] sm:h-auto sm:flex-1">
         <AppNav />
         <BifurcationPlot
           system={system}

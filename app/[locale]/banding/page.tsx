@@ -39,7 +39,7 @@ export default function BandingPage() {
 
   return (
     <main className="flex h-dvh flex-col bg-night">
-      <div className="relative flex-1">
+      <div className="relative h-[60vh] sm:h-auto sm:flex-1">
         <AppNav />
         <ComparisonCanvas system={system} dt={dt} onMetrics={setMetrics} />
         <ComparisonPanel
