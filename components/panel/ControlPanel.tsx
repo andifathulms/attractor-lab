@@ -1,6 +1,7 @@
 import { useT } from '@/lib/i18n/LocaleProvider';
 import type { IntegratorId } from '@/lib/dynamics/integrate';
 import type { SystemId } from '@/lib/dynamics/systems';
+import { usePanelFocusOnToggle } from '@/lib/usePanelFocus';
 
 export const SYSTEM_LABEL: Record<SystemId, string> = {
   lorenz: 'Lorenz',
@@ -66,10 +67,12 @@ export function ControlPanel({
   canVerify,
 }: ControlPanelProps) {
   const t = useT();
+  const { openButtonRef, closeButtonRef } = usePanelFocusOnToggle(collapsed);
 
   if (collapsed) {
     return (
       <button
+        ref={openButtonRef}
         type="button"
         onClick={onToggleCollapsed}
         aria-label={t.panel.openPanel}
@@ -85,6 +88,7 @@ export function ControlPanel({
       <div className="mb-1 flex items-center justify-between">
         <h2 className="font-display text-lg font-medium">{t.panel.title}</h2>
         <button
+          ref={closeButtonRef}
           type="button"
           onClick={onToggleCollapsed}
           aria-label={t.panel.closePanel}

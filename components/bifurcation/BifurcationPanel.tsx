@@ -1,5 +1,6 @@
 import { useT } from '@/lib/i18n/LocaleProvider';
 import type { SystemId } from '@/lib/dynamics/systems';
+import { usePanelFocusOnToggle } from '@/lib/usePanelFocus';
 
 const SYSTEM_LABEL: Record<SystemId, string> = {
   lorenz: 'Lorenz',
@@ -51,10 +52,12 @@ export function BifurcationPanel({
   onToggleCollapsed,
 }: BifurcationPanelProps) {
   const t = useT();
+  const { openButtonRef, closeButtonRef } = usePanelFocusOnToggle(collapsed);
 
   if (collapsed) {
     return (
       <button
+        ref={openButtonRef}
         type="button"
         onClick={onToggleCollapsed}
         aria-label={t.panel.openPanel}
@@ -70,6 +73,7 @@ export function BifurcationPanel({
       <div className="mb-4 flex items-center justify-between">
         <h2 className="font-display text-lg font-medium">{t.panel.title}</h2>
         <button
+          ref={closeButtonRef}
           type="button"
           onClick={onToggleCollapsed}
           aria-label={t.panel.closePanel}
