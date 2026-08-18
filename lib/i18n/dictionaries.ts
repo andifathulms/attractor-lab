@@ -57,6 +57,7 @@ export type Dictionary = {
     readonly jumpToTrajectory: string;
     readonly checkConvergence: string;
     readonly convergenceOrder: string;
+    readonly convergenceExplain: string;
     readonly sweptParameter: string;
     readonly min: string;
     readonly max: string;
@@ -164,6 +165,8 @@ const id: Dictionary = {
     jumpToTrajectory: 'Lompat ke lintasan',
     checkConvergence: 'Cek konvergensi',
     convergenceOrder: 'orde konvergensi (dt → dt/2)',
+    convergenceExplain:
+      'Tiap integrator dijalankan pada dt dan dt/2, dibandingkan dengan referensi RK4 pada dt/64. Orde = log₂(error(dt) / error(dt/2)) — Euler ≈1, RK2 ≈2, RK4 ≈4, sesuai perilaku pemotongan lokalnya.',
     sweptParameter: 'Parameter yang disapu',
     min: 'Min',
     max: 'Maks',
@@ -272,6 +275,8 @@ const en: Dictionary = {
     jumpToTrajectory: 'Jump to trajectory',
     checkConvergence: 'Check convergence',
     convergenceOrder: 'convergence order (dt → dt/2)',
+    convergenceExplain:
+      'Each integrator runs at dt and dt/2, compared against an RK4 reference at dt/64. Order = log₂(error(dt) / error(dt/2)) — ≈1 for Euler, ≈2 for RK2, ≈4 for RK4, matching each one’s local truncation behavior.',
     sweptParameter: 'Swept parameter',
     min: 'Min',
     max: 'Max',

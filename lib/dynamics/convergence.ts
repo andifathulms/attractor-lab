@@ -4,10 +4,17 @@ import { rk2Step } from './integrate/rk2';
 import { rk4Step } from './integrate/rk4';
 import { derivative, type System } from './systems';
 
+/** The order plus the two intermediate error magnitudes it's derived from — shown together so the ratio is checkable, not just its conclusion. */
+export type ConvergenceResult = {
+  readonly order: number;
+  readonly errorCoarse: number;
+  readonly errorFine: number;
+};
+
 export type ConvergenceOrders = {
-  readonly euler: number;
-  readonly rk2: number;
-  readonly rk4: number;
+  readonly euler: ConvergenceResult;
+  readonly rk2: ConvergenceResult;
+  readonly rk4: ConvergenceResult;
 };
 
 type StepFn = (state: Float64Array, dt: number, f: DerivativeFn) => Float64Array;
@@ -44,18 +51,18 @@ export function estimateConvergenceOrders(
   const f: DerivativeFn = (state, out) => derivative(system, state, out);
   const reference = integrate(rk4Step, initial, dt / 64, duration, f);
 
-  const orderFor = (stepFn: StepFn): number => {
+  const resultFor = (stepFn: StepFn): ConvergenceResult => {
     const coarse = integrate(stepFn, initial, dt, duration, f);
     const fine = integrate(stepFn, initial, dt / 2, duration, f);
     const errorCoarse = distance(coarse, reference);
     const errorFine = distance(fine, reference);
-    if (errorFine === 0) return Infinity;
-    return Math.log2(errorCoarse / errorFine);
+    const order = errorFine === 0 ? Infinity : Math.log2(errorCoarse / errorFine);
+    return { order, errorCoarse, errorFine };
   };
 
   return {
-    euler: orderFor(eulerStep),
-    rk2: orderFor(rk2Step),
-    rk4: orderFor(rk4Step),
+    euler: resultFor(eulerStep),
+    rk2: resultFor(rk2Step),
+    rk4: resultFor(rk4Step),
   };
 }

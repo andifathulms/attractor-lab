@@ -1,5 +1,5 @@
 import { useT } from '@/lib/i18n/LocaleProvider';
-import type { ConvergenceOrders } from '@/lib/dynamics/convergence';
+import type { ConvergenceOrders, ConvergenceResult } from '@/lib/dynamics/convergence';
 import type { SystemId } from '@/lib/dynamics/systems';
 import { usePanelFocusOnToggle } from '@/lib/usePanelFocus';
 import { EULER_COLOR, RK2_COLOR, RK4_COLOR } from './ComparisonCanvas';
@@ -130,11 +130,15 @@ export function ComparisonPanel({
       </button>
 
       {convergence && (
-        <div className="space-y-1 font-mono text-sm [font-variant-numeric:tabular-nums]">
+        <div className="space-y-2 font-mono text-sm [font-variant-numeric:tabular-nums]">
           <div className="mb-1 text-caption">{t.panel.convergenceOrder}</div>
-          <ConvergenceRow label={t.integratorNames.euler} expected={1} observed={convergence.euler} />
-          <ConvergenceRow label={t.integratorNames.rk2} expected={2} observed={convergence.rk2} />
-          <ConvergenceRow label={t.integratorNames.rk4} expected={4} observed={convergence.rk4} />
+          {/* The rule cited where it's applied, plus the two error
+              magnitudes each order is actually computed from — not just
+              the ratio's conclusion. */}
+          <p className="text-caption">{t.panel.convergenceExplain}</p>
+          <ConvergenceRow label={t.integratorNames.euler} expected={1} result={convergence.euler} />
+          <ConvergenceRow label={t.integratorNames.rk2} expected={2} result={convergence.rk2} />
+          <ConvergenceRow label={t.integratorNames.rk4} expected={4} result={convergence.rk4} />
         </div>
       )}
     </div>
@@ -153,18 +157,23 @@ function Legend({ color, label }: { readonly color: string; readonly label: stri
 function ConvergenceRow({
   label,
   expected,
-  observed,
+  result,
 }: {
   readonly label: string;
   readonly expected: number;
-  readonly observed: number;
+  readonly result: ConvergenceResult;
 }) {
   return (
-    <div className="flex items-baseline justify-between">
-      <span className="text-caption">{label}</span>
-      <span>
-        {observed.toFixed(2)} <span className="text-caption">(≈{expected})</span>
-      </span>
+    <div className="border-b border-rule pb-1">
+      <div className="flex items-baseline justify-between">
+        <span className="text-caption">{label}</span>
+        <span>
+          {result.order.toFixed(2)} <span className="text-caption">(≈{expected})</span>
+        </span>
+      </div>
+      <div className="text-caption">
+        error(dt)={result.errorCoarse.toExponential(2)} → error(dt/2)={result.errorFine.toExponential(2)}
+      </div>
     </div>
   );
 }
