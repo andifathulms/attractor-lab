@@ -45,6 +45,7 @@ export default function JelajahPage() {
     elapsed: 0,
     lyapunovMax: undefined,
   });
+  const [latestSeparation, setLatestSeparation] = useState<number | undefined>(undefined);
   const separationPlotRef = useRef<SeparationPlotHandle | null>(null);
   const attractorCanvasRef = useRef<AttractorCanvasHandle | null>(null);
   const pairCanvasRef = useRef<DivergencePairCanvasHandle | null>(null);
@@ -178,10 +179,15 @@ export default function JelajahPage() {
             dt={dt}
             epsilon={epsilon}
             onMetrics={setMetrics}
-            onSeparationBatch={(times, separations) =>
-              separationPlotRef.current?.pushSamples(times, separations)
-            }
-            onReset={() => separationPlotRef.current?.reset()}
+            onSeparationBatch={(times, separations) => {
+              separationPlotRef.current?.pushSamples(times, separations);
+              const last = separations[separations.length - 1];
+              if (last !== undefined) setLatestSeparation(last);
+            }}
+            onReset={() => {
+              separationPlotRef.current?.reset();
+              setLatestSeparation(undefined);
+            }}
           />
         ) : (
           <AttractorCanvas
@@ -217,7 +223,15 @@ export default function JelajahPage() {
           canVerify={metrics.elapsed > 0}
         />
       </div>
-      {pairMode && <SeparationPlot ref={separationPlotRef} epsilon={epsilon} />}
+      {pairMode && (
+        <SeparationPlot
+          ref={separationPlotRef}
+          epsilon={epsilon}
+          elapsed={metrics.elapsed}
+          latestSeparation={latestSeparation}
+          lyapunovMax={metrics.lyapunovMax}
+        />
+      )}
       <ReadoutStrip
         integrator={integrator}
         dt={dt}

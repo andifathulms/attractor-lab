@@ -8,6 +8,12 @@ export type Dictionary = {
   readonly canvas: {
     readonly label: string;
   };
+  readonly divergence: {
+    readonly axisExplain: string;
+    readonly rateLabel: string;
+    readonly definitionNote: string;
+    readonly notYetDiverged: string;
+  };
   readonly nav: {
     readonly jelajah: string;
     readonly banding: string;
@@ -103,6 +109,14 @@ const id: Dictionary = {
   canvas: {
     label:
       'Render lintasan 3D. Panah kiri/kanan memutar horizontal, panah atas/bawah memutar vertikal, +/− memperbesar/memperkecil.',
+  },
+  divergence: {
+    axisExplain:
+      'Garis di atas menelusuri jarak antara lintasan A dan B setiap saat — kenaikan yang lurus berarti perpisahannya eksponensial, ciri kekacauan deterministik.',
+    rateLabel: 'laju kasar saat ini',
+    definitionNote:
+      'Ini definisi eksponen Lyapunov: |Δ(t)| ≈ ε·e^(λt). λ maks di bawah adalah estimasi yang lebih cermat (metode Benettin: dua lintasan, pertumbuhan log dirata-rata seiring waktu) — bukan dihitung langsung dari dua titik ini.',
+    notYetDiverged: '|Δ| belum melewati ε — perpisahan belum terlihat pada skala ini.',
   },
   nav: {
     jelajah: 'Jelajah',
@@ -200,6 +214,14 @@ const en: Dictionary = {
   canvas: {
     label:
       'Rendered 3D trajectory. Left/right arrows rotate horizontally, up/down arrows rotate vertically, +/- zoom in/out.',
+  },
+  divergence: {
+    axisExplain:
+      "The line above traces the distance between trajectory A and B at each moment — a straight climb means the separation is exponential, the signature of deterministic chaos.",
+    rateLabel: 'rough rate right now',
+    definitionNote:
+      'This is the definition of the Lyapunov exponent: |Δ(t)| ≈ ε·e^(λt). λ max below is a more careful estimate (the Benettin method: two trajectories, log growth averaged over time) — not computed directly from these two points.',
+    notYetDiverged: "|Δ| hasn't passed ε yet — the separation isn't visible at this scale yet.",
   },
   nav: {
     jelajah: 'Explore',

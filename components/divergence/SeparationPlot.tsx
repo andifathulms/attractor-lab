@@ -1,6 +1,7 @@
 'use client';
 
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
+import { useT } from '@/lib/i18n/LocaleProvider';
 import { drawSeparationPlot } from '@/lib/render/separation-plot';
 import { appendSamples, EMPTY_SERIES, type Series } from '@/lib/render/series';
 
@@ -11,6 +12,9 @@ export type SeparationPlotHandle = {
 
 export type SeparationPlotProps = {
   readonly epsilon: number;
+  readonly elapsed: number;
+  readonly latestSeparation: number | undefined;
+  readonly lyapunovMax: number | undefined;
 };
 
 const MAX_SAMPLES = 4000;
@@ -20,7 +24,8 @@ const TRAIL_B = '#5FB0D9';
 // Docks as a narrow band above the readout strip when the pair is active —
 // log separation against time. DESIGN.md §6.
 export const SeparationPlot = forwardRef<SeparationPlotHandle, SeparationPlotProps>(
-  function SeparationPlot({ epsilon }, ref) {
+  function SeparationPlot({ epsilon, elapsed, latestSeparation, lyapunovMax }, ref) {
+    const t = useT();
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const seriesRef = useRef<Series>(EMPTY_SERIES);
 
@@ -70,22 +75,47 @@ export const SeparationPlot = forwardRef<SeparationPlotHandle, SeparationPlotPro
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    const ratio = latestSeparation !== undefined ? latestSeparation / epsilon : undefined;
+    const hasDiverged = ratio !== undefined && ratio > 1;
+    const impliedRate = hasDiverged && elapsed > 0 ? Math.log(ratio as number) / elapsed : undefined;
+
     return (
-      <div className="flex h-20 w-full items-center gap-4 border-t border-rule bg-night px-4">
-        <div className="flex shrink-0 flex-col gap-1 font-mono text-sm text-readout">
-          <span>
-            <span className="mr-1 inline-block h-2 w-2 rounded-full" style={{ background: TRAIL_A }} />
-            A
-          </span>
-          <span>
-            <span className="mr-1 inline-block h-2 w-2 rounded-full" style={{ background: TRAIL_B }} />
-            B
-          </span>
+      <div className="w-full border-t border-rule bg-night px-4 py-2">
+        <div className="flex h-20 w-full items-center gap-4">
+          <div className="flex shrink-0 flex-col gap-1 font-mono text-sm text-readout">
+            <span>
+              <span className="mr-1 inline-block h-2 w-2 rounded-full" style={{ background: TRAIL_A }} />
+              A
+            </span>
+            <span>
+              <span className="mr-1 inline-block h-2 w-2 rounded-full" style={{ background: TRAIL_B }} />
+              B
+            </span>
+          </div>
+          <div className="h-full flex-1">
+            <canvas ref={canvasRef} className="h-full w-full" />
+          </div>
+          <span className="shrink-0 font-mono text-sm text-caption">log₁₀|Δ|</span>
         </div>
-        <div className="h-full flex-1">
-          <canvas ref={canvasRef} className="h-full w-full" />
-        </div>
-        <span className="shrink-0 font-mono text-sm text-caption">log₁₀|Δ|</span>
+        {/* The worked example: real numbers from what's on screen right now,
+            not a static explanation — the arithmetic that connects the
+            visual (trails splitting) to λ, cited at the point it's used. */}
+        <p className="mt-1 font-mono text-sm leading-snug text-caption [font-variant-numeric:tabular-nums]">
+          {t.divergence.axisExplain}
+          {latestSeparation !== undefined && ratio !== undefined && (
+            hasDiverged && impliedRate !== undefined ? (
+              <>
+                {' '}
+                ε={epsilon.toExponential(1)} → |Δ|={latestSeparation.toExponential(2)} (t={elapsed.toFixed(2)}, ×
+                {ratio.toExponential(1)}) — {t.divergence.rateLabel} ≈{impliedRate.toFixed(3)}.{' '}
+                {t.divergence.definitionNote}
+                {lyapunovMax !== undefined && ` λ maks ≈ ${lyapunovMax.toFixed(4)}.`}
+              </>
+            ) : (
+              <> {t.divergence.notYetDiverged}</>
+            )
+          )}
+        </p>
       </div>
     );
   }
