@@ -8,6 +8,8 @@ export type ReadoutStripProps = {
   readonly lyapunovMax: number | undefined;
   readonly pairMode?: boolean;
   readonly epsilon?: number;
+  /** Predicted system time until the pair's separation reaches the "unrelated" threshold — lib/predictability.ts. */
+  readonly horizon?: number;
 };
 
 // The readout strip is never collapsible and never optional — an unlabelled
@@ -19,6 +21,7 @@ export function ReadoutStrip({
   lyapunovMax,
   pairMode,
   epsilon,
+  horizon,
 }: ReadoutStripProps) {
   const t = useT();
 
@@ -34,6 +37,7 @@ export function ReadoutStrip({
       {pairMode && epsilon !== undefined && (
         <>
           <Field label={t.readout.epsilon} value={epsilon.toExponential(1)} />
+          <Field label={t.readout.horizon} value={horizon !== undefined ? horizon.toFixed(2) : '—'} />
           <span className="flex items-center gap-3">
             <TrajectoryTag color="#F0C05A" label="A" />
             <TrajectoryTag color="#5FB0D9" label="B" />

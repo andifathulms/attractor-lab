@@ -18,6 +18,7 @@ import { useT } from '@/lib/i18n/LocaleProvider';
 import type { IntegratorId } from '@/lib/dynamics/integrate';
 import { classicSystem, type System, type SystemId } from '@/lib/dynamics/systems';
 import { decodeJelajahState, encodeJelajahState } from '@/lib/permalink';
+import { predictabilityHorizon, separationThreshold } from '@/lib/predictability';
 
 export default function JelajahPage() {
   const t = useT();
@@ -82,6 +83,10 @@ export default function JelajahPage() {
 
   const system = useMemo(() => ({ type: systemId, params }) as System, [systemId, params]);
   const integratorConfig = useMemo(() => ({ type: integrator }), [integrator]);
+  const horizon = useMemo(() => {
+    if (metrics.lyapunovMax === undefined) return undefined;
+    return predictabilityHorizon(metrics.lyapunovMax, epsilon, separationThreshold(systemId));
+  }, [metrics.lyapunovMax, epsilon, systemId]);
 
   const handleExport = () => {
     const snapshot = pairMode ? pairCanvasRef.current?.getSnapshot() : attractorCanvasRef.current?.getSnapshot();
@@ -165,6 +170,7 @@ export default function JelajahPage() {
         lyapunovMax={metrics.lyapunovMax}
         pairMode={pairMode}
         epsilon={epsilon}
+        horizon={horizon}
       />
     </main>
   );
