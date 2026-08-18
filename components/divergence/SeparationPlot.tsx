@@ -85,7 +85,7 @@ export const SeparationPlot = forwardRef<SeparationPlotHandle, SeparationPlotPro
         <div className="h-full flex-1">
           <canvas ref={canvasRef} className="h-full w-full" />
         </div>
-        <span className="shrink-0 font-mono text-sm text-rule">log₁₀|Δ|</span>
+        <span className="shrink-0 font-mono text-sm text-caption">log₁₀|Δ|</span>
       </div>
     );
   }

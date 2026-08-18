@@ -28,7 +28,7 @@ export function MakerSignature() {
 
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 sm:flex-nowrap">
-      <p className="font-mono text-sm text-rule [font-variant-numeric:tabular-nums]">
+      <p className="font-mono text-sm text-caption [font-variant-numeric:tabular-nums]">
         Designed &amp; built by{' '}
         <a
           href={PORTFOLIO_URL}
@@ -49,7 +49,7 @@ export function MakerSignature() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label={name}
-            className="flex h-8 w-8 items-center justify-center rounded text-rule transition-colors duration-fast hover:bg-graticule hover:text-trail-a"
+            className="flex h-8 w-8 items-center justify-center rounded text-caption transition-colors duration-fast hover:bg-graticule hover:text-trail-a"
           >
             <Icon className="h-[18px] w-[18px]" />
           </a>

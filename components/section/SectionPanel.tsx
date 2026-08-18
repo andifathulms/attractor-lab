@@ -67,7 +67,7 @@ export function SectionPanel({
       </div>
 
       <label className="mb-4 block">
-        <span className="mb-1 block text-sm text-rule">{t.panel.system}</span>
+        <span className="mb-1 block text-sm text-caption">{t.panel.system}</span>
         <select
           value={systemId}
           onChange={(event) => onSystemChange(event.target.value as SystemId)}
@@ -82,7 +82,7 @@ export function SectionPanel({
       </label>
 
       <label className="mb-4 block">
-        <span className="mb-1 block text-sm text-rule">{t.panel.step}</span>
+        <span className="mb-1 block text-sm text-caption">{t.panel.step}</span>
         <input
           type="number"
           value={dt}
@@ -95,9 +95,9 @@ export function SectionPanel({
       </label>
 
       <div className="mb-4 rounded border border-rule p-2">
-        <span className="mb-2 block text-sm text-rule">{t.panel.plane}</span>
+        <span className="mb-2 block text-sm text-caption">{t.panel.plane}</span>
         <label className="mb-2 block">
-          <span className="mb-1 block text-sm text-rule">{t.panel.axis}</span>
+          <span className="mb-1 block text-sm text-caption">{t.panel.axis}</span>
           <select
             value={plane.axis}
             onChange={(event) =>
@@ -113,7 +113,7 @@ export function SectionPanel({
           </select>
         </label>
         <label className="block">
-          <span className="mb-1 block text-sm text-rule">{t.panel.offset}</span>
+          <span className="mb-1 block text-sm text-caption">{t.panel.offset}</span>
           <input
             type="number"
             value={plane.offset}
@@ -125,7 +125,7 @@ export function SectionPanel({
       </div>
 
       <fieldset className="space-y-2">
-        <legend className="mb-1 text-sm text-rule">{t.panel.parameters}</legend>
+        <legend className="mb-1 text-sm text-caption">{t.panel.parameters}</legend>
         {Object.entries(params).map(([key, value]) => (
           <label key={key} className="flex items-center justify-between gap-2">
             <span className="font-display italic">{key}</span>

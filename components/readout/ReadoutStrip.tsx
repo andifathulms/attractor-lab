@@ -56,7 +56,7 @@ function TrajectoryTag({ color, label }: { readonly color: string; readonly labe
 function Field({ label, value }: { readonly label: string; readonly value: string }) {
   return (
     <div className="flex items-baseline gap-2">
-      <span className="text-rule">{label}</span>
+      <span className="text-caption">{label}</span>
       <span>{value}</span>
     </div>
   );

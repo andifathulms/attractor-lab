@@ -25,7 +25,7 @@ export default function SistemIndexPage({
               >
                 {s.name}
               </Link>
-              <p className="mt-1 font-mono text-xs text-rule">
+              <p className="mt-1 font-mono text-xs text-caption">
                 {pick(s.discoverer, locale)} · {s.year} · {s.kind === 'flow' ? t.sistem.flow : t.sistem.map}
               </p>
             </li>

@@ -66,7 +66,7 @@ export function ComparisonPanel({
       </div>
 
       <label className="mb-4 block">
-        <span className="mb-1 block text-sm text-rule">{t.panel.system}</span>
+        <span className="mb-1 block text-sm text-caption">{t.panel.system}</span>
         <select
           value={systemId}
           onChange={(event) => onSystemChange(event.target.value as SystemId)}
@@ -81,7 +81,7 @@ export function ComparisonPanel({
       </label>
 
       <label className="mb-4 block">
-        <span className="mb-1 block text-sm text-rule">{t.panel.step}</span>
+        <span className="mb-1 block text-sm text-caption">{t.panel.step}</span>
         <input
           type="number"
           value={dt}
@@ -94,7 +94,7 @@ export function ComparisonPanel({
       </label>
 
       <fieldset className="mb-4 space-y-2">
-        <legend className="mb-1 text-sm text-rule">{t.panel.parameters}</legend>
+        <legend className="mb-1 text-sm text-caption">{t.panel.parameters}</legend>
         {Object.entries(params).map(([key, value]) => (
           <label key={key} className="flex items-center justify-between gap-2">
             <span className="font-display italic">{key}</span>
@@ -127,7 +127,7 @@ export function ComparisonPanel({
 
       {convergence && (
         <div className="space-y-1 font-mono text-sm [font-variant-numeric:tabular-nums]">
-          <div className="mb-1 text-rule">{t.panel.convergenceOrder}</div>
+          <div className="mb-1 text-caption">{t.panel.convergenceOrder}</div>
           <ConvergenceRow label={t.integratorNames.euler} expected={1} observed={convergence.euler} />
           <ConvergenceRow label={t.integratorNames.rk2} expected={2} observed={convergence.rk2} />
           <ConvergenceRow label={t.integratorNames.rk4} expected={4} observed={convergence.rk4} />
@@ -157,9 +157,9 @@ function ConvergenceRow({
 }) {
   return (
     <div className="flex items-baseline justify-between">
-      <span className="text-rule">{label}</span>
+      <span className="text-caption">{label}</span>
       <span>
-        {observed.toFixed(2)} <span className="text-rule">(≈{expected})</span>
+        {observed.toFixed(2)} <span className="text-caption">(≈{expected})</span>
       </span>
     </div>
   );

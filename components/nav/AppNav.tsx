@@ -18,7 +18,7 @@ export function AppNav() {
   ];
 
   return (
-    <nav className="absolute left-4 top-4 z-10 flex gap-3 font-mono text-sm text-rule">
+    <nav className="absolute left-4 top-4 z-10 flex gap-3 font-mono text-sm text-caption">
       {links.map((link) => (
         <Link key={link.href} href={link.href} className="transition-colors duration-fast hover:text-readout">
           {link.label}

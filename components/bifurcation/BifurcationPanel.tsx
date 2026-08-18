@@ -80,7 +80,7 @@ export function BifurcationPanel({
       </div>
 
       <label className="mb-4 block">
-        <span className="mb-1 block text-sm text-rule">{t.panel.system}</span>
+        <span className="mb-1 block text-sm text-caption">{t.panel.system}</span>
         <select
           value={systemId}
           onChange={(event) => onSystemChange(event.target.value as SystemId)}
@@ -95,7 +95,7 @@ export function BifurcationPanel({
       </label>
 
       <label className="mb-4 block">
-        <span className="mb-1 block text-sm text-rule">{t.panel.sweptParameter}</span>
+        <span className="mb-1 block text-sm text-caption">{t.panel.sweptParameter}</span>
         <select
           value={paramName}
           onChange={(event) => onParamNameChange(event.target.value)}
@@ -111,7 +111,7 @@ export function BifurcationPanel({
 
       <div className="mb-4 flex gap-2">
         <label className="flex-1">
-          <span className="mb-1 block text-sm text-rule">{t.panel.min}</span>
+          <span className="mb-1 block text-sm text-caption">{t.panel.min}</span>
           <input
             type="number"
             value={paramMin}
@@ -120,7 +120,7 @@ export function BifurcationPanel({
           />
         </label>
         <label className="flex-1">
-          <span className="mb-1 block text-sm text-rule">{t.panel.max}</span>
+          <span className="mb-1 block text-sm text-caption">{t.panel.max}</span>
           <input
             type="number"
             value={paramMax}
@@ -131,7 +131,7 @@ export function BifurcationPanel({
       </div>
 
       <label className="mb-4 block">
-        <span className="mb-1 block text-sm text-rule">{t.panel.sampleCount}</span>
+        <span className="mb-1 block text-sm text-caption">{t.panel.sampleCount}</span>
         <input
           type="number"
           value={sampleCount}
@@ -143,7 +143,7 @@ export function BifurcationPanel({
       </label>
 
       <label className="mb-4 block">
-        <span className="mb-1 block text-sm text-rule">{t.panel.localMaximaAxis}</span>
+        <span className="mb-1 block text-sm text-caption">{t.panel.localMaximaAxis}</span>
         <select
           value={axis}
           onChange={(event) => onAxisChange(Number(event.target.value) as 0 | 1 | 2)}
@@ -158,7 +158,7 @@ export function BifurcationPanel({
       </label>
 
       <label className="block">
-        <span className="mb-1 block text-sm text-rule">{t.panel.step}</span>
+        <span className="mb-1 block text-sm text-caption">{t.panel.step}</span>
         <input
           type="number"
           value={dt}
