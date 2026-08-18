@@ -52,3 +52,19 @@ export function drawBifurcationPlot(
     ctx.fillRect(x, y, 1, 1);
   }
 }
+
+/**
+ * Inverse of the x-axis mapping `drawBifurcationPlot` uses internally —
+ * shared rather than re-derived so a screen position always resolves to the
+ * exact parameter value it was drawn at.
+ */
+export function xToParam(
+  x: number,
+  config: Pick<BifurcationPlotConfig, 'width' | 'paramMin' | 'paramMax'>
+): number {
+  const { width, paramMin, paramMax } = config;
+  const margin = 24;
+  const paramSpan = Math.max(paramMax - paramMin, 1e-9);
+  const fraction = (x - margin) / Math.max(width - 2 * margin, 1e-9);
+  return paramMin + fraction * paramSpan;
+}

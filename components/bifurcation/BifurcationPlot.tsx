@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react';
 import type { LocalMaximaConfig } from '@/lib/dynamics/bifurcation';
 import type { System } from '@/lib/dynamics/systems';
-import { drawBifurcationPlot, type BifurcationPoint } from '@/lib/render/bifurcation-plot';
+import { drawBifurcationPlot, xToParam, type BifurcationPoint } from '@/lib/render/bifurcation-plot';
 import type {
   SampleMessage,
   StartMessage,
@@ -24,6 +24,8 @@ export type BifurcationPlotProps = {
   readonly sampleCount: number;
   readonly config: LocalMaximaConfig;
   readonly onProgress: (progress: BifurcationProgress) => void;
+  /** Called with the exact parameter value under a click — lets a caller jump to that live trajectory. */
+  readonly onParamPick?: (paramValue: number) => void;
 };
 
 const INITIAL_STATE: readonly [number, number, number] = [1, 1, 1];
@@ -36,6 +38,7 @@ export function BifurcationPlot({
   sampleCount,
   config,
   onProgress,
+  onParamPick,
 }: BifurcationPlotProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const pointsRef = useRef<BifurcationPoint[]>([]);
@@ -111,5 +114,20 @@ export function BifurcationPlot({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return <canvas ref={canvasRef} className="h-full w-full" />;
+  const handleClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
+    if (!onParamPick) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const x = ((event.clientX - rect.left) / rect.width) * canvas.width;
+    onParamPick(xToParam(x, { width: canvas.width, paramMin, paramMax }));
+  };
+
+  return (
+    <canvas
+      ref={canvasRef}
+      onClick={handleClick}
+      className={onParamPick ? 'h-full w-full cursor-crosshair' : 'h-full w-full'}
+    />
+  );
 }

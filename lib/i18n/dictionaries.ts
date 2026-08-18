@@ -41,6 +41,7 @@ export type Dictionary = {
     readonly verify: string;
     readonly verifying: string;
     readonly verifyDeltaLabel: string;
+    readonly clickToJump: string;
     readonly checkConvergence: string;
     readonly convergenceOrder: string;
     readonly sweptParameter: string;
@@ -129,6 +130,7 @@ const id: Dictionary = {
     verify: 'Verifikasi tampilan ini',
     verifying: 'Menghitung…',
     verifyDeltaLabel: 'Δ pada dt/2',
+    clickToJump: 'Klik diagram untuk melihat lintasannya',
     checkConvergence: 'Cek konvergensi',
     convergenceOrder: 'orde konvergensi (dt → dt/2)',
     sweptParameter: 'Parameter yang disapu',
@@ -218,6 +220,7 @@ const en: Dictionary = {
     verify: 'Verify this view',
     verifying: 'Computing…',
     verifyDeltaLabel: 'Δ at dt/2',
+    clickToJump: 'Click the diagram to see its trajectory',
     checkConvergence: 'Check convergence',
     convergenceOrder: 'convergence order (dt → dt/2)',
     sweptParameter: 'Swept parameter',

@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { BifurcationPanel } from '@/components/bifurcation/BifurcationPanel';
 import { BifurcationPlot, type BifurcationProgress } from '@/components/bifurcation/BifurcationPlot';
@@ -7,8 +8,13 @@ import { BifurcationReadoutStrip } from '@/components/bifurcation/BifurcationRea
 import { AppNav } from '@/components/nav/AppNav';
 import type { LocalMaximaConfig } from '@/lib/dynamics/bifurcation';
 import { classicSystem, type SystemId } from '@/lib/dynamics/systems';
+import { useLocale, useT } from '@/lib/i18n/LocaleProvider';
+import { encodeJelajahState } from '@/lib/permalink';
 
 export default function CabangPage() {
+  const router = useRouter();
+  const locale = useLocale();
+  const t = useT();
   const [systemId, setSystemId] = useState<SystemId>('lorenz');
   const [paramName, setParamName] = useState('rho');
   const [paramMin, setParamMin] = useState(0);
@@ -38,6 +44,22 @@ export default function CabangPage() {
     [dt, axis]
   );
 
+  // The sweep that produced this diagram always integrates with RK4
+  // (lib/dynamics/bifurcation.ts) — the jump carries that forward so the
+  // trajectory jelajah renders is the same computation that produced the
+  // point being clicked, not a different one that merely starts nearby.
+  const handleParamPick = (paramValue: number) => {
+    const search = encodeJelajahState({
+      systemId,
+      params: { ...baseSystem.params, [paramName]: paramValue },
+      integrator: 'rk4',
+      dt,
+      pairMode: true,
+      epsilon: 1e-8,
+    });
+    router.push(`/${locale}/jelajah?${search}`);
+  };
+
   return (
     <main className="flex h-dvh flex-col bg-night">
       <div className="relative h-[60vh] sm:h-auto sm:flex-1">
@@ -50,7 +72,11 @@ export default function CabangPage() {
           sampleCount={sampleCount}
           config={config}
           onProgress={setProgress}
+          onParamPick={handleParamPick}
         />
+        <p className="pointer-events-none absolute bottom-4 left-4 z-10 font-mono text-xs text-caption">
+          {t.panel.clickToJump}
+        </p>
         <BifurcationPanel
           systemId={systemId}
           onSystemChange={handleSystemChange}
