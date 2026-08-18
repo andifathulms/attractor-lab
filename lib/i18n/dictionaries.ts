@@ -5,6 +5,9 @@ export type Dictionary = {
     readonly name: string;
     readonly tagline: string;
   };
+  readonly canvas: {
+    readonly label: string;
+  };
   readonly nav: {
     readonly jelajah: string;
     readonly banding: string;
@@ -96,6 +99,10 @@ const id: Dictionary = {
   brand: {
     name: 'Attractor Lab',
     tagline: 'Atraktor aneh, diintegrasi langkah demi langkah — amati dua lintasan nyaris identik menyimpang.',
+  },
+  canvas: {
+    label:
+      'Render lintasan 3D. Panah kiri/kanan memutar horizontal, panah atas/bawah memutar vertikal, +/− memperbesar/memperkecil.',
   },
   nav: {
     jelajah: 'Jelajah',
@@ -189,6 +196,10 @@ const en: Dictionary = {
   brand: {
     name: 'Attractor Lab',
     tagline: 'Strange attractors, integrated step by step — watch two near-identical trajectories diverge.',
+  },
+  canvas: {
+    label:
+      'Rendered 3D trajectory. Left/right arrows rotate horizontally, up/down arrows rotate vertically, +/- zoom in/out.',
   },
   nav: {
     jelajah: 'Explore',

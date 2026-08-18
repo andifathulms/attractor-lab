@@ -1,9 +1,11 @@
 'use client';
 
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
+import { canvasKeyboardInteraction } from '@/lib/canvas-keyboard';
 import type { Integrator } from '@/lib/dynamics/integrate';
 import type { System } from '@/lib/dynamics/systems';
 import type { ExportSnapshot } from '@/lib/export/plotter';
+import { useT } from '@/lib/i18n/LocaleProvider';
 import { REDUCED_MOTION_STEPS, usePrefersReducedMotion } from '@/lib/motion';
 import { clearBuffer, drawSegment, redrawTrajectory } from '@/lib/render/accumulate';
 import { project, type Rotation } from '@/lib/render/projection';
@@ -39,6 +41,7 @@ const PITCH_LIMIT = Math.PI / 2 - 0.05;
 
 export const AttractorCanvas = forwardRef<AttractorCanvasHandle, AttractorCanvasProps>(
   function AttractorCanvas({ system, integrator, dt, onMetrics }, ref) {
+    const t = useT();
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const chunksRef = useRef<Float64Array[]>([]);
     const lastPointRef = useRef<Float64Array | null>(null);
@@ -218,14 +221,34 @@ export const AttractorCanvas = forwardRef<AttractorCanvasHandle, AttractorCanvas
       event.currentTarget.releasePointerCapture(event.pointerId);
     };
 
+    // Keyboard equivalent to drag-to-rotate / wheel-to-zoom — the canvas
+    // has no native interactive role, so it needs tabIndex to be reachable
+    // at all. WCAG 2.1.1.
+    const onKeyDown = (event: React.KeyboardEvent<HTMLCanvasElement>) => {
+      const next = canvasKeyboardInteraction(event.key, rotationRef.current, zoomRef.current, {
+        pitchLimit: PITCH_LIMIT,
+        zoomMin: ZOOM_MIN,
+        zoomMax: ZOOM_MAX,
+      });
+      if (!next) return;
+      event.preventDefault();
+      rotationRef.current = next.rotation;
+      zoomRef.current = next.zoom;
+      scheduleRedraw();
+    };
+
     return (
       <canvas
         ref={canvasRef}
+        tabIndex={0}
+        role="img"
+        aria-label={t.canvas.label}
         className="h-full w-full touch-none"
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         onPointerLeave={onPointerUp}
+        onKeyDown={onKeyDown}
       />
     );
   }
