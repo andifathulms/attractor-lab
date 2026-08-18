@@ -3,8 +3,10 @@
 import { useEffect, useRef } from 'react';
 import type { LocalMaximaConfig } from '@/lib/dynamics/bifurcation';
 import type { System } from '@/lib/dynamics/systems';
+import { usePrefersReducedMotion } from '@/lib/motion';
 import { drawBifurcationPlot, xToParam, type BifurcationPoint } from '@/lib/render/bifurcation-plot';
 import type {
+  CompleteMessage,
   SampleMessage,
   StartMessage,
   WorkerOutboundMessage,
@@ -42,6 +44,7 @@ export function BifurcationPlot({
 }: BifurcationPlotProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const pointsRef = useRef<BifurcationPoint[]>([]);
+  const reducedMotion = usePrefersReducedMotion();
 
   const redraw = () => {
     const canvas = canvasRef.current;
@@ -66,6 +69,8 @@ export function BifurcationPlot({
       const message = event.data;
       if (message.type === 'sample') {
         handleSample(message);
+      } else if (message.type === 'complete') {
+        handleComplete(message);
       } else {
         onProgress({ sampleIndex: sampleCount, sampleCount, done: true });
       }
@@ -79,6 +84,19 @@ export function BifurcationPlot({
       onProgress({ sampleIndex: message.sampleIndex + 1, sampleCount: message.sampleCount, done: false });
     };
 
+    // Reduced motion: the whole sweep arrived as one complete batch — draw
+    // it in a single redraw instead of building the diagram up sample by
+    // sample. DESIGN.md §7.
+    const handleComplete = (message: CompleteMessage) => {
+      const points: BifurcationPoint[] = [];
+      for (let i = 0; i < message.params.length; i++) {
+        points.push({ param: message.params[i] as number, value: message.values[i] as number });
+      }
+      pointsRef.current = points;
+      redraw();
+      onProgress({ sampleIndex: sampleCount, sampleCount, done: true });
+    };
+
     const startMessage: StartMessage = {
       type: 'start',
       system,
@@ -88,12 +106,13 @@ export function BifurcationPlot({
       sampleCount,
       initial: INITIAL_STATE,
       config,
+      reducedMotion,
     };
     worker.postMessage(startMessage);
 
     return () => worker.terminate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(system), paramName, paramMin, paramMax, sampleCount, JSON.stringify(config)]);
+  }, [JSON.stringify(system), paramName, paramMin, paramMax, sampleCount, JSON.stringify(config), reducedMotion]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
