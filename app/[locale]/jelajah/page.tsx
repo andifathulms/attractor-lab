@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { AttractorCanvas, type AttractorCanvasHandle, type CanvasMetrics } from '@/components/canvas/AttractorCanvas';
 import {
   DivergencePairCanvas,
@@ -17,6 +17,7 @@ import { downloadSvg } from '@/lib/export/download';
 import { useT } from '@/lib/i18n/LocaleProvider';
 import type { IntegratorId } from '@/lib/dynamics/integrate';
 import { classicSystem, type System, type SystemId } from '@/lib/dynamics/systems';
+import { decodeJelajahState, encodeJelajahState } from '@/lib/permalink';
 
 export default function JelajahPage() {
   const t = useT();
@@ -29,6 +30,7 @@ export default function JelajahPage() {
   const [pairMode, setPairMode] = useState(true);
   const [epsilon, setEpsilon] = useState(1e-8);
   const [collapsed, setCollapsed] = useState(false);
+  const [copied, setCopied] = useState(false);
   const [metrics, setMetrics] = useState<CanvasMetrics | DivergenceMetrics>({
     elapsed: 0,
     lyapunovMax: undefined,
@@ -37,9 +39,45 @@ export default function JelajahPage() {
   const attractorCanvasRef = useRef<AttractorCanvasHandle | null>(null);
   const pairCanvasRef = useRef<DivergencePairCanvasHandle | null>(null);
 
+  // A permalink is only meaningful if it can override every field it
+  // encodes, once, before anything else touches state — applied here rather
+  // than folded into the initial useState calls so it works identically
+  // whether the query string came from a shared link or a same-origin
+  // navigation (e.g. the bifurcation-diagram jump).
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const decoded = decodeJelajahState(window.location.search.replace(/^\?/, ''));
+    if (Object.keys(decoded).length === 0) return;
+    const nextSystemId = decoded.systemId ?? systemId;
+    setSystemId(nextSystemId);
+    setParams(decoded.params ?? { ...classicSystem[nextSystemId].params });
+    if (decoded.integrator) setIntegrator(decoded.integrator);
+    if (decoded.dt !== undefined) setDt(decoded.dt);
+    if (decoded.pairMode !== undefined) setPairMode(decoded.pairMode);
+    if (decoded.epsilon !== undefined) setEpsilon(decoded.epsilon);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Keeps the URL a live mirror of state — same inputs produce a
+  // byte-identical trajectory (CLAUDE.md invariant 3), so the address bar
+  // itself becomes a reproducible reference to whatever is on screen.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const search = encodeJelajahState({ systemId, params, integrator, dt, pairMode, epsilon });
+    window.history.replaceState(null, '', `${window.location.pathname}?${search}`);
+  }, [systemId, params, integrator, dt, pairMode, epsilon]);
+
   const handleSystemChange = (id: SystemId) => {
     setSystemId(id);
     setParams({ ...classicSystem[id].params });
+  };
+
+  const handleCopyLink = () => {
+    if (typeof window === 'undefined') return;
+    void navigator.clipboard.writeText(window.location.href).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    });
   };
 
   const system = useMemo(() => ({ type: systemId, params }) as System, [systemId, params]);
@@ -115,6 +153,8 @@ export default function JelajahPage() {
           collapsed={collapsed}
           onToggleCollapsed={() => setCollapsed((c) => !c)}
           onExport={handleExport}
+          onCopyLink={handleCopyLink}
+          copied={copied}
         />
       </div>
       {pairMode && <SeparationPlot ref={separationPlotRef} epsilon={epsilon} />}

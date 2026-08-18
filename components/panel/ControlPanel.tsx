@@ -32,6 +32,8 @@ export type ControlPanelProps = {
   readonly collapsed: boolean;
   readonly onToggleCollapsed: () => void;
   readonly onExport: () => void;
+  readonly onCopyLink: () => void;
+  readonly copied: boolean;
 };
 
 export function ControlPanel({
@@ -50,6 +52,8 @@ export function ControlPanel({
   collapsed,
   onToggleCollapsed,
   onExport,
+  onCopyLink,
+  copied,
 }: ControlPanelProps) {
   const t = useT();
 
@@ -173,6 +177,14 @@ export function ControlPanel({
         className="mt-4 w-full rounded border border-rule bg-graticule px-2 py-1.5 text-readout transition-colors duration-fast hover:bg-rule"
       >
         {t.panel.exportSvg}
+      </button>
+
+      <button
+        type="button"
+        onClick={onCopyLink}
+        className="mt-2 w-full rounded border border-rule bg-graticule px-2 py-1.5 text-readout transition-colors duration-fast hover:bg-rule"
+      >
+        {copied ? t.panel.linkCopied : t.panel.copyLink}
       </button>
     </div>
   );

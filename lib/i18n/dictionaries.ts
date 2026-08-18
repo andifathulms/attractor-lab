@@ -36,6 +36,11 @@ export type Dictionary = {
     readonly pairMode: string;
     readonly epsilon: string;
     readonly exportSvg: string;
+    readonly copyLink: string;
+    readonly linkCopied: string;
+    readonly verify: string;
+    readonly verifying: string;
+    readonly verifyDeltaLabel: string;
     readonly checkConvergence: string;
     readonly convergenceOrder: string;
     readonly sweptParameter: string;
@@ -60,6 +65,7 @@ export type Dictionary = {
     readonly done: string;
     readonly separationA: string;
     readonly separationB: string;
+    readonly horizon: string;
   };
   readonly sistem: {
     readonly indexTitle: string;
@@ -67,6 +73,13 @@ export type Dictionary = {
     readonly distinctiveness: string;
     readonly flow: string;
     readonly map: string;
+    readonly checkedConstants: string;
+    readonly computed: string;
+    readonly published: string;
+    readonly withinTolerance: string;
+    readonly outsideTolerance: string;
+    readonly verifyingConstants: string;
+    readonly kaplanYorkeDimension: string;
   };
   readonly onboarding: {
     readonly intro: string;
@@ -111,6 +124,11 @@ const id: Dictionary = {
     pairMode: 'Pasangan divergensi',
     epsilon: 'Epsilon (ε)',
     exportSvg: 'Ekspor SVG',
+    copyLink: 'Salin tautan',
+    linkCopied: 'Tautan disalin',
+    verify: 'Verifikasi tampilan ini',
+    verifying: 'Menghitung…',
+    verifyDeltaLabel: 'Δ pada dt/2',
     checkConvergence: 'Cek konvergensi',
     convergenceOrder: 'orde konvergensi (dt → dt/2)',
     sweptParameter: 'Parameter yang disapu',
@@ -135,6 +153,7 @@ const id: Dictionary = {
     done: 'selesai',
     separationA: '|euler − rk4|',
     separationB: '|rk2 − rk4|',
+    horizon: 'cakrawala prediksi',
   },
   sistem: {
     indexTitle: 'Sistem',
@@ -142,6 +161,13 @@ const id: Dictionary = {
     distinctiveness: 'Yang membedakannya',
     flow: 'aliran (ODE)',
     map: 'peta terulang',
+    checkedConstants: 'Konstanta terverifikasi',
+    computed: 'dihitung',
+    published: 'terpublikasi',
+    withinTolerance: 'sesuai toleransi',
+    outsideTolerance: 'di luar toleransi',
+    verifyingConstants: 'menghitung…',
+    kaplanYorkeDimension: 'dimensi Kaplan–Yorke',
   },
   onboarding: {
     intro: 'Atraktor aneh, dihitung langkah demi langkah oleh integrator tulisan tangan.',
@@ -187,6 +213,11 @@ const en: Dictionary = {
     pairMode: 'Divergence pair',
     epsilon: 'Epsilon (ε)',
     exportSvg: 'Export SVG',
+    copyLink: 'Copy link',
+    linkCopied: 'Link copied',
+    verify: 'Verify this view',
+    verifying: 'Computing…',
+    verifyDeltaLabel: 'Δ at dt/2',
     checkConvergence: 'Check convergence',
     convergenceOrder: 'convergence order (dt → dt/2)',
     sweptParameter: 'Swept parameter',
@@ -211,6 +242,7 @@ const en: Dictionary = {
     done: 'done',
     separationA: '|euler − rk4|',
     separationB: '|rk2 − rk4|',
+    horizon: 'predictability horizon',
   },
   sistem: {
     indexTitle: 'Systems',
@@ -218,6 +250,13 @@ const en: Dictionary = {
     distinctiveness: 'What sets it apart',
     flow: 'flow (ODE)',
     map: 'iterated map',
+    checkedConstants: 'Verified constants',
+    computed: 'computed',
+    published: 'published',
+    withinTolerance: 'within tolerance',
+    outsideTolerance: 'outside tolerance',
+    verifyingConstants: 'computing…',
+    kaplanYorkeDimension: 'Kaplan–Yorke dimension',
   },
   onboarding: {
     intro: 'A strange attractor, computed step by step by a hand-written integrator.',
