@@ -15,6 +15,8 @@ export type SeparationPlotProps = {
   readonly elapsed: number;
   readonly latestSeparation: number | undefined;
   readonly lyapunovMax: number | undefined;
+  readonly horizon: number | undefined;
+  readonly horizonThreshold: number;
 };
 
 const MAX_SAMPLES = 4000;
@@ -24,7 +26,7 @@ const TRAIL_B = '#5FB0D9';
 // Docks as a narrow band above the readout strip when the pair is active —
 // log separation against time. DESIGN.md §6.
 export const SeparationPlot = forwardRef<SeparationPlotHandle, SeparationPlotProps>(
-  function SeparationPlot({ epsilon, elapsed, latestSeparation, lyapunovMax }, ref) {
+  function SeparationPlot({ epsilon, elapsed, latestSeparation, lyapunovMax, horizon, horizonThreshold }, ref) {
     const t = useT();
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const seriesRef = useRef<Series>(EMPTY_SERIES);
@@ -116,6 +118,13 @@ export const SeparationPlot = forwardRef<SeparationPlotHandle, SeparationPlotPro
             )
           )}
         </p>
+        {lyapunovMax !== undefined && (
+          <p className="mt-1 font-mono text-sm leading-snug text-caption [font-variant-numeric:tabular-nums]">
+            {t.divergence.horizonNote} {t.divergence.horizonThresholdRule} ≈{horizonThreshold.toFixed(2)}.
+            {horizon !== undefined &&
+              ` λ maks=${lyapunovMax.toFixed(4)}, ε=${epsilon.toExponential(1)} → ${t.readout.horizon} ≈${horizon.toFixed(2)}.`}
+          </p>
+        )}
       </div>
     );
   }

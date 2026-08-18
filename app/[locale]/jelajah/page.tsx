@@ -125,10 +125,11 @@ export default function JelajahPage() {
 
   const system = useMemo(() => ({ type: systemId, params }) as System, [systemId, params]);
   const integratorConfig = useMemo(() => ({ type: integrator }), [integrator]);
+  const horizonThreshold = useMemo(() => separationThreshold(systemId), [systemId]);
   const horizon = useMemo(() => {
     if (metrics.lyapunovMax === undefined) return undefined;
-    return predictabilityHorizon(metrics.lyapunovMax, epsilon, separationThreshold(systemId));
-  }, [metrics.lyapunovMax, epsilon, systemId]);
+    return predictabilityHorizon(metrics.lyapunovMax, epsilon, horizonThreshold);
+  }, [metrics.lyapunovMax, epsilon, horizonThreshold]);
   // Frames the verify-check's raw distance against the attractor's own
   // physical scale (CLAUDE.md invariant 12's bounding box), so the number
   // reads as "how much of the picture" rather than an uninterpretable
@@ -230,6 +231,8 @@ export default function JelajahPage() {
           elapsed={metrics.elapsed}
           latestSeparation={latestSeparation}
           lyapunovMax={metrics.lyapunovMax}
+          horizon={horizon}
+          horizonThreshold={horizonThreshold}
         />
       )}
       <ReadoutStrip

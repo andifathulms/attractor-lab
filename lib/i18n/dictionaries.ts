@@ -13,6 +13,8 @@ export type Dictionary = {
     readonly rateLabel: string;
     readonly definitionNote: string;
     readonly notYetDiverged: string;
+    readonly horizonNote: string;
+    readonly horizonThresholdRule: string;
   };
   readonly nav: {
     readonly jelajah: string;
@@ -117,6 +119,9 @@ const id: Dictionary = {
     definitionNote:
       'Ini definisi eksponen Lyapunov: |Δ(t)| ≈ ε·e^(λt). λ maks di bawah adalah estimasi yang lebih cermat (metode Benettin: dua lintasan, pertumbuhan log dirata-rata seiring waktu) — bukan dihitung langsung dari dua titik ini.',
     notYetDiverged: '|Δ| belum melewati ε — perpisahan belum terlihat pada skala ini.',
+    horizonNote:
+      "Cakrawala prediksi di bawah menjawab: dengan λ dan ε ini, kapan |Δ| diperkirakan mencapai ambang 'tak berkaitan'? Rumusnya t ≈ ln(ambang/ε)/λ.",
+    horizonThresholdRule: 'Ambang itu dipilih sebagai 10% dari diagonal kotak pembatas sistem — patokan eksplisit, bukan konstanta sembarang',
   },
   nav: {
     jelajah: 'Jelajah',
@@ -222,6 +227,9 @@ const en: Dictionary = {
     definitionNote:
       'This is the definition of the Lyapunov exponent: |Δ(t)| ≈ ε·e^(λt). λ max below is a more careful estimate (the Benettin method: two trajectories, log growth averaged over time) — not computed directly from these two points.',
     notYetDiverged: "|Δ| hasn't passed ε yet — the separation isn't visible at this scale yet.",
+    horizonNote:
+      "The predictability horizon below answers: with this λ and ε, when is |Δ| expected to reach the 'unrelated' threshold? The formula is t ≈ ln(threshold/ε)/λ.",
+    horizonThresholdRule: "That threshold is chosen as 10% of the system's bounding-box diagonal — an explicit rule, not an arbitrary constant",
   },
   nav: {
     jelajah: 'Explore',
