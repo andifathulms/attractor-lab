@@ -146,6 +146,7 @@ export function BifurcationPlot({
     <canvas
       ref={canvasRef}
       onClick={handleClick}
+      aria-hidden="true"
       className={onParamPick ? 'h-full w-full cursor-crosshair' : 'h-full w-full'}
     />
   );

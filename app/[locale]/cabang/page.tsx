@@ -28,6 +28,14 @@ export default function CabangPage() {
     sampleCount,
     done: false,
   });
+  // Keyboard/screen-reader equivalent to clicking a point on the diagram —
+  // the click gesture has no keyboard path and no accessible name at all,
+  // and it's the only way to reach the jump feature otherwise. A native
+  // range input is fully keyboard-operable (arrow keys, Home/End) and
+  // gets a real accessible name for free; the separate Jump button lets a
+  // keyboard user explore the range before committing, instead of
+  // navigating away on every arrow keypress.
+  const [selectedParam, setSelectedParam] = useState(0);
 
   const baseSystem = classicSystem[systemId];
   const availableParams = Object.keys(baseSystem.params);
@@ -43,6 +51,7 @@ export default function CabangPage() {
     () => ({ dt, burnInSteps: 4000, sampleSteps: 6000, axis }),
     [dt, axis]
   );
+  const clampedSelectedParam = Math.min(Math.max(selectedParam, paramMin), paramMax);
 
   // The sweep that produced this diagram always integrates with RK4
   // (lib/dynamics/bifurcation.ts) — the jump carries that forward so the
@@ -99,6 +108,33 @@ export default function CabangPage() {
           collapsed={collapsed}
           onToggleCollapsed={() => setCollapsed((c) => !c)}
         />
+      </div>
+      <div className="flex w-full flex-wrap items-center gap-3 border-t border-rule bg-night px-4 py-3">
+        <label className="flex flex-1 items-center gap-3 font-mono text-sm text-readout">
+          <span className="shrink-0 text-caption">
+            {t.panel.sweptParameter} ({paramName})
+          </span>
+          <input
+            type="range"
+            min={paramMin}
+            max={paramMax}
+            step={(paramMax - paramMin) / 500 || 0.001}
+            value={clampedSelectedParam}
+            onChange={(event) => setSelectedParam(Number(event.target.value))}
+            aria-label={`${t.panel.sweptParameter} (${paramName})`}
+            className="min-w-0 flex-1"
+          />
+          <span className="w-16 shrink-0 text-right [font-variant-numeric:tabular-nums]">
+            {clampedSelectedParam.toPrecision(4)}
+          </span>
+        </label>
+        <button
+          type="button"
+          onClick={() => handleParamPick(clampedSelectedParam)}
+          className="shrink-0 rounded border border-rule bg-graticule px-3 py-1.5 text-sm text-readout transition-colors duration-fast hover:bg-rule"
+        >
+          {t.panel.jumpToTrajectory}
+        </button>
       </div>
       <BifurcationReadoutStrip
         dt={dt}

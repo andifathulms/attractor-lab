@@ -43,6 +43,7 @@ export type Dictionary = {
     readonly verifyDeltaLabel: string;
     readonly verifyDeltaScaleSuffix: string;
     readonly clickToJump: string;
+    readonly jumpToTrajectory: string;
     readonly checkConvergence: string;
     readonly convergenceOrder: string;
     readonly sweptParameter: string;
@@ -134,6 +135,7 @@ const id: Dictionary = {
     verifyDeltaLabel: 'Δ pada dt/2',
     verifyDeltaScaleSuffix: 'dari skala sistem',
     clickToJump: 'Klik diagram untuk melihat lintasannya',
+    jumpToTrajectory: 'Lompat ke lintasan',
     checkConvergence: 'Cek konvergensi',
     convergenceOrder: 'orde konvergensi (dt → dt/2)',
     sweptParameter: 'Parameter yang disapu',
@@ -226,6 +228,7 @@ const en: Dictionary = {
     verifyDeltaLabel: 'Δ at dt/2',
     verifyDeltaScaleSuffix: 'of system scale',
     clickToJump: 'Click the diagram to see its trajectory',
+    jumpToTrajectory: 'Jump to trajectory',
     checkConvergence: 'Check convergence',
     convergenceOrder: 'convergence order (dt → dt/2)',
     sweptParameter: 'Swept parameter',
