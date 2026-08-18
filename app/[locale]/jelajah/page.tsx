@@ -73,9 +73,10 @@ export default function JelajahPage() {
     <main className="flex h-dvh flex-col bg-night">
       <div className="relative h-[60vh] sm:h-auto sm:flex-1">
         <AppNav />
-        {pairMode && (
-          <OnboardingHint storageKey="attractor-lab-onboarding-divergence" message={t.onboarding.divergenceHint} />
-        )}
+        <OnboardingHint
+          storageKey="attractor-lab-onboarding"
+          message={pairMode ? `${t.onboarding.intro} ${t.onboarding.divergenceHint}` : t.onboarding.intro}
+        />
         {pairMode ? (
           <DivergencePairCanvas
             ref={pairCanvasRef}
