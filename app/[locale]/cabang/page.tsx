@@ -74,7 +74,10 @@ export default function CabangPage() {
           onProgress={setProgress}
           onParamPick={handleParamPick}
         />
-        <p className="pointer-events-none absolute bottom-4 left-4 z-10 font-mono text-sm text-caption">
+        {/* Mobile: top-right, clear of AppNav (top-left) and the bifurcation
+            panel's fixed bottom sheet. Desktop: back to bottom-left, where
+            the panel instead docks top-right and never reaches this corner. */}
+        <p className="pointer-events-none absolute right-4 top-4 z-10 max-w-[10rem] text-right font-mono text-sm text-caption sm:bottom-4 sm:left-4 sm:right-auto sm:top-auto sm:max-w-none sm:text-left">
           {t.panel.clickToJump}
         </p>
         <BifurcationPanel
