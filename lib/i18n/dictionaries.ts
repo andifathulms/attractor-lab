@@ -100,6 +100,7 @@ export type Dictionary = {
     readonly verifyingConstants: string;
     readonly kaplanYorkeDimension: string;
     readonly constantsReady: string;
+    readonly constantsExplain: string;
   };
   readonly onboarding: {
     readonly intro: string;
@@ -215,6 +216,8 @@ const id: Dictionary = {
     verifyingConstants: 'menghitung…',
     kaplanYorkeDimension: 'dimensi Kaplan–Yorke',
     constantsReady: 'Konstanta terverifikasi selesai dihitung.',
+    constantsExplain:
+      'λ maks mengukur seberapa cepat dua lintasan yang berdekatan berpisah (satuan 1/waktu). Dimensi Kaplan–Yorke memperkirakan dimensi fraktal atraktor dari spektrum Lyapunov penuh: D = j + (jumlah j eksponen teratas) / |eksponen berikutnya|, dengan j indeks terbesar yang jumlah parsialnya masih ≥0. Keduanya estimasi numerik, bukan nilai analitik tertutup — karena itu ada kolom toleransi di atas.',
   },
   onboarding: {
     intro: 'Atraktor aneh, dihitung langkah demi langkah oleh integrator tulisan tangan.',
@@ -331,6 +334,8 @@ const en: Dictionary = {
     verifyingConstants: 'computing…',
     kaplanYorkeDimension: 'Kaplan–Yorke dimension',
     constantsReady: 'Verified constants finished computing.',
+    constantsExplain:
+      'λ max measures how fast two nearby trajectories separate (units of 1/time). The Kaplan–Yorke dimension estimates the attractor\'s fractal dimension from the full Lyapunov spectrum: D = j + (sum of the top j exponents) / |the next exponent|, where j is the largest index whose partial sum is still ≥0. Both are numerical estimates, not closed-form analytic values — that\'s why there\'s a tolerance column above.',
   },
   onboarding: {
     intro: 'A strange attractor, computed step by step by a hand-written integrator.',

@@ -79,6 +79,9 @@ export function VerifiedConstants({ systemId }: VerifiedConstantsProps) {
           )}
         </tbody>
       </table>
+      {/* What these two numbers actually mean and how the second one is
+          derived — cited here, next to the table, not assumed knowledge. */}
+      <p className="mt-2 font-mono text-sm leading-snug text-caption">{t.sistem.constantsExplain}</p>
     </section>
   );
 }
