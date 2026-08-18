@@ -26,7 +26,6 @@ export function Equation({ children, plain }: EquationProps) {
       viewBox={`0 0 ${width} 32`}
       className="h-8 w-auto max-w-full"
     >
-      <title>{plain}</title>
       <text x="0" y="22" className="fill-readout font-display text-[22px] italic">
         {children}
       </text>
