@@ -43,6 +43,10 @@ const config: Config = {
         bloom: '#FFF8E8',
         section: '#A78BC4',
         readout: '#B8C2CE',
+        // Secondary/label text — #2A313D ("rule") is a border color and
+        // fails WCAG contrast (1.47:1) when used as text; this token is for
+        // captions, field labels, and nav links that need to be legible.
+        caption: '#8B95A3',
         rule: '#2A313D',
       },
       transitionDuration: {

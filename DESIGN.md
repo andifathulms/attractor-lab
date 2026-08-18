@@ -70,7 +70,8 @@ Single-trajectory views use `--trail-a` only. `--bloom` is not a colour you assi
 ```
 --section   #A78BC4     violet — the Poincaré plane and its intersections
 --readout   #B8C2CE     numeric text
---rule      #2A313D     hairlines
+--caption   #8B95A3     field labels, nav links — secondary text, AA on --night and --graticule
+--rule      #2A313D     hairlines only — fails AA as text, never set as a text colour
 ```
 
 Violet for the section because it is a *different kind of object* — a construction placed into the space rather than part of the trajectory.
