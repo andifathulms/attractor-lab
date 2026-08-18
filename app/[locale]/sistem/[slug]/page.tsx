@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { AppNav } from '@/components/nav/AppNav';
 import { Equation } from '@/components/equation/Equation';
@@ -6,10 +7,30 @@ import { VerifiedConstants } from '@/components/sistem/VerifiedConstants';
 import type { MapId } from '@/lib/dynamics/maps';
 import type { SystemId } from '@/lib/dynamics/systems';
 import { dictionaries, type Locale } from '@/lib/i18n/dictionaries';
+import { buildMetadata } from '@/lib/metadata';
 import { getSystemReference, pick, systemReferences } from '../data';
 
 export function generateStaticParams(): { slug: string }[] {
   return systemReferences.map((s) => ({ slug: s.slug }));
+}
+
+export function generateMetadata({
+  params,
+}: {
+  readonly params: { readonly locale: string; readonly slug: string };
+}): Metadata {
+  const reference = getSystemReference(params.slug);
+  if (!reference) return {};
+  const locale: Locale = params.locale === 'en' ? 'en' : 'id';
+  // title/description both come from the reference entry that renders this
+  // exact page (data.tsx) — the same "distinctiveness" paragraph shown
+  // on-page, not separately authored copy.
+  return buildMetadata({
+    title: reference.name,
+    description: pick(reference.distinctiveness, locale),
+    locale,
+    path: `/sistem/${reference.slug}`,
+  });
 }
 
 export default function SistemSlugPage({
