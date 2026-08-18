@@ -21,7 +21,7 @@ export function OnboardingHint({ storageKey, message }: OnboardingHintProps) {
   if (seen) return null;
 
   return (
-    <div className="absolute left-4 top-32 z-10 max-w-xs rounded border border-rule bg-night/90 p-4 font-sans text-sm text-readout backdrop-blur-sm">
+    <div className="absolute left-4 top-32 z-10 max-w-xs rounded border border-rule bg-night/90 p-4 font-sans text-sm text-readout backdrop-blur-sm sm:max-w-sm">
       <p className="mb-3 leading-relaxed">{message}</p>
       <button
         type="button"
