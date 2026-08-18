@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react';
 import type { Plane } from '@/lib/dynamics/section';
 import type { System } from '@/lib/dynamics/systems';
+import { REDUCED_MOTION_STEPS, usePrefersReducedMotion } from '@/lib/motion';
 import { clearBuffer, drawMarker, redrawLayers, type TrajectoryLayer } from '@/lib/render/accumulate';
 import { project, type Rotation } from '@/lib/render/projection';
 import type {
@@ -47,6 +48,7 @@ export function SectionCanvas({ system, dt, plane, onMetrics, onCrossings }: Sec
   const draggingRef = useRef(false);
   const lastPointerRef = useRef({ x: 0, y: 0 });
   const redrawPendingRef = useRef(false);
+  const reducedMotion = usePrefersReducedMotion();
 
   const layers = (): TrajectoryLayer[] => [
     { chunks: chunksRef.current, color: TRAJECTORY_COLOR },
@@ -96,31 +98,45 @@ export function SectionCanvas({ system, dt, plane, onMetrics, onCrossings }: Sec
         onCrossings(message.crossings);
       }
 
-      const activeCanvas = canvasRef.current;
-      const activeCtx = activeCanvas?.getContext('2d');
-      if (activeCanvas && activeCtx) {
-        const config = {
-          rotation: rotationRef.current,
-          zoom: zoomRef.current,
-          width: activeCanvas.width,
-          height: activeCanvas.height,
-        };
-        drawIncremental(activeCtx, message.points, lastPointRef, TRAJECTORY_COLOR, config);
-        for (let i = 0; i + 2 < message.crossings.length; i += 3) {
-          const point = message.crossings.subarray(i, i + 3);
-          drawMarker(activeCtx, project(point, config), SECTION_COLOR);
+      // Reduced motion: the whole run arrived as one complete batch —
+      // render it in a single redraw instead of stroking each segment in
+      // as it streams. DESIGN.md §7.
+      if (reducedMotion) {
+        scheduleRedraw();
+      } else {
+        const activeCanvas = canvasRef.current;
+        const activeCtx = activeCanvas?.getContext('2d');
+        if (activeCanvas && activeCtx) {
+          const config = {
+            rotation: rotationRef.current,
+            zoom: zoomRef.current,
+            width: activeCanvas.width,
+            height: activeCanvas.height,
+          };
+          drawIncremental(activeCtx, message.points, lastPointRef, TRAJECTORY_COLOR, config);
+          for (let i = 0; i + 2 < message.crossings.length; i += 3) {
+            const point = message.crossings.subarray(i, i + 3);
+            drawMarker(activeCtx, project(point, config), SECTION_COLOR);
+          }
         }
       }
 
       onMetrics({ elapsed: message.elapsed, crossingCount: crossingCountRef.current });
     };
 
-    const startMessage: StartMessage = { type: 'start', system, dt, initial: INITIAL_STATE, plane };
+    const startMessage: StartMessage = {
+      type: 'start',
+      system,
+      dt,
+      initial: INITIAL_STATE,
+      plane,
+      reducedMotionSteps: reducedMotion ? REDUCED_MOTION_STEPS : undefined,
+    };
     worker.postMessage(startMessage);
 
     return () => worker.terminate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(system), dt, plane.axis, plane.offset]);
+  }, [JSON.stringify(system), dt, plane.axis, plane.offset, reducedMotion]);
 
   useEffect(() => {
     const canvas = canvasRef.current;

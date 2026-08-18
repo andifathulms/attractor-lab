@@ -4,6 +4,7 @@ import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
 import type { Integrator } from '@/lib/dynamics/integrate';
 import type { System } from '@/lib/dynamics/systems';
 import type { ExportSnapshot } from '@/lib/export/plotter';
+import { REDUCED_MOTION_STEPS, usePrefersReducedMotion } from '@/lib/motion';
 import { clearBuffer, drawSegment, redrawTrajectory } from '@/lib/render/accumulate';
 import { project, type Rotation } from '@/lib/render/projection';
 import type {
@@ -47,6 +48,7 @@ export const AttractorCanvas = forwardRef<AttractorCanvasHandle, AttractorCanvas
     const lastPointerRef = useRef({ x: 0, y: 0 });
     const redrawPendingRef = useRef(false);
     const lastLyapunovRef = useRef<number | undefined>(undefined);
+    const reducedMotion = usePrefersReducedMotion();
 
     useImperativeHandle(
       ref,
@@ -103,23 +105,30 @@ export const AttractorCanvas = forwardRef<AttractorCanvasHandle, AttractorCanvas
       const handleBatch = (message: BatchMessage) => {
         chunksRef.current.push(message.points);
 
-        const activeCanvas = canvasRef.current;
-        const activeCtx = activeCanvas?.getContext('2d');
-        if (activeCanvas && activeCtx) {
-          const config = {
-            rotation: rotationRef.current,
-            zoom: zoomRef.current,
-            width: activeCanvas.width,
-            height: activeCanvas.height,
-          };
-          for (let i = 0; i + 2 < message.points.length; i += 3) {
-            const point = message.points.subarray(i, i + 3);
-            const screen = project(point, config);
-            if (lastPointRef.current) {
-              const prevScreen = project(lastPointRef.current, config);
-              drawSegment(activeCtx, prevScreen, screen, TRAIL_COLOR);
+        // Reduced motion: the whole trajectory arrived as one complete
+        // batch — render it in a single redraw instead of stroking each
+        // segment in as it streams in. DESIGN.md §7.
+        if (reducedMotion) {
+          scheduleRedraw();
+        } else {
+          const activeCanvas = canvasRef.current;
+          const activeCtx = activeCanvas?.getContext('2d');
+          if (activeCanvas && activeCtx) {
+            const config = {
+              rotation: rotationRef.current,
+              zoom: zoomRef.current,
+              width: activeCanvas.width,
+              height: activeCanvas.height,
+            };
+            for (let i = 0; i + 2 < message.points.length; i += 3) {
+              const point = message.points.subarray(i, i + 3);
+              const screen = project(point, config);
+              if (lastPointRef.current) {
+                const prevScreen = project(lastPointRef.current, config);
+                drawSegment(activeCtx, prevScreen, screen, TRAIL_COLOR);
+              }
+              lastPointRef.current = point;
             }
-            lastPointRef.current = point;
           }
         }
 
@@ -131,12 +140,19 @@ export const AttractorCanvas = forwardRef<AttractorCanvasHandle, AttractorCanvas
         onMetrics({ elapsed: message.elapsed, lyapunovMax: message.lyapunovMax });
       };
 
-      const startMessage: StartMessage = { type: 'start', system, integrator, dt, initial: INITIAL_STATE };
+      const startMessage: StartMessage = {
+        type: 'start',
+        system,
+        integrator,
+        dt,
+        initial: INITIAL_STATE,
+        reducedMotionSteps: reducedMotion ? REDUCED_MOTION_STEPS : undefined,
+      };
       worker.postMessage(startMessage);
 
       return () => worker.terminate();
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [JSON.stringify(system), JSON.stringify(integrator), dt]);
+    }, [JSON.stringify(system), JSON.stringify(integrator), dt, reducedMotion]);
 
     useEffect(() => {
       const canvas = canvasRef.current;

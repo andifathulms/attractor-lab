@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import type { System } from '@/lib/dynamics/systems';
+import { REDUCED_MOTION_STEPS, usePrefersReducedMotion } from '@/lib/motion';
 import { clearBuffer, redrawLayers, type TrajectoryLayer } from '@/lib/render/accumulate';
 import { project, type Rotation } from '@/lib/render/projection';
 import type {
@@ -49,6 +50,7 @@ export function ComparisonCanvas({ system, dt, onMetrics }: ComparisonCanvasProp
   const draggingRef = useRef(false);
   const lastPointerRef = useRef({ x: 0, y: 0 });
   const redrawPendingRef = useRef(false);
+  const reducedMotion = usePrefersReducedMotion();
 
   const layers = (): TrajectoryLayer[] => [
     { chunks: chunksRk4Ref.current, color: RK4_COLOR },
@@ -98,18 +100,25 @@ export function ComparisonCanvas({ system, dt, onMetrics }: ComparisonCanvasProp
       chunksRk2Ref.current.push(message.pointsRk2);
       chunksRk4Ref.current.push(message.pointsRk4);
 
-      const activeCanvas = canvasRef.current;
-      const activeCtx = activeCanvas?.getContext('2d');
-      if (activeCanvas && activeCtx) {
-        const config = {
-          rotation: rotationRef.current,
-          zoom: zoomRef.current,
-          width: activeCanvas.width,
-          height: activeCanvas.height,
-        };
-        drawIncremental(activeCtx, message.pointsRk4, lastPointRk4Ref, RK4_COLOR, config);
-        drawIncremental(activeCtx, message.pointsRk2, lastPointRk2Ref, RK2_COLOR, config);
-        drawIncremental(activeCtx, message.pointsEuler, lastPointEulerRef, EULER_COLOR, config);
+      // Reduced motion: the whole run arrived as one complete batch —
+      // render it in a single redraw instead of stroking each segment in
+      // as it streams. DESIGN.md §7.
+      if (reducedMotion) {
+        scheduleRedraw();
+      } else {
+        const activeCanvas = canvasRef.current;
+        const activeCtx = activeCanvas?.getContext('2d');
+        if (activeCanvas && activeCtx) {
+          const config = {
+            rotation: rotationRef.current,
+            zoom: zoomRef.current,
+            width: activeCanvas.width,
+            height: activeCanvas.height,
+          };
+          drawIncremental(activeCtx, message.pointsRk4, lastPointRk4Ref, RK4_COLOR, config);
+          drawIncremental(activeCtx, message.pointsRk2, lastPointRk2Ref, RK2_COLOR, config);
+          drawIncremental(activeCtx, message.pointsEuler, lastPointEulerRef, EULER_COLOR, config);
+        }
       }
 
       onMetrics({
@@ -119,12 +128,18 @@ export function ComparisonCanvas({ system, dt, onMetrics }: ComparisonCanvasProp
       });
     };
 
-    const startMessage: StartMessage = { type: 'start', system, dt, initial: INITIAL_STATE };
+    const startMessage: StartMessage = {
+      type: 'start',
+      system,
+      dt,
+      initial: INITIAL_STATE,
+      reducedMotionSteps: reducedMotion ? REDUCED_MOTION_STEPS : undefined,
+    };
     worker.postMessage(startMessage);
 
     return () => worker.terminate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(system), dt]);
+  }, [JSON.stringify(system), dt, reducedMotion]);
 
   useEffect(() => {
     const canvas = canvasRef.current;

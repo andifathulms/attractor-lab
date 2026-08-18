@@ -4,6 +4,7 @@ import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
 import type { Integrator } from '@/lib/dynamics/integrate';
 import type { System } from '@/lib/dynamics/systems';
 import type { ExportSnapshot } from '@/lib/export/plotter';
+import { REDUCED_MOTION_STEPS, usePrefersReducedMotion } from '@/lib/motion';
 import { clearBuffer, redrawLayers, type TrajectoryLayer } from '@/lib/render/accumulate';
 import { project, type Rotation } from '@/lib/render/projection';
 import type {
@@ -58,6 +59,7 @@ export const DivergencePairCanvas = forwardRef<
   const lastPointerRef = useRef({ x: 0, y: 0 });
   const redrawPendingRef = useRef(false);
   const lastLyapunovRef = useRef<number | undefined>(undefined);
+  const reducedMotion = usePrefersReducedMotion();
 
   useImperativeHandle(
     ref,
@@ -121,17 +123,24 @@ export const DivergencePairCanvas = forwardRef<
       chunksARef.current.push(message.pointsA);
       chunksBRef.current.push(message.pointsB);
 
-      const activeCanvas = canvasRef.current;
-      const activeCtx = activeCanvas?.getContext('2d');
-      if (activeCanvas && activeCtx) {
-        const config = {
-          rotation: rotationRef.current,
-          zoom: zoomRef.current,
-          width: activeCanvas.width,
-          height: activeCanvas.height,
-        };
-        drawIncremental(activeCtx, message.pointsA, lastPointARef, TRAIL_A, config);
-        drawIncremental(activeCtx, message.pointsB, lastPointBRef, TRAIL_B, config);
+      // Reduced motion: the whole run arrived as one complete batch —
+      // render it in a single redraw instead of stroking each segment in
+      // as it streams. DESIGN.md §7.
+      if (reducedMotion) {
+        scheduleRedraw();
+      } else {
+        const activeCanvas = canvasRef.current;
+        const activeCtx = activeCanvas?.getContext('2d');
+        if (activeCanvas && activeCtx) {
+          const config = {
+            rotation: rotationRef.current,
+            zoom: zoomRef.current,
+            width: activeCanvas.width,
+            height: activeCanvas.height,
+          };
+          drawIncremental(activeCtx, message.pointsA, lastPointARef, TRAIL_A, config);
+          drawIncremental(activeCtx, message.pointsB, lastPointBRef, TRAIL_B, config);
+        }
       }
 
       onSeparationBatch(Array.from(message.times), Array.from(message.separations));
@@ -150,12 +159,13 @@ export const DivergencePairCanvas = forwardRef<
       dt,
       initial: INITIAL_STATE,
       epsilon,
+      reducedMotionSteps: reducedMotion ? REDUCED_MOTION_STEPS : undefined,
     };
     worker.postMessage(startMessage);
 
     return () => worker.terminate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(system), JSON.stringify(integrator), dt, epsilon]);
+  }, [JSON.stringify(system), JSON.stringify(integrator), dt, epsilon, reducedMotion]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
