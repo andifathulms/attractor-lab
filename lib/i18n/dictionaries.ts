@@ -7,6 +7,8 @@ export type Dictionary = {
   };
   readonly canvas: {
     readonly label: string;
+    readonly sectionLabel: string;
+    readonly mapLabel: string;
   };
   readonly divergence: {
     readonly axisExplain: string;
@@ -117,6 +119,9 @@ const id: Dictionary = {
   canvas: {
     label:
       'Render lintasan 3D. Panah kiri/kanan memutar horizontal, panah atas/bawah memutar vertikal, +/− memperbesar/memperkecil.',
+    sectionLabel:
+      'Render lintasan 3D dengan bidang Poincaré (ungu) dan titik potongnya. Panah kiri/kanan memutar horizontal, panah atas/bawah memutar vertikal, +/− memperbesar/memperkecil.',
+    mapLabel: 'Render peta {name} dengan 200.000 titik iterasi.',
   },
   divergence: {
     axisExplain:
@@ -235,6 +240,9 @@ const en: Dictionary = {
   canvas: {
     label:
       'Rendered 3D trajectory. Left/right arrows rotate horizontally, up/down arrows rotate vertically, +/- zoom in/out.',
+    sectionLabel:
+      'Rendered 3D trajectory with its Poincaré plane (violet) and crossing points. Left/right arrows rotate horizontally, up/down arrows rotate vertically, +/- zoom in/out.',
+    mapLabel: 'Rendered {name} map with 200,000 iterated points.',
   },
   divergence: {
     axisExplain:

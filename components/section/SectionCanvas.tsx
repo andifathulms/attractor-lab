@@ -223,7 +223,7 @@ export function SectionCanvas({ system, dt, plane, onMetrics, onCrossings }: Sec
       ref={canvasRef}
       tabIndex={0}
       role="img"
-      aria-label={t.canvas.label}
+      aria-label={t.canvas.sectionLabel}
       className="h-full w-full touch-none"
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}

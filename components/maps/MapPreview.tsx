@@ -2,9 +2,11 @@
 
 import { useEffect, useRef } from 'react';
 import { classicMap, iterate, type MapId } from '@/lib/dynamics/maps';
+import { useT } from '@/lib/i18n/LocaleProvider';
 
 export type MapPreviewProps = {
   readonly mapId: MapId;
+  readonly name: string;
 };
 
 const SKIP = 50; // discard the short transient before the map settles
@@ -13,7 +15,8 @@ const TRAIL_COLOR = 'rgba(240, 192, 90, 0.08)';
 
 // No integration involved here — the map is its own step, and there's no
 // step-size question to display. PRD.md §2.
-export function MapPreview({ mapId }: MapPreviewProps) {
+export function MapPreview({ mapId, name }: MapPreviewProps) {
+  const t = useT();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
@@ -69,5 +72,12 @@ export function MapPreview({ mapId }: MapPreviewProps) {
     }
   }, [mapId]);
 
-  return <canvas ref={canvasRef} className="h-full w-full" />;
+  return (
+    <canvas
+      ref={canvasRef}
+      role="img"
+      aria-label={t.canvas.mapLabel.replace('{name}', name)}
+      className="h-full w-full"
+    />
+  );
 }

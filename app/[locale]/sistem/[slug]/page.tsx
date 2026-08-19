@@ -63,7 +63,7 @@ export default function SistemSlugPage({
 
         {reference.kind === 'map' && (
           <section className="mb-10 h-64 w-64 border border-rule">
-            <MapPreview mapId={reference.slug as MapId} />
+            <MapPreview mapId={reference.slug as MapId} name={reference.name} />
           </section>
         )}
 
