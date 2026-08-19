@@ -88,7 +88,7 @@ export default function SistemSlugPage({
 
         <section className="mb-10">
           <h2 className="mb-3 font-display text-lg font-medium">{t.sistem.distinctiveness}</h2>
-          <p className="font-sans text-base leading-relaxed">{pick(reference.distinctiveness, locale)}</p>
+          <p className="font-display text-base leading-relaxed">{pick(reference.distinctiveness, locale)}</p>
         </section>
 
         <p className="font-mono text-sm text-caption">{pick(reference.citation, locale)}</p>

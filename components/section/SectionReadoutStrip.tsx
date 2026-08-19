@@ -20,7 +20,7 @@ export function SectionReadoutStrip({ dt, elapsed, plane, crossingCount }: Secti
       <Field label={t.readout.integrator} value={t.integratorNames.rk4} />
       <Field label={t.readout.step} value={dt.toExponential(1)} />
       <Field label={t.readout.elapsedTime} value={elapsed.toFixed(2)} />
-      <Field label={t.readout.plane} value={`${AXIS_LABEL[plane.axis]} = ${plane.offset}`} />
+      <Field label={t.readout.plane} value={`${AXIS_LABEL[plane.axis]} = ${plane.offset.toFixed(3)}`} />
       <Field label={t.readout.crossings} value={String(crossingCount)} />
     </div>
   );

@@ -27,7 +27,7 @@ export function BifurcationReadoutStrip({
     <div className="flex w-full flex-wrap items-center gap-6 border-t border-rule bg-night px-4 py-3 font-mono text-sm text-readout [font-variant-numeric:tabular-nums]">
       <Field label={t.readout.integrator} value={t.integratorNames.rk4} />
       <Field label={t.readout.step} value={dt.toExponential(1)} />
-      <Field label={t.readout.sweep} value={`${paramName} ∈ [${paramMin}, ${paramMax}]`} />
+      <Field label={t.readout.sweep} value={`${paramName} ∈ [${paramMin.toFixed(3)}, ${paramMax.toFixed(3)}]`} />
       <Field
         label={t.readout.progress}
         value={done ? `${sampleCount}/${sampleCount} ${t.readout.done}` : `${sampleIndex}/${sampleCount}`}
