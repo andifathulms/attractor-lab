@@ -1,8 +1,8 @@
 import Link from 'next/link';
+import { PanelShell } from '@/components/panel/PanelShell';
 import { useLocale, useT } from '@/lib/i18n/LocaleProvider';
 import type { IntegratorId } from '@/lib/dynamics/integrate';
 import type { SystemId } from '@/lib/dynamics/systems';
-import { usePanelFocusOnToggle } from '@/lib/usePanelFocus';
 
 export const SYSTEM_LABEL: Record<SystemId, string> = {
   lorenz: 'Lorenz',
@@ -69,38 +69,13 @@ export function ControlPanel({
 }: ControlPanelProps) {
   const t = useT();
   const locale = useLocale();
-  const { openButtonRef, closeButtonRef } = usePanelFocusOnToggle(collapsed);
-
-  if (collapsed) {
-    return (
-      <button
-        ref={openButtonRef}
-        type="button"
-        onClick={onToggleCollapsed}
-        aria-label={t.panel.openPanel}
-        className="absolute inset-x-0 bottom-0 z-20 w-full border-t border-rule bg-night/90 py-3 text-center font-sans text-sm text-readout transition-colors duration-fast hover:bg-graticule sm:inset-x-auto sm:bottom-auto sm:right-0 sm:top-8 sm:z-auto sm:w-auto sm:rounded-l sm:rounded-r-none sm:border sm:border-r-0 sm:border-t-0 sm:px-2 sm:py-4"
-      >
-        ⟨
-      </button>
-    );
-  }
 
   return (
-    <div className="absolute inset-x-0 bottom-0 z-20 max-h-[40vh] overflow-y-auto border-t border-rule bg-night/95 p-4 font-sans text-sm text-readout sm:inset-x-auto sm:right-4 sm:top-8 sm:bottom-auto sm:z-auto sm:max-h-none sm:w-72 sm:overflow-visible sm:rounded sm:border sm:bg-night/90 sm:backdrop-blur-sm">
-      <div className="mb-1 flex items-center justify-between">
-        <h2 className="font-display text-lg font-medium">{t.panel.title}</h2>
-        <button
-          ref={closeButtonRef}
-          type="button"
-          onClick={onToggleCollapsed}
-          aria-label={t.panel.closePanel}
-          className="text-readout transition-colors duration-fast hover:text-bloom"
-        >
-          ⟩
-        </button>
-      </div>
-      <p className="mb-4 text-sm leading-snug text-caption">{t.panel.intro}</p>
-
+    <PanelShell
+      collapsed={collapsed}
+      onToggleCollapsed={onToggleCollapsed}
+      intro={<p className="mb-4 text-sm leading-snug text-caption">{t.panel.intro}</p>}
+    >
       <label className="mb-4 block">
         <span className="mb-1 block text-sm text-caption">{t.panel.system}</span>
         <select
@@ -234,6 +209,6 @@ export function ControlPanel({
             ` (${(verifyDeltaFraction * 100).toPrecision(2)}% ${t.panel.verifyDeltaScaleSuffix})`}
         </p>
       )}
-    </div>
+    </PanelShell>
   );
 }
