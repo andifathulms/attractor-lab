@@ -32,12 +32,12 @@ export function ReadoutStrip({
       <Field label={t.readout.elapsedTime} value={elapsed.toFixed(2)} />
       <Field
         label={t.readout.lyapunovMax}
-        value={lyapunovMax !== undefined ? lyapunovMax.toFixed(4) : '—'}
+        value={lyapunovMax !== undefined ? lyapunovMax.toFixed(4) : '-'}
       />
       {pairMode && epsilon !== undefined && (
         <>
           <Field label={t.readout.epsilon} value={epsilon.toExponential(1)} />
-          <Field label={t.readout.horizon} value={horizon !== undefined ? horizon.toFixed(2) : '—'} />
+          <Field label={t.readout.horizon} value={horizon !== undefined ? horizon.toFixed(2) : '-'} />
           <span className="flex items-center gap-3">
             <TrajectoryTag swatchClassName="bg-trail-a" label="A" />
             <TrajectoryTag swatchClassName="bg-trail-b" label="B" />

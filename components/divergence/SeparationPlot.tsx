@@ -107,7 +107,7 @@ export const SeparationPlot = forwardRef<SeparationPlotHandle, SeparationPlotPro
               <>
                 {' '}
                 ε={epsilon.toExponential(1)} → |Δ|={latestSeparation.toExponential(2)} (t={elapsed.toFixed(2)}, ×
-                {ratio.toExponential(1)}) — {t.divergence.rateLabel} ≈{impliedRate.toFixed(3)}.{' '}
+                {ratio.toExponential(1)}), {t.divergence.rateLabel} ≈{impliedRate.toFixed(3)}.{' '}
                 {t.divergence.definitionNote}
                 {lyapunovMax !== undefined && ` λ maks ≈ ${lyapunovMax.toFixed(4)}.`}
               </>

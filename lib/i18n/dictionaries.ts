@@ -114,7 +114,7 @@ export type Dictionary = {
 const id: Dictionary = {
   brand: {
     name: 'Attractor Lab',
-    tagline: 'Atraktor aneh, diintegrasi langkah demi langkah — amati dua lintasan nyaris identik menyimpang.',
+    tagline: 'Atraktor aneh, diintegrasi langkah demi langkah: amati dua lintasan nyaris identik menyimpang.',
   },
   canvas: {
     label:
@@ -125,14 +125,14 @@ const id: Dictionary = {
   },
   divergence: {
     axisExplain:
-      'Garis di atas menelusuri jarak antara lintasan A dan B setiap saat — kenaikan yang lurus berarti perpisahannya eksponensial, ciri kekacauan deterministik.',
+      'Garis di atas menelusuri jarak antara lintasan A dan B setiap saat. Kenaikan yang lurus berarti perpisahannya eksponensial, ciri kekacauan deterministik.',
     rateLabel: 'laju kasar saat ini',
     definitionNote:
-      'Ini definisi eksponen Lyapunov: |Δ(t)| ≈ ε·e^(λt). λ maks di bawah adalah estimasi yang lebih cermat (metode Benettin: dua lintasan, pertumbuhan log dirata-rata seiring waktu) — bukan dihitung langsung dari dua titik ini.',
-    notYetDiverged: '|Δ| belum melewati ε — perpisahan belum terlihat pada skala ini.',
+      'Ini definisi eksponen Lyapunov: |Δ(t)| ≈ ε·e^(λt). λ maks di bawah adalah estimasi yang lebih cermat (metode Benettin: dua lintasan, pertumbuhan log dirata-rata seiring waktu), bukan dihitung langsung dari dua titik ini.',
+    notYetDiverged: '|Δ| belum melewati ε. Perpisahan belum terlihat pada skala ini.',
     horizonNote:
       "Cakrawala prediksi di bawah menjawab: dengan λ dan ε ini, kapan |Δ| diperkirakan mencapai ambang 'tak berkaitan'? Rumusnya t ≈ ln(ambang/ε)/λ.",
-    horizonThresholdRule: 'Ambang itu dipilih sebagai 10% dari diagonal kotak pembatas sistem — patokan eksplisit, bukan konstanta sembarang',
+    horizonThresholdRule: 'Ambang itu dipilih sebagai 10% dari diagonal kotak pembatas sistem: patokan eksplisit, bukan konstanta sembarang',
   },
   nav: {
     jelajah: 'Jelajah',
@@ -174,15 +174,15 @@ const id: Dictionary = {
     clickToJump: 'Klik diagram untuk melihat lintasannya',
     jumpToTrajectory: 'Lompat ke lintasan',
     bifurcationExplain:
-      'Setiap titik adalah satu maksimum lokal sumbu {axis} sepanjang lintasan, pada nilai parameter itu — bukan lintasan penuh, hanya puncaknya. Satu titik di atas satu nilai parameter berarti periodik; sebaran vertikal (smear) berarti kacau.',
+      'Setiap titik adalah satu maksimum lokal sumbu {axis} sepanjang lintasan, pada nilai parameter itu. Bukan lintasan penuh, hanya puncaknya. Satu titik di atas satu nilai parameter berarti periodik; sebaran vertikal (smear) berarti kacau.',
     sectionExplain:
-      'Setiap kali lintasan menembus bidang irisan (dari satu sisi), posisi (u, v)-nya pada bidang itu digambar di sini — tangle 3D yang rumit menjadi peta yang hampir satu dimensi. Ini adalah wawasan yang membuat kekacauan bisa dipelajari: struktur yang tersembunyi dalam kekusutan menjadi terlihat begitu diiris.',
+      'Setiap kali lintasan menembus bidang irisan (dari satu sisi), posisi (u, v)-nya pada bidang itu digambar di sini. Tangle 3D yang rumit menjadi peta yang hampir satu dimensi. Ini adalah wawasan yang membuat kekacauan bisa dipelajari: struktur yang tersembunyi dalam kekusutan menjadi terlihat begitu diiris.',
     tryCompareCuePrefix: 'Ingin lihat integrator gagal? Buka',
     tryCompareCueSuffix: ', naikkan dt, dan bandingkan Euler, RK2, RK4 berdampingan.',
     checkConvergence: 'Cek konvergensi',
     convergenceOrder: 'orde konvergensi (dt → dt/2)',
     convergenceExplain:
-      'Tiap integrator dijalankan pada dt dan dt/2, dibandingkan dengan referensi RK4 pada dt/64. Orde = log₂(error(dt) / error(dt/2)) — Euler ≈1, RK2 ≈2, RK4 ≈4, sesuai perilaku pemotongan lokalnya.',
+      'Tiap integrator dijalankan pada dt dan dt/2, dibandingkan dengan referensi RK4 pada dt/64. Orde = log₂(error(dt) / error(dt/2)): Euler ≈1, RK2 ≈2, RK4 ≈4, sesuai perilaku pemotongan lokalnya.',
     sweptParameter: 'Parameter yang disapu',
     min: 'Min',
     max: 'Maks',
@@ -222,12 +222,12 @@ const id: Dictionary = {
     kaplanYorkeDimension: 'dimensi Kaplan–Yorke',
     constantsReady: 'Konstanta terverifikasi selesai dihitung.',
     constantsExplain:
-      'λ maks mengukur seberapa cepat dua lintasan yang berdekatan berpisah (satuan 1/waktu). Dimensi Kaplan–Yorke memperkirakan dimensi fraktal atraktor dari spektrum Lyapunov penuh: D = j + (jumlah j eksponen teratas) / |eksponen berikutnya|, dengan j indeks terbesar yang jumlah parsialnya masih ≥0. Keduanya estimasi numerik, bukan nilai analitik tertutup — karena itu ada kolom toleransi di atas.',
+      'λ maks mengukur seberapa cepat dua lintasan yang berdekatan berpisah (satuan 1/waktu). Dimensi Kaplan–Yorke memperkirakan dimensi fraktal atraktor dari spektrum Lyapunov penuh: D = j + (jumlah j eksponen teratas) / |eksponen berikutnya|, dengan j indeks terbesar yang jumlah parsialnya masih ≥0. Keduanya estimasi numerik, bukan nilai analitik tertutup, karena itu ada kolom toleransi di atas.',
   },
   onboarding: {
     intro: 'Atraktor aneh, dihitung langkah demi langkah oleh integrator tulisan tangan.',
     divergenceHint:
-      'Dua lintasan identik, dimulai dengan perbedaan sekecil 10⁻⁸. Amati saat keduanya menyimpang — ini kekacauan deterministik, bukan noise acak.',
+      'Dua lintasan identik, dimulai dengan perbedaan sekecil 10⁻⁸. Amati saat keduanya menyimpang: ini kekacauan deterministik, bukan noise acak.',
     dismiss: 'Mengerti',
   },
 };
@@ -235,7 +235,7 @@ const id: Dictionary = {
 const en: Dictionary = {
   brand: {
     name: 'Attractor Lab',
-    tagline: 'Strange attractors, integrated step by step — watch two near-identical trajectories diverge.',
+    tagline: 'Strange attractors, integrated step by step: watch two near-identical trajectories diverge.',
   },
   canvas: {
     label:
@@ -246,14 +246,14 @@ const en: Dictionary = {
   },
   divergence: {
     axisExplain:
-      "The line above traces the distance between trajectory A and B at each moment — a straight climb means the separation is exponential, the signature of deterministic chaos.",
+      "The line above traces the distance between trajectory A and B at each moment. A straight climb means the separation is exponential, the signature of deterministic chaos.",
     rateLabel: 'rough rate right now',
     definitionNote:
-      'This is the definition of the Lyapunov exponent: |Δ(t)| ≈ ε·e^(λt). λ max below is a more careful estimate (the Benettin method: two trajectories, log growth averaged over time) — not computed directly from these two points.',
-    notYetDiverged: "|Δ| hasn't passed ε yet — the separation isn't visible at this scale yet.",
+      'This is the definition of the Lyapunov exponent: |Δ(t)| ≈ ε·e^(λt). λ max below is a more careful estimate (the Benettin method: two trajectories, log growth averaged over time), not computed directly from these two points.',
+    notYetDiverged: "|Δ| hasn't passed ε yet. The separation isn't visible at this scale yet.",
     horizonNote:
       "The predictability horizon below answers: with this λ and ε, when is |Δ| expected to reach the 'unrelated' threshold? The formula is t ≈ ln(threshold/ε)/λ.",
-    horizonThresholdRule: "That threshold is chosen as 10% of the system's bounding-box diagonal — an explicit rule, not an arbitrary constant",
+    horizonThresholdRule: "That threshold is chosen as 10% of the system's bounding-box diagonal: an explicit rule, not an arbitrary constant",
   },
   nav: {
     jelajah: 'Explore',
@@ -295,15 +295,15 @@ const en: Dictionary = {
     clickToJump: 'Click the diagram to see its trajectory',
     jumpToTrajectory: 'Jump to trajectory',
     bifurcationExplain:
-      'Each dot is one local maximum of the {axis} axis along the trajectory, at that parameter value — not the full trajectory, just its peaks. One dot above a single parameter value means periodic; a vertical smear means chaotic.',
+      'Each dot is one local maximum of the {axis} axis along the trajectory, at that parameter value. Not the full trajectory, just its peaks. One dot above a single parameter value means periodic; a vertical smear means chaotic.',
     sectionExplain:
-      "Each time the trajectory pierces the section plane (from one side), its (u, v) position on that plane is drawn here — a tangled 3D curve becomes a nearly one-dimensional map. This is the insight that made chaos tractable to study: structure hidden in the tangle becomes visible once it's sliced.",
+      "Each time the trajectory pierces the section plane (from one side), its (u, v) position on that plane is drawn here. A tangled 3D curve becomes a nearly one-dimensional map. This is the insight that made chaos tractable to study: structure hidden in the tangle becomes visible once it's sliced.",
     tryCompareCuePrefix: 'Want to see an integrator fail? Open',
     tryCompareCueSuffix: ', push dt up, and watch Euler, RK2, and RK4 side by side.',
     checkConvergence: 'Check convergence',
     convergenceOrder: 'convergence order (dt → dt/2)',
     convergenceExplain:
-      'Each integrator runs at dt and dt/2, compared against an RK4 reference at dt/64. Order = log₂(error(dt) / error(dt/2)) — ≈1 for Euler, ≈2 for RK2, ≈4 for RK4, matching each one’s local truncation behavior.',
+      'Each integrator runs at dt and dt/2, compared against an RK4 reference at dt/64. Order = log₂(error(dt) / error(dt/2)): ≈1 for Euler, ≈2 for RK2, ≈4 for RK4, matching each one’s local truncation behavior.',
     sweptParameter: 'Swept parameter',
     min: 'Min',
     max: 'Max',
@@ -343,12 +343,12 @@ const en: Dictionary = {
     kaplanYorkeDimension: 'Kaplan–Yorke dimension',
     constantsReady: 'Verified constants finished computing.',
     constantsExplain:
-      'λ max measures how fast two nearby trajectories separate (units of 1/time). The Kaplan–Yorke dimension estimates the attractor\'s fractal dimension from the full Lyapunov spectrum: D = j + (sum of the top j exponents) / |the next exponent|, where j is the largest index whose partial sum is still ≥0. Both are numerical estimates, not closed-form analytic values — that\'s why there\'s a tolerance column above.',
+      'λ max measures how fast two nearby trajectories separate (units of 1/time). The Kaplan–Yorke dimension estimates the attractor\'s fractal dimension from the full Lyapunov spectrum: D = j + (sum of the top j exponents) / |the next exponent|, where j is the largest index whose partial sum is still ≥0. Both are numerical estimates, not closed-form analytic values. That\'s why there\'s a tolerance column above.',
   },
   onboarding: {
     intro: 'A strange attractor, computed step by step by a hand-written integrator.',
     divergenceHint:
-      "Two identical trajectories, started 10⁻⁸ apart. Watch them diverge — that's deterministic chaos, not random noise.",
+      "Two identical trajectories, started 10⁻⁸ apart. Watch them diverge: that's deterministic chaos, not random noise.",
     dismiss: 'Got it',
   },
 };

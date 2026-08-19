@@ -23,11 +23,11 @@ export function ComparisonReadoutStrip({
       <Field label={t.readout.elapsedTime} value={elapsed.toFixed(2)} />
       <Field
         label={t.readout.separationA}
-        value={eulerVsRk4 !== undefined ? eulerVsRk4.toExponential(2) : '—'}
+        value={eulerVsRk4 !== undefined ? eulerVsRk4.toExponential(2) : '-'}
       />
       <Field
         label={t.readout.separationB}
-        value={rk2VsRk4 !== undefined ? rk2VsRk4.toExponential(2) : '—'}
+        value={rk2VsRk4 !== undefined ? rk2VsRk4.toExponential(2) : '-'}
       />
     </div>
   );

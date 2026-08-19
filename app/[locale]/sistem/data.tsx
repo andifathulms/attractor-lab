@@ -75,16 +75,16 @@ export const systemReferences: readonly SystemReference[] = [
       {
         symbol: 'σ',
         meaning: {
-          id: 'rasio Prandtl — kecepatan difusi momentum relatif terhadap panas',
-          en: 'Prandtl ratio — the speed of momentum diffusion relative to heat',
+          id: 'rasio Prandtl: kecepatan difusi momentum relatif terhadap panas',
+          en: 'Prandtl ratio: the speed of momentum diffusion relative to heat',
         },
         classicValue: '10',
       },
       {
         symbol: 'ρ',
         meaning: {
-          id: 'bilangan Rayleigh — seberapa kuat sistem didorong menjauhi kesetimbangan',
-          en: 'Rayleigh number — how strongly the system is driven away from equilibrium',
+          id: 'bilangan Rayleigh: seberapa kuat sistem didorong menjauhi kesetimbangan',
+          en: 'Rayleigh number: how strongly the system is driven away from equilibrium',
         },
         classicValue: '28',
       },
@@ -105,7 +105,7 @@ export const systemReferences: readonly SystemReference[] = [
     },
     distinctiveness: {
       id: 'Model konveksi atmosfer yang disederhanakan drastis, dan sistem yang menemukan kekacauan deterministik itu sendiri. Dua titik tetap tak-trivial simetris membentuk "sayap kupu-kupu" yang menjadi citra baku kekacauan.',
-      en: "A drastically simplified model of atmospheric convection — and the system that discovered deterministic chaos itself. Two symmetric non-trivial fixed points form the \"butterfly wings\" that became chaos theory's standard image.",
+      en: "A drastically simplified model of atmospheric convection, and the system that discovered deterministic chaos itself. Two symmetric non-trivial fixed points form the \"butterfly wings\" that became chaos theory's standard image.",
     },
   },
   {
@@ -162,8 +162,8 @@ export const systemReferences: readonly SystemReference[] = [
       en: 'Rössler, O. E. (1976). An Equation for Continuous Chaos. Phys. Lett. A 57(5), 397–398.',
     },
     distinctiveness: {
-      id: 'Dirancang setelah Lorenz, sengaja dibuat dengan hanya satu suku nonlinear (xz pada persamaan ż) — attractor kekacauan paling sederhana yang bisa ditulis, dengan struktur pita tunggal yang mudah dilacak dibanding sayap ganda Lorenz.',
-      en: "Designed after Lorenz, deliberately built with only one nonlinear term (xz in the ż equation) — the simplest chaotic attractor that can be written down, with a single-band structure that's easier to trace than Lorenz's double wing.",
+      id: 'Dirancang setelah Lorenz, sengaja dibuat dengan hanya satu suku nonlinear (xz pada persamaan ż): attractor kekacauan paling sederhana yang bisa ditulis, dengan struktur pita tunggal yang mudah dilacak dibanding sayap ganda Lorenz.',
+      en: "Designed after Lorenz, deliberately built with only one nonlinear term (xz in the ż equation): the simplest chaotic attractor that can be written down, with a single-band structure that's easier to trace than Lorenz's double wing.",
     },
   },
   {
@@ -200,8 +200,8 @@ export const systemReferences: readonly SystemReference[] = [
       {
         symbol: 'b',
         meaning: {
-          id: 'redaman — semakin besar, semakin cepat menuju titik tetap',
-          en: 'damping — the larger it is, the faster the system settles to a fixed point',
+          id: 'redaman: semakin besar, semakin cepat menuju titik tetap',
+          en: 'damping: the larger it is, the faster the system settles to a fixed point',
         },
         classicValue: '0.208186',
       },
@@ -213,8 +213,8 @@ export const systemReferences: readonly SystemReference[] = [
       en: 'Thomas, R. (1999). Deterministic Chaos Seen in Terms of Feedback Circuits. Int. J. Bifurcation Chaos 9(10), 1889–1905.',
     },
     distinctiveness: {
-      id: 'Simetri siklik sempurna: menukar x→y→z→x meninggalkan persamaan tak berubah. Dibangun dari sinus, bukan perkalian suku — model sirkuit umpan-balik berlabuh biologis, bukan aliran fluida.',
-      en: 'Perfect cyclic symmetry: swapping x→y→z→x leaves the equations unchanged. Built from sines rather than products of terms — a feedback-circuit model with biological roots, not a fluid flow.',
+      id: 'Simetri siklik sempurna: menukar x→y→z→x meninggalkan persamaan tak berubah. Dibangun dari sinus, bukan perkalian suku: model sirkuit umpan-balik berlabuh biologis, bukan aliran fluida.',
+      en: 'Perfect cyclic symmetry: swapping x→y→z→x leaves the equations unchanged. Built from sines rather than products of terms: a feedback-circuit model with biological roots, not a fluid flow.',
     },
   },
   {
@@ -263,8 +263,8 @@ export const systemReferences: readonly SystemReference[] = [
       en: "Popularised through Julien C. Sprott and Paul Bourke's attractor catalogues, mid-2000s.",
     },
     distinctiveness: {
-      id: 'Simetri siklik seperti Thomas, tapi dari umpan-balik kuadratik silang, bukan trigonometri — menghasilkan pilinan bercuping yang jauh lebih padat dan kompak.',
-      en: 'Cyclic symmetry like Thomas, but from cross-quadratic feedback rather than trigonometry — producing a much denser, more compact lobed twist.',
+      id: 'Simetri siklik seperti Thomas, tapi dari umpan-balik kuadratik silang, bukan trigonometri, menghasilkan pilinan bercuping yang jauh lebih padat dan kompak.',
+      en: 'Cyclic symmetry like Thomas, but from cross-quadratic feedback rather than trigonometry, producing a much denser, more compact lobed twist.',
     },
   },
   {
@@ -333,8 +333,8 @@ export const systemReferences: readonly SystemReference[] = [
       },
     ],
     discoverer: {
-      id: 'Aizawa (setelah kerja sirkuit-kacau Aizawa & Uezu, 1982) — via Julien C. Sprott',
-      en: "Aizawa (after Aizawa & Uezu's 1982 chaotic-circuit work) — via Julien C. Sprott",
+      id: 'Aizawa (setelah kerja sirkuit-kacau Aizawa & Uezu, 1982), via Julien C. Sprott',
+      en: "Aizawa (after Aizawa & Uezu's 1982 chaotic-circuit work), via Julien C. Sprott",
     },
     year: 1982,
     citation: {
@@ -342,8 +342,8 @@ export const systemReferences: readonly SystemReference[] = [
       en: "Popularised through Julien C. Sprott's attractor catalogue, referencing Aizawa & Uezu's chaotic-circuit work (1982).",
     },
     distinctiveness: {
-      id: 'Persamaan paling rumit di antara sistem kontinu dalam koleksi ini — enam parameter, satu suku kubik — menghasilkan bentuk seperti cangkang berlapis yang jauh dari sayap kupu-kupu Lorenz.',
-      en: 'The most intricate equations among the continuous systems in this collection — six parameters, one cubic term — producing a layered, shell-like form far removed from Lorenz\'s butterfly wings.',
+      id: 'Persamaan paling rumit di antara sistem kontinu dalam koleksi ini (enam parameter, satu suku kubik), menghasilkan bentuk seperti cangkang berlapis yang jauh dari sayap kupu-kupu Lorenz.',
+      en: 'The most intricate equations among the continuous systems in this collection (six parameters, one cubic term), producing a layered, shell-like form far removed from Lorenz\'s butterfly wings.',
     },
   },
   {
@@ -381,8 +381,8 @@ export const systemReferences: readonly SystemReference[] = [
       en: "Pickover, C. A. (1990). Computers, Pattern, Chaos and Beauty. St. Martin's Press.",
     },
     distinctiveness: {
-      id: 'Peta terulang, bukan aliran — tidak ada waktu kontinu, tidak ada langkah integrasi untuk dilabeli. Setiap iterasi langsung menjadi titik berikutnya, menghasilkan filigri padat dari jutaan titik diskret.',
-      en: "An iterated map, not a flow — there's no continuous time, no integration step to label. Each iteration becomes the next point directly, producing a dense filigree from millions of discrete points.",
+      id: 'Peta terulang, bukan aliran: tidak ada waktu kontinu, tidak ada langkah integrasi untuk dilabeli. Setiap iterasi langsung menjadi titik berikutnya, menghasilkan filigri padat dari jutaan titik diskret.',
+      en: "An iterated map, not a flow: there's no continuous time, no integration step to label. Each iteration becomes the next point directly, producing a dense filigree from millions of discrete points.",
     },
   },
   {
@@ -428,8 +428,8 @@ export const systemReferences: readonly SystemReference[] = [
       en: "Popularised through Paul Bourke's map galleries, attributed to Peter de Jong's experiments around 1980.",
     },
     distinctiveness: {
-      id: 'Empat suku trigonometri simetris (sin/cos berpasangan pada tiap sumbu) berbeda dari asimetri Clifford — menghasilkan pita-pita berlapis alih-alih filigri bertekstur seragam.',
-      en: "Four symmetric trigonometric terms (paired sin/cos on each axis) differ from Clifford's asymmetry — producing layered bands instead of a uniformly textured filigree.",
+      id: 'Empat suku trigonometri simetris (sin/cos berpasangan pada tiap sumbu) berbeda dari asimetri Clifford, menghasilkan pita-pita berlapis alih-alih filigri bertekstur seragam.',
+      en: "Four symmetric trigonometric terms (paired sin/cos on each axis) differ from Clifford's asymmetry, producing layered bands instead of a uniformly textured filigree.",
     },
   },
 ];
