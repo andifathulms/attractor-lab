@@ -39,8 +39,8 @@ export function ReadoutStrip({
           <Field label={t.readout.epsilon} value={epsilon.toExponential(1)} />
           <Field label={t.readout.horizon} value={horizon !== undefined ? horizon.toFixed(2) : '—'} />
           <span className="flex items-center gap-3">
-            <TrajectoryTag color="#F0C05A" label="A" />
-            <TrajectoryTag color="#5FB0D9" label="B" />
+            <TrajectoryTag swatchClassName="bg-trail-a" label="A" />
+            <TrajectoryTag swatchClassName="bg-trail-b" label="B" />
           </span>
         </>
       )}
@@ -48,10 +48,10 @@ export function ReadoutStrip({
   );
 }
 
-function TrajectoryTag({ color, label }: { readonly color: string; readonly label: string }) {
+function TrajectoryTag({ swatchClassName, label }: { readonly swatchClassName: string; readonly label: string }) {
   return (
     <span className="flex items-center gap-1">
-      <span className="inline-block h-2 w-2 rounded-full" style={{ background: color }} />
+      <span className={`inline-block h-2 w-2 rounded-full ${swatchClassName}`} />
       {label}
     </span>
   );

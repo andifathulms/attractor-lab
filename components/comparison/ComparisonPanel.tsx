@@ -2,7 +2,6 @@ import { useT } from '@/lib/i18n/LocaleProvider';
 import type { ConvergenceOrders, ConvergenceResult } from '@/lib/dynamics/convergence';
 import type { SystemId } from '@/lib/dynamics/systems';
 import { usePanelFocusOnToggle } from '@/lib/usePanelFocus';
-import { EULER_COLOR, RK2_COLOR, RK4_COLOR } from './ComparisonCanvas';
 
 const SYSTEM_LABEL: Record<SystemId, string> = {
   lorenz: 'Lorenz',
@@ -116,9 +115,9 @@ export function ComparisonPanel({
       </fieldset>
 
       <div className="mb-3 space-y-1 font-mono text-sm">
-        <Legend color={RK4_COLOR} label={t.integratorNames.rk4} />
-        <Legend color={RK2_COLOR} label={t.integratorNames.rk2} />
-        <Legend color={EULER_COLOR} label={t.integratorNames.euler} />
+        <Legend swatchClassName="bg-trail-a" label={t.integratorNames.rk4} />
+        <Legend swatchClassName="bg-section" label={t.integratorNames.rk2} />
+        <Legend swatchClassName="bg-trail-b" label={t.integratorNames.euler} />
       </div>
 
       <button
@@ -145,10 +144,10 @@ export function ComparisonPanel({
   );
 }
 
-function Legend({ color, label }: { readonly color: string; readonly label: string }) {
+function Legend({ swatchClassName, label }: { readonly swatchClassName: string; readonly label: string }) {
   return (
     <div className="flex items-center gap-2">
-      <span className="inline-block h-2 w-4 rounded-full" style={{ background: color }} />
+      <span className={`inline-block h-2 w-4 rounded-full ${swatchClassName}`} />
       <span>{label}</span>
     </div>
   );

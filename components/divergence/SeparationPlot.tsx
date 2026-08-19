@@ -20,8 +20,6 @@ export type SeparationPlotProps = {
 };
 
 const MAX_SAMPLES = 4000;
-const TRAIL_A = '#F0C05A';
-const TRAIL_B = '#5FB0D9';
 
 // Docks as a narrow band above the readout strip when the pair is active —
 // log separation against time. DESIGN.md §6.
@@ -86,11 +84,11 @@ export const SeparationPlot = forwardRef<SeparationPlotHandle, SeparationPlotPro
         <div className="flex h-20 w-full items-center gap-4">
           <div className="flex shrink-0 flex-col gap-1 font-mono text-sm text-readout">
             <span>
-              <span className="mr-1 inline-block h-2 w-2 rounded-full" style={{ background: TRAIL_A }} />
+              <span className="mr-1 inline-block h-2 w-2 rounded-full bg-trail-a" />
               A
             </span>
             <span>
-              <span className="mr-1 inline-block h-2 w-2 rounded-full" style={{ background: TRAIL_B }} />
+              <span className="mr-1 inline-block h-2 w-2 rounded-full bg-trail-b" />
               B
             </span>
           </div>
