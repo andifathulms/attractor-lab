@@ -7,6 +7,7 @@ import { useT } from '@/lib/i18n/LocaleProvider';
 import { REDUCED_MOTION_STEPS, usePrefersReducedMotion } from '@/lib/motion';
 import { clearBuffer, redrawLayers, type TrajectoryLayer } from '@/lib/render/accumulate';
 import { project, type Rotation } from '@/lib/render/projection';
+import { TRAIL_COLORS } from '@/lib/render/trail-colors';
 import type {
   BatchMessage,
   StartMessage,
@@ -24,14 +25,6 @@ export type ComparisonCanvasProps = {
   readonly dt: number;
   readonly onMetrics: (metrics: ComparisonMetrics) => void;
 };
-
-// RK4 is the reference every render implicitly trusts elsewhere in this app,
-// so it keeps trail-a. Euler is the one that visibly departs first, so it
-// gets the cool trail-b. RK2 — a different kind of construction from either
-// endpoint of the comparison — takes the section violet.
-export const EULER_COLOR = 'rgba(95, 176, 217, 0.14)';
-export const RK2_COLOR = 'rgba(167, 139, 196, 0.14)';
-export const RK4_COLOR = 'rgba(240, 192, 90, 0.14)';
 
 const INITIAL_STATE: readonly [number, number, number] = [0.1, 0.1, 0.1];
 const ZOOM_MIN = 1;
@@ -56,9 +49,9 @@ export function ComparisonCanvas({ system, dt, onMetrics }: ComparisonCanvasProp
   const reducedMotion = usePrefersReducedMotion();
 
   const layers = (): TrajectoryLayer[] => [
-    { chunks: chunksRk4Ref.current, color: RK4_COLOR },
-    { chunks: chunksRk2Ref.current, color: RK2_COLOR },
-    { chunks: chunksEulerRef.current, color: EULER_COLOR },
+    { chunks: chunksRk4Ref.current, color: TRAIL_COLORS.rk4 },
+    { chunks: chunksRk2Ref.current, color: TRAIL_COLORS.rk2 },
+    { chunks: chunksEulerRef.current, color: TRAIL_COLORS.euler },
   ];
 
   const scheduleRedraw = () => {
@@ -118,9 +111,9 @@ export function ComparisonCanvas({ system, dt, onMetrics }: ComparisonCanvasProp
             width: activeCanvas.width,
             height: activeCanvas.height,
           };
-          drawIncremental(activeCtx, message.pointsRk4, lastPointRk4Ref, RK4_COLOR, config);
-          drawIncremental(activeCtx, message.pointsRk2, lastPointRk2Ref, RK2_COLOR, config);
-          drawIncremental(activeCtx, message.pointsEuler, lastPointEulerRef, EULER_COLOR, config);
+          drawIncremental(activeCtx, message.pointsRk4, lastPointRk4Ref, TRAIL_COLORS.rk4, config);
+          drawIncremental(activeCtx, message.pointsRk2, lastPointRk2Ref, TRAIL_COLORS.rk2, config);
+          drawIncremental(activeCtx, message.pointsEuler, lastPointEulerRef, TRAIL_COLORS.euler, config);
         }
       }
 

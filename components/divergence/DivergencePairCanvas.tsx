@@ -9,6 +9,7 @@ import { useT } from '@/lib/i18n/LocaleProvider';
 import { REDUCED_MOTION_STEPS, usePrefersReducedMotion } from '@/lib/motion';
 import { clearBuffer, redrawLayers, type TrajectoryLayer } from '@/lib/render/accumulate';
 import { project, type Rotation } from '@/lib/render/projection';
+import { TRAIL_COLORS } from '@/lib/render/trail-colors';
 import type {
   BatchMessage,
   MetricsMessage,
@@ -35,8 +36,6 @@ export type DivergencePairCanvasHandle = {
   readonly getSnapshot: () => ExportSnapshot;
 };
 
-const TRAIL_A = 'rgba(240, 192, 90, 0.14)';
-const TRAIL_B = 'rgba(95, 176, 217, 0.14)';
 const INITIAL_STATE: readonly [number, number, number] = [0.1, 0.1, 0.1];
 const ZOOM_MIN = 1;
 const ZOOM_MAX = 60;
@@ -76,8 +75,8 @@ export const DivergencePairCanvas = forwardRef<
   );
 
   const layers = (): TrajectoryLayer[] => [
-    { chunks: chunksARef.current, color: TRAIL_A },
-    { chunks: chunksBRef.current, color: TRAIL_B },
+    { chunks: chunksARef.current, color: TRAIL_COLORS.trailA },
+    { chunks: chunksBRef.current, color: TRAIL_COLORS.trailB },
   ];
 
   const scheduleRedraw = () => {
@@ -141,8 +140,8 @@ export const DivergencePairCanvas = forwardRef<
             width: activeCanvas.width,
             height: activeCanvas.height,
           };
-          drawIncremental(activeCtx, message.pointsA, lastPointARef, TRAIL_A, config);
-          drawIncremental(activeCtx, message.pointsB, lastPointBRef, TRAIL_B, config);
+          drawIncremental(activeCtx, message.pointsA, lastPointARef, TRAIL_COLORS.trailA, config);
+          drawIncremental(activeCtx, message.pointsB, lastPointBRef, TRAIL_COLORS.trailB, config);
         }
       }
 

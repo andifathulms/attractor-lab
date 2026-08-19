@@ -9,6 +9,7 @@ import { useT } from '@/lib/i18n/LocaleProvider';
 import { REDUCED_MOTION_STEPS, usePrefersReducedMotion } from '@/lib/motion';
 import { clearBuffer, drawSegment, redrawTrajectory } from '@/lib/render/accumulate';
 import { project, type Rotation } from '@/lib/render/projection';
+import { TRAIL_COLORS } from '@/lib/render/trail-colors';
 import type {
   BatchMessage,
   MetricsMessage,
@@ -32,7 +33,6 @@ export type AttractorCanvasHandle = {
   readonly getSnapshot: () => ExportSnapshot;
 };
 
-const TRAIL_COLOR = 'rgba(240, 192, 90, 0.14)';
 const INITIAL_STATE: readonly [number, number, number] = [0.1, 0.1, 0.1];
 const ZOOM_MIN = 1;
 const ZOOM_MAX = 60;
@@ -78,7 +78,7 @@ export const AttractorCanvas = forwardRef<AttractorCanvasHandle, AttractorCanvas
             width: canvas.width,
             height: canvas.height,
           },
-          TRAIL_COLOR
+          TRAIL_COLORS.trailA
         );
       });
     };
@@ -128,7 +128,7 @@ export const AttractorCanvas = forwardRef<AttractorCanvasHandle, AttractorCanvas
               const screen = project(point, config);
               if (lastPointRef.current) {
                 const prevScreen = project(lastPointRef.current, config);
-                drawSegment(activeCtx, prevScreen, screen, TRAIL_COLOR);
+                drawSegment(activeCtx, prevScreen, screen, TRAIL_COLORS.trailA);
               }
               lastPointRef.current = point;
             }

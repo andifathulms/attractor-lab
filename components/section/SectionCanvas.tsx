@@ -8,6 +8,7 @@ import { useT } from '@/lib/i18n/LocaleProvider';
 import { REDUCED_MOTION_STEPS, usePrefersReducedMotion } from '@/lib/motion';
 import { clearBuffer, drawMarker, redrawLayers, type TrajectoryLayer } from '@/lib/render/accumulate';
 import { project, type Rotation } from '@/lib/render/projection';
+import { TRAIL_COLORS } from '@/lib/render/trail-colors';
 import type {
   BatchMessage,
   StartMessage,
@@ -27,12 +28,6 @@ export type SectionCanvasProps = {
   readonly onCrossings: (crossings: Float64Array) => void;
 };
 
-// The attractor itself renders faint — it's context for the plane, not the
-// subject. The section is violet: "a different kind of object... a
-// construction placed into the space rather than part of the trajectory."
-// DESIGN.md §4.
-const TRAJECTORY_COLOR = 'rgba(240, 192, 90, 0.05)';
-const SECTION_COLOR = 'rgba(167, 139, 196, 0.9)';
 const INITIAL_STATE: readonly [number, number, number] = [0.1, 0.1, 0.1];
 const ZOOM_MIN = 1;
 const ZOOM_MAX = 60;
@@ -54,8 +49,8 @@ export function SectionCanvas({ system, dt, plane, onMetrics, onCrossings }: Sec
   const reducedMotion = usePrefersReducedMotion();
 
   const layers = (): TrajectoryLayer[] => [
-    { chunks: chunksRef.current, color: TRAJECTORY_COLOR },
-    { chunks: crossingChunksRef.current, color: SECTION_COLOR, kind: 'points' },
+    { chunks: chunksRef.current, color: TRAIL_COLORS.sectionTrajectory },
+    { chunks: crossingChunksRef.current, color: TRAIL_COLORS.section, kind: 'points' },
   ];
 
   const scheduleRedraw = () => {
@@ -116,10 +111,10 @@ export function SectionCanvas({ system, dt, plane, onMetrics, onCrossings }: Sec
             width: activeCanvas.width,
             height: activeCanvas.height,
           };
-          drawIncremental(activeCtx, message.points, lastPointRef, TRAJECTORY_COLOR, config);
+          drawIncremental(activeCtx, message.points, lastPointRef, TRAIL_COLORS.sectionTrajectory, config);
           for (let i = 0; i + 2 < message.crossings.length; i += 3) {
             const point = message.crossings.subarray(i, i + 3);
-            drawMarker(activeCtx, project(point, config), SECTION_COLOR);
+            drawMarker(activeCtx, project(point, config), TRAIL_COLORS.section);
           }
         }
       }

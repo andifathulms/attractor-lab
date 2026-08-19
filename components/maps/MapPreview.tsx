@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { classicMap, iterate, type MapId } from '@/lib/dynamics/maps';
 import { useT } from '@/lib/i18n/LocaleProvider';
+import { TRAIL_COLORS } from '@/lib/render/trail-colors';
 
 export type MapPreviewProps = {
   readonly mapId: MapId;
@@ -11,7 +12,6 @@ export type MapPreviewProps = {
 
 const SKIP = 50; // discard the short transient before the map settles
 const POINT_COUNT = 200000;
-const TRAIL_COLOR = 'rgba(240, 192, 90, 0.08)';
 
 // No integration involved here — the map is its own step, and there's no
 // step-size question to display. PRD.md §2.
@@ -64,7 +64,7 @@ export function MapPreview({ mapId, name }: MapPreviewProps) {
     const offsetY = (canvas.height - spanY * scale) / 2 - minY * scale;
 
     ctx.globalCompositeOperation = 'lighter';
-    ctx.fillStyle = TRAIL_COLOR;
+    ctx.fillStyle = TRAIL_COLORS.mapTrail;
     for (const point of points) {
       const x = (point[0] as number) * scale + offsetX;
       const y = canvas.height - ((point[1] as number) * scale + offsetY);
