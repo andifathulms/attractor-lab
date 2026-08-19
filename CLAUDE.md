@@ -154,4 +154,12 @@ Every render states its integrator and step size, and the method page explains w
 
 ## Current state
 
-M0 — not yet scaffolded. Next: `invariants.ts`, the system derivative functions, and the three integrators, with the analytic and convergence-order suites. **No rendering work until both suites are green.**
+Built past M0. Six routes exist under `app/[locale]/`, each in both `id` and `en`: `jelajah` (single trajectory / divergence pair), `banding` (integrator comparison), `irisan` (Poincaré section), `cabang` (bifurcation diagram + parameter sweep), `sistem` (system reference index) and `sistem/[slug]` (per-system reference page). The root `app/page.tsx` redirects to `/id/jelajah`.
+
+`lib/dynamics` is scaffolded and pure per invariant 1: `systems/` (Lorenz, Rössler, Thomas, Halvorsen, Aizawa), `maps/` (Clifford, De Jong), `integrate/` (Euler, RK2, RK4), plus `invariants.ts`, `lyapunov.ts`, `dimension.ts`, `convergence.ts`, `bifurcation.ts`, `section.ts`, `trajectory.ts`. Rendering exists on top of it: five canvas-owning components (`components/canvas/AttractorCanvas`, `components/divergence/DivergencePairCanvas`, `components/comparison/ComparisonCanvas`, `components/section/SectionCanvas`, `components/maps/MapPreview`) each stream from their own worker (`workers/integrate`, `divergence`, `compare`, `section` — `MapPreview` iterates synchronously, no worker, no step-size question) and draw additively via `lib/render/accumulate.ts`. Two more workers exist for off-canvas computation: `constants.worker.ts` (drives `VerifiedConstants`) and `verify.worker.ts` (drives `ControlPanel`'s verify button). Export (`lib/export/plotter.ts`, `simplify.ts`) and the analytic/order/constants/export/bench suites are in place and gating.
+
+**Two known deviations from the rest of this document:**
+- The Next config file is `next.config.mjs`, not `next.config.js` — the "Commands" and "Layout" sections above should be read with that in mind.
+- The "Layout" tree above shows a single `components/panel/` and `components/readout/`. On disk these are per-route: `components/panel/ControlPanel.tsx` is `jelajah`-only, and each of `banding`, `irisan`, `cabang` has its own panel (`ComparisonPanel`, `SectionPanel`, `BifurcationPanel`) and its own readout strip (`ComparisonReadoutStrip`, `SectionReadoutStrip`, `BifurcationReadoutStrip`) alongside the shared `components/readout/ReadoutStrip.tsx` used by `jelajah`. `DESIGN-REWORK.md` §2 tracks unifying these; nothing has been merged yet.
+
+`pnpm test:analytic` and `pnpm test:order` are green. Next per `DESIGN-REWORK.md`'s build order: the separation plot lands on `/banding`.
