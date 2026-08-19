@@ -48,7 +48,7 @@ export function SectionPanel({
         type="button"
         onClick={onToggleCollapsed}
         aria-label={t.panel.openPanel}
-        className="w-full border-t border-rule bg-night/90 py-3 text-center font-sans text-sm text-readout transition-colors duration-fast hover:bg-graticule sm:absolute sm:right-0 sm:top-8 sm:w-auto sm:rounded-l sm:rounded-r-none sm:border sm:border-r-0 sm:border-t-0 sm:px-2 sm:py-4"
+        className="absolute inset-x-0 bottom-0 z-20 w-full border-t border-rule bg-night/90 py-3 text-center font-sans text-sm text-readout transition-colors duration-fast hover:bg-graticule sm:inset-x-auto sm:bottom-auto sm:right-0 sm:top-8 sm:z-auto sm:w-auto sm:rounded-l sm:rounded-r-none sm:border sm:border-r-0 sm:border-t-0 sm:px-2 sm:py-4"
       >
         ⟨
       </button>
@@ -56,7 +56,7 @@ export function SectionPanel({
   }
 
   return (
-    <div className="fixed inset-x-0 bottom-24 z-20 max-h-[40vh] overflow-y-auto border-t border-rule bg-night/95 p-4 font-sans text-sm text-readout sm:absolute sm:inset-x-auto sm:right-4 sm:top-8 sm:bottom-auto sm:z-auto sm:max-h-none sm:w-72 sm:overflow-visible sm:rounded sm:border sm:bg-night/90 sm:backdrop-blur-sm">
+    <div className="absolute inset-x-0 bottom-0 z-20 max-h-[40vh] overflow-y-auto border-t border-rule bg-night/95 p-4 font-sans text-sm text-readout sm:inset-x-auto sm:right-4 sm:top-8 sm:bottom-auto sm:z-auto sm:max-h-none sm:w-72 sm:overflow-visible sm:rounded sm:border sm:bg-night/90 sm:backdrop-blur-sm">
       <div className="mb-4 flex items-center justify-between">
         <h2 className="font-display text-lg font-medium">{t.panel.title}</h2>
         <button
