@@ -1,48 +1,35 @@
-import { useT } from '@/lib/i18n/LocaleProvider';
-import type { IntegratorId } from '@/lib/dynamics/integrate';
+export type ReadoutField = {
+  readonly label: string;
+  readonly value: string;
+};
+
+export type ReadoutTag = {
+  readonly label: string;
+  readonly swatchClassName: string;
+};
 
 export type ReadoutStripProps = {
-  readonly integrator: IntegratorId;
-  readonly dt: number;
-  readonly elapsed: number;
-  readonly lyapunovMax: number | undefined;
-  readonly pairMode?: boolean;
-  readonly epsilon?: number;
-  /** Predicted system time until the pair's separation reaches the "unrelated" threshold — lib/predictability.ts. */
-  readonly horizon?: number;
+  readonly fields: readonly ReadoutField[];
+  /** Trailing colour-swatch legend (e.g. trajectory A/B) — colour is never the only channel, so each tag carries its label too. DESIGN.md §8. */
+  readonly tags?: readonly ReadoutTag[];
 };
 
 // The readout strip is never collapsible and never optional — an unlabelled
 // attractor image is exactly what this project argues against. CLAUDE.md §4.
-export function ReadoutStrip({
-  integrator,
-  dt,
-  elapsed,
-  lyapunovMax,
-  pairMode,
-  epsilon,
-  horizon,
-}: ReadoutStripProps) {
-  const t = useT();
-
+// One shell for every route (DESIGN-REWORK.md §2): which fields it shows is
+// the only thing that differs.
+export function ReadoutStrip({ fields, tags }: ReadoutStripProps) {
   return (
     <div className="flex w-full flex-wrap items-center gap-6 border-t border-rule bg-night px-4 py-3 font-mono text-sm text-readout [font-variant-numeric:tabular-nums]">
-      <Field label={t.readout.integrator} value={t.integratorNames[integrator]} />
-      <Field label={t.readout.step} value={dt.toExponential(1)} />
-      <Field label={t.readout.elapsedTime} value={elapsed.toFixed(2)} />
-      <Field
-        label={t.readout.lyapunovMax}
-        value={lyapunovMax !== undefined ? lyapunovMax.toFixed(4) : '-'}
-      />
-      {pairMode && epsilon !== undefined && (
-        <>
-          <Field label={t.readout.epsilon} value={epsilon.toExponential(1)} />
-          <Field label={t.readout.horizon} value={horizon !== undefined ? horizon.toFixed(2) : '-'} />
-          <span className="flex items-center gap-3">
-            <TrajectoryTag swatchClassName="bg-trail-a" label="A" />
-            <TrajectoryTag swatchClassName="bg-trail-b" label="B" />
-          </span>
-        </>
+      {fields.map((field) => (
+        <Field key={field.label} label={field.label} value={field.value} />
+      ))}
+      {tags && tags.length > 0 && (
+        <span className="flex items-center gap-3">
+          {tags.map((tag) => (
+            <TrajectoryTag key={tag.label} swatchClassName={tag.swatchClassName} label={tag.label} />
+          ))}
+        </span>
       )}
     </div>
   );

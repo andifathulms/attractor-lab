@@ -236,13 +236,29 @@ export function JelajahView() {
         />
       )}
       <ReadoutStrip
-        integrator={integrator}
-        dt={dt}
-        elapsed={metrics.elapsed}
-        lyapunovMax={metrics.lyapunovMax}
-        pairMode={pairMode}
-        epsilon={epsilon}
-        horizon={horizon}
+        fields={[
+          { label: t.readout.integrator, value: t.integratorNames[integrator] },
+          { label: t.readout.step, value: dt.toExponential(1) },
+          { label: t.readout.elapsedTime, value: metrics.elapsed.toFixed(2) },
+          {
+            label: t.readout.lyapunovMax,
+            value: metrics.lyapunovMax !== undefined ? metrics.lyapunovMax.toFixed(4) : '-',
+          },
+          ...(pairMode && epsilon !== undefined
+            ? [
+                { label: t.readout.epsilon, value: epsilon.toExponential(1) },
+                { label: t.readout.horizon, value: horizon !== undefined ? horizon.toFixed(2) : '-' },
+              ]
+            : []),
+        ]}
+        tags={
+          pairMode && epsilon !== undefined
+            ? [
+                { label: 'A', swatchClassName: 'bg-trail-a' },
+                { label: 'B', swatchClassName: 'bg-trail-b' },
+              ]
+            : undefined
+        }
       />
     </main>
   );
