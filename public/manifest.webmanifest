@@ -1,0 +1,27 @@
+{
+  "name": "Attractor Lab",
+  "short_name": "Attractor Lab",
+  "description": "Deterministic. Unpredictable. Both.",
+  "start_url": "https://andifathulms.github.io/attractor-lab/id/jelajah",
+  "display": "standalone",
+  "background_color": "#0D0F14",
+  "theme_color": "#0D0F14",
+  "icons": [
+    {
+      "src": "https://andifathulms.github.io/attractor-lab/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://andifathulms.github.io/attractor-lab/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "https://andifathulms.github.io/attractor-lab/icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
