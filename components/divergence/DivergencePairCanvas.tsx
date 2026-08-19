@@ -1,14 +1,12 @@
 'use client';
 
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
-import { canvasKeyboardInteraction } from '@/lib/canvas-keyboard';
+import { TrajectoryCanvas, type TrajectoryCanvasHandle } from '@/components/canvas/TrajectoryCanvas';
 import type { Integrator } from '@/lib/dynamics/integrate';
 import type { System } from '@/lib/dynamics/systems';
 import type { ExportSnapshot } from '@/lib/export/plotter';
 import { useT } from '@/lib/i18n/LocaleProvider';
 import { REDUCED_MOTION_STEPS, usePrefersReducedMotion } from '@/lib/motion';
-import { clearBuffer, redrawLayers, type TrajectoryLayer } from '@/lib/render/accumulate';
-import { project, type Rotation } from '@/lib/render/projection';
 import { TRAIL_COLORS } from '@/lib/render/trail-colors';
 import type {
   BatchMessage,
@@ -37,10 +35,8 @@ export type DivergencePairCanvasHandle = {
 };
 
 const INITIAL_STATE: readonly [number, number, number] = [0.1, 0.1, 0.1];
-const ZOOM_MIN = 1;
-const ZOOM_MAX = 60;
-const DRAG_SENSITIVITY = 0.005;
-const PITCH_LIMIT = Math.PI / 2 - 0.05;
+const TRAJECTORY_A = 'a';
+const TRAJECTORY_B = 'b';
 
 export const DivergencePairCanvas = forwardRef<
   DivergencePairCanvasHandle,
@@ -50,64 +46,23 @@ export const DivergencePairCanvas = forwardRef<
   ref
 ) {
   const t = useT();
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const chunksARef = useRef<Float64Array[]>([]);
-  const chunksBRef = useRef<Float64Array[]>([]);
-  const lastPointARef = useRef<Float64Array | null>(null);
-  const lastPointBRef = useRef<Float64Array | null>(null);
-  const rotationRef = useRef<Rotation>({ yaw: 0.6, pitch: -0.3 });
-  const zoomRef = useRef(8);
-  const draggingRef = useRef(false);
-  const lastPointerRef = useRef({ x: 0, y: 0 });
-  const redrawPendingRef = useRef(false);
+  const canvasRef = useRef<TrajectoryCanvasHandle | null>(null);
   const lastLyapunovRef = useRef<number | undefined>(undefined);
   const reducedMotion = usePrefersReducedMotion();
 
   useImperativeHandle(
     ref,
     () => ({
-      getSnapshot: () => ({
-        trajectories: [chunksARef.current, chunksBRef.current],
-        rotation: rotationRef.current,
-      }),
+      getSnapshot: () =>
+        canvasRef.current?.getSnapshot() ?? { trajectories: [[], []], rotation: { yaw: 0, pitch: 0 } },
     }),
     []
   );
 
-  const layers = (): TrajectoryLayer[] => [
-    { chunks: chunksARef.current, color: TRAIL_COLORS.trailA },
-    { chunks: chunksBRef.current, color: TRAIL_COLORS.trailB },
-  ];
-
-  const scheduleRedraw = () => {
-    if (redrawPendingRef.current) return;
-    redrawPendingRef.current = true;
-    requestAnimationFrame(() => {
-      redrawPendingRef.current = false;
-      const canvas = canvasRef.current;
-      const ctx = canvas?.getContext('2d');
-      if (!canvas || !ctx) return;
-      redrawLayers(ctx, layers(), {
-        rotation: rotationRef.current,
-        zoom: zoomRef.current,
-        width: canvas.width,
-        height: canvas.height,
-      });
-    });
-  };
-
   // Re-integrates from scratch and clears the buffer — the only case that clears it.
   useEffect(() => {
-    const canvas = canvasRef.current;
-    const ctx = canvas?.getContext('2d');
-    if (!canvas || !ctx) return;
-
-    chunksARef.current = [];
-    chunksBRef.current = [];
-    lastPointARef.current = null;
-    lastPointBRef.current = null;
+    canvasRef.current?.clear();
     lastLyapunovRef.current = undefined;
-    clearBuffer(ctx, canvas.width, canvas.height);
     onReset();
 
     const worker = new Worker(new URL('../../workers/divergence.worker.ts', import.meta.url));
@@ -122,28 +77,8 @@ export const DivergencePairCanvas = forwardRef<
     };
 
     const handleBatch = (message: BatchMessage) => {
-      chunksARef.current.push(message.pointsA);
-      chunksBRef.current.push(message.pointsB);
-
-      // Reduced motion: the whole run arrived as one complete batch —
-      // render it in a single redraw instead of stroking each segment in
-      // as it streams. DESIGN.md §7.
-      if (reducedMotion) {
-        scheduleRedraw();
-      } else {
-        const activeCanvas = canvasRef.current;
-        const activeCtx = activeCanvas?.getContext('2d');
-        if (activeCanvas && activeCtx) {
-          const config = {
-            rotation: rotationRef.current,
-            zoom: zoomRef.current,
-            width: activeCanvas.width,
-            height: activeCanvas.height,
-          };
-          drawIncremental(activeCtx, message.pointsA, lastPointARef, TRAIL_COLORS.trailA, config);
-          drawIncremental(activeCtx, message.pointsB, lastPointBRef, TRAIL_COLORS.trailB, config);
-        }
-      }
+      canvasRef.current?.pushPoints(TRAJECTORY_A, message.pointsA);
+      canvasRef.current?.pushPoints(TRAJECTORY_B, message.pointsB);
 
       onSeparationBatch(Array.from(message.times), Array.from(message.separations));
       onMetrics({ elapsed: message.elapsed, lyapunovMax: lastLyapunovRef.current });
@@ -169,120 +104,14 @@ export const DivergencePairCanvas = forwardRef<
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(system), JSON.stringify(integrator), dt, epsilon, reducedMotion]);
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const resize = () => {
-      const parent = canvas.parentElement;
-      if (!parent) return;
-      canvas.width = parent.clientWidth;
-      canvas.height = parent.clientHeight;
-      scheduleRedraw();
-    };
-    resize();
-
-    const observer = new ResizeObserver(resize);
-    observer.observe(canvas.parentElement as Element);
-    return () => observer.disconnect();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const onWheelNative = (event: WheelEvent) => {
-      event.preventDefault();
-      const factor = Math.exp(-event.deltaY * 0.001);
-      zoomRef.current = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, zoomRef.current * factor));
-      scheduleRedraw();
-    };
-
-    canvas.addEventListener('wheel', onWheelNative, { passive: false });
-    return () => canvas.removeEventListener('wheel', onWheelNative);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const onPointerDown = (event: React.PointerEvent<HTMLCanvasElement>) => {
-    draggingRef.current = true;
-    lastPointerRef.current = { x: event.clientX, y: event.clientY };
-    event.currentTarget.setPointerCapture(event.pointerId);
-  };
-
-  const onPointerMove = (event: React.PointerEvent<HTMLCanvasElement>) => {
-    if (!draggingRef.current) return;
-    const dx = event.clientX - lastPointerRef.current.x;
-    const dy = event.clientY - lastPointerRef.current.y;
-    lastPointerRef.current = { x: event.clientX, y: event.clientY };
-
-    const rotation = rotationRef.current;
-    const nextPitch = Math.max(
-      -PITCH_LIMIT,
-      Math.min(PITCH_LIMIT, rotation.pitch - dy * DRAG_SENSITIVITY)
-    );
-    rotationRef.current = { yaw: rotation.yaw + dx * DRAG_SENSITIVITY, pitch: nextPitch };
-    scheduleRedraw();
-  };
-
-  const onPointerUp = (event: React.PointerEvent<HTMLCanvasElement>) => {
-    draggingRef.current = false;
-    event.currentTarget.releasePointerCapture(event.pointerId);
-  };
-
-  // Keyboard equivalent to drag-to-rotate / wheel-to-zoom — the canvas has
-  // no native interactive role, so it needs tabIndex to be reachable at
-  // all. WCAG 2.1.1.
-  const onKeyDown = (event: React.KeyboardEvent<HTMLCanvasElement>) => {
-    const next = canvasKeyboardInteraction(event.key, rotationRef.current, zoomRef.current, {
-      pitchLimit: PITCH_LIMIT,
-      zoomMin: ZOOM_MIN,
-      zoomMax: ZOOM_MAX,
-    });
-    if (!next) return;
-    event.preventDefault();
-    rotationRef.current = next.rotation;
-    zoomRef.current = next.zoom;
-    scheduleRedraw();
-  };
-
   return (
-    <canvas
+    <TrajectoryCanvas
       ref={canvasRef}
-      tabIndex={0}
-      role="img"
-      aria-label={t.canvas.label}
-      className="h-full w-full touch-none"
-      onPointerDown={onPointerDown}
-      onPointerMove={onPointerMove}
-      onPointerUp={onPointerUp}
-      onPointerLeave={onPointerUp}
-      onKeyDown={onKeyDown}
+      trajectories={[
+        { id: TRAJECTORY_A, color: TRAIL_COLORS.trailA },
+        { id: TRAJECTORY_B, color: TRAIL_COLORS.trailB },
+      ]}
+      ariaLabel={t.canvas.label}
     />
   );
 });
-
-function drawIncremental(
-  ctx: CanvasRenderingContext2D,
-  points: Float64Array,
-  lastPointRef: React.MutableRefObject<Float64Array | null>,
-  color: string,
-  config: { rotation: Rotation; zoom: number; width: number; height: number }
-): void {
-  ctx.globalCompositeOperation = 'lighter';
-  ctx.strokeStyle = color;
-  ctx.lineWidth = 1;
-
-  for (let i = 0; i + 2 < points.length; i += 3) {
-    const point = points.subarray(i, i + 3);
-    const screen = project(point, config);
-    if (lastPointRef.current) {
-      const prevScreen = project(lastPointRef.current, config);
-      ctx.beginPath();
-      ctx.moveTo(prevScreen.x, prevScreen.y);
-      ctx.lineTo(screen.x, screen.y);
-      ctx.stroke();
-    }
-    lastPointRef.current = point;
-  }
-}

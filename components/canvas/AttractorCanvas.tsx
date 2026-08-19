@@ -1,14 +1,12 @@
 'use client';
 
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
-import { canvasKeyboardInteraction } from '@/lib/canvas-keyboard';
+import { TrajectoryCanvas, type TrajectoryCanvasHandle } from '@/components/canvas/TrajectoryCanvas';
 import type { Integrator } from '@/lib/dynamics/integrate';
 import type { System } from '@/lib/dynamics/systems';
 import type { ExportSnapshot } from '@/lib/export/plotter';
 import { useT } from '@/lib/i18n/LocaleProvider';
 import { REDUCED_MOTION_STEPS, usePrefersReducedMotion } from '@/lib/motion';
-import { clearBuffer, drawSegment, redrawTrajectory } from '@/lib/render/accumulate';
-import { project, type Rotation } from '@/lib/render/projection';
 import { TRAIL_COLORS } from '@/lib/render/trail-colors';
 import type {
   BatchMessage,
@@ -34,65 +32,28 @@ export type AttractorCanvasHandle = {
 };
 
 const INITIAL_STATE: readonly [number, number, number] = [0.1, 0.1, 0.1];
-const ZOOM_MIN = 1;
-const ZOOM_MAX = 60;
-const DRAG_SENSITIVITY = 0.005;
-const PITCH_LIMIT = Math.PI / 2 - 0.05;
+const TRAJECTORY_ID = 'attractor';
 
 export const AttractorCanvas = forwardRef<AttractorCanvasHandle, AttractorCanvasProps>(
   function AttractorCanvas({ system, integrator, dt, onMetrics }, ref) {
     const t = useT();
-    const canvasRef = useRef<HTMLCanvasElement | null>(null);
-    const chunksRef = useRef<Float64Array[]>([]);
-    const lastPointRef = useRef<Float64Array | null>(null);
-    const rotationRef = useRef<Rotation>({ yaw: 0.6, pitch: -0.3 });
-    const zoomRef = useRef(8);
-    const draggingRef = useRef(false);
-    const lastPointerRef = useRef({ x: 0, y: 0 });
-    const redrawPendingRef = useRef(false);
+    const canvasRef = useRef<TrajectoryCanvasHandle | null>(null);
     const lastLyapunovRef = useRef<number | undefined>(undefined);
     const reducedMotion = usePrefersReducedMotion();
 
     useImperativeHandle(
       ref,
       () => ({
-        getSnapshot: () => ({ trajectories: [chunksRef.current], rotation: rotationRef.current }),
+        getSnapshot: () =>
+          canvasRef.current?.getSnapshot() ?? { trajectories: [[]], rotation: { yaw: 0, pitch: 0 } },
       }),
       []
     );
 
-    const scheduleRedraw = () => {
-      if (redrawPendingRef.current) return;
-      redrawPendingRef.current = true;
-      requestAnimationFrame(() => {
-        redrawPendingRef.current = false;
-        const canvas = canvasRef.current;
-        const ctx = canvas?.getContext('2d');
-        if (!canvas || !ctx) return;
-        redrawTrajectory(
-          ctx,
-          chunksRef.current,
-          {
-            rotation: rotationRef.current,
-            zoom: zoomRef.current,
-            width: canvas.width,
-            height: canvas.height,
-          },
-          TRAIL_COLORS.trailA
-        );
-      });
-    };
-
     // Re-integrates from scratch and clears the buffer — the only case that clears it.
     useEffect(() => {
-      const canvas = canvasRef.current;
-      const ctx = canvas?.getContext('2d');
-      if (!canvas || !ctx) return;
-
-      chunksRef.current = [];
-      lastPointRef.current = null;
+      canvasRef.current?.clear();
       lastLyapunovRef.current = undefined;
-      clearBuffer(ctx, canvas.width, canvas.height);
 
       const worker = new Worker(new URL('../../workers/integrate.worker.ts', import.meta.url));
 
@@ -106,35 +67,7 @@ export const AttractorCanvas = forwardRef<AttractorCanvasHandle, AttractorCanvas
       };
 
       const handleBatch = (message: BatchMessage) => {
-        chunksRef.current.push(message.points);
-
-        // Reduced motion: the whole trajectory arrived as one complete
-        // batch — render it in a single redraw instead of stroking each
-        // segment in as it streams in. DESIGN.md §7.
-        if (reducedMotion) {
-          scheduleRedraw();
-        } else {
-          const activeCanvas = canvasRef.current;
-          const activeCtx = activeCanvas?.getContext('2d');
-          if (activeCanvas && activeCtx) {
-            const config = {
-              rotation: rotationRef.current,
-              zoom: zoomRef.current,
-              width: activeCanvas.width,
-              height: activeCanvas.height,
-            };
-            for (let i = 0; i + 2 < message.points.length; i += 3) {
-              const point = message.points.subarray(i, i + 3);
-              const screen = project(point, config);
-              if (lastPointRef.current) {
-                const prevScreen = project(lastPointRef.current, config);
-                drawSegment(activeCtx, prevScreen, screen, TRAIL_COLORS.trailA);
-              }
-              lastPointRef.current = point;
-            }
-          }
-        }
-
+        canvasRef.current?.pushPoints(TRAJECTORY_ID, message.points);
         onMetrics({ elapsed: message.elapsed, lyapunovMax: lastLyapunovRef.current });
       };
 
@@ -157,98 +90,11 @@ export const AttractorCanvas = forwardRef<AttractorCanvasHandle, AttractorCanvas
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [JSON.stringify(system), JSON.stringify(integrator), dt, reducedMotion]);
 
-    useEffect(() => {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-
-      const resize = () => {
-        const parent = canvas.parentElement;
-        if (!parent) return;
-        canvas.width = parent.clientWidth;
-        canvas.height = parent.clientHeight;
-        scheduleRedraw();
-      };
-      resize();
-
-      const observer = new ResizeObserver(resize);
-      observer.observe(canvas.parentElement as Element);
-      return () => observer.disconnect();
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    // React attaches wheel listeners as passive by default, so preventDefault
-    // (needed to stop the page from scrolling under the canvas) requires a
-    // native listener registered with { passive: false }.
-    useEffect(() => {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-
-      const onWheelNative = (event: WheelEvent) => {
-        event.preventDefault();
-        const factor = Math.exp(-event.deltaY * 0.001);
-        zoomRef.current = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, zoomRef.current * factor));
-        scheduleRedraw();
-      };
-
-      canvas.addEventListener('wheel', onWheelNative, { passive: false });
-      return () => canvas.removeEventListener('wheel', onWheelNative);
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    const onPointerDown = (event: React.PointerEvent<HTMLCanvasElement>) => {
-      draggingRef.current = true;
-      lastPointerRef.current = { x: event.clientX, y: event.clientY };
-      event.currentTarget.setPointerCapture(event.pointerId);
-    };
-
-    const onPointerMove = (event: React.PointerEvent<HTMLCanvasElement>) => {
-      if (!draggingRef.current) return;
-      const dx = event.clientX - lastPointerRef.current.x;
-      const dy = event.clientY - lastPointerRef.current.y;
-      lastPointerRef.current = { x: event.clientX, y: event.clientY };
-
-      const rotation = rotationRef.current;
-      const nextPitch = Math.max(
-        -PITCH_LIMIT,
-        Math.min(PITCH_LIMIT, rotation.pitch - dy * DRAG_SENSITIVITY)
-      );
-      rotationRef.current = { yaw: rotation.yaw + dx * DRAG_SENSITIVITY, pitch: nextPitch };
-      scheduleRedraw();
-    };
-
-    const onPointerUp = (event: React.PointerEvent<HTMLCanvasElement>) => {
-      draggingRef.current = false;
-      event.currentTarget.releasePointerCapture(event.pointerId);
-    };
-
-    // Keyboard equivalent to drag-to-rotate / wheel-to-zoom — the canvas
-    // has no native interactive role, so it needs tabIndex to be reachable
-    // at all. WCAG 2.1.1.
-    const onKeyDown = (event: React.KeyboardEvent<HTMLCanvasElement>) => {
-      const next = canvasKeyboardInteraction(event.key, rotationRef.current, zoomRef.current, {
-        pitchLimit: PITCH_LIMIT,
-        zoomMin: ZOOM_MIN,
-        zoomMax: ZOOM_MAX,
-      });
-      if (!next) return;
-      event.preventDefault();
-      rotationRef.current = next.rotation;
-      zoomRef.current = next.zoom;
-      scheduleRedraw();
-    };
-
     return (
-      <canvas
+      <TrajectoryCanvas
         ref={canvasRef}
-        tabIndex={0}
-        role="img"
-        aria-label={t.canvas.label}
-        className="h-full w-full touch-none"
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
-        onPointerLeave={onPointerUp}
-        onKeyDown={onKeyDown}
+        trajectories={[{ id: TRAJECTORY_ID, color: TRAIL_COLORS.trailA }]}
+        ariaLabel={t.canvas.label}
       />
     );
   }

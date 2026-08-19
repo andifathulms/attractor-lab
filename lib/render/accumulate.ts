@@ -92,13 +92,3 @@ export function redrawLayers(
     drawLayer(ctx, layer, config);
   }
 }
-
-/** Full redraw from stored trajectory chunks at the current projection — used after orbit/zoom. */
-export function redrawTrajectory(
-  ctx: CanvasRenderingContext2D,
-  chunks: readonly Float64Array[],
-  config: ProjectionConfig,
-  color: string
-): void {
-  redrawLayers(ctx, [{ chunks, color }], config);
-}
