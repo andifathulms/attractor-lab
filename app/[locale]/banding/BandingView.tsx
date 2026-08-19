@@ -9,6 +9,7 @@ import {
   type ComparisonSeparationPlotHandle,
 } from '@/components/comparison/ComparisonSeparationPlot';
 import { AppNav } from '@/components/nav/AppNav';
+import { estimateConvergenceSeries, type ConvergenceCheckSeries } from '@/lib/convergence-series';
 import { estimateConvergenceOrders, type ConvergenceOrders } from '@/lib/dynamics/convergence';
 import { classicSystem, type System, type SystemId } from '@/lib/dynamics/systems';
 
@@ -27,12 +28,14 @@ export function BandingView() {
     rk2VsRk4: 0,
   });
   const [convergence, setConvergence] = useState<ConvergenceOrders | undefined>(undefined);
+  const [convergenceCheck, setConvergenceCheck] = useState<ConvergenceCheckSeries | undefined>(undefined);
   const separationPlotRef = useRef<ComparisonSeparationPlotHandle | null>(null);
 
   const handleSystemChange = (id: SystemId) => {
     setSystemId(id);
     setParams({ ...classicSystem[id].params });
     setConvergence(undefined);
+    setConvergenceCheck(undefined);
   };
 
   const system = useMemo(() => ({ type: systemId, params }) as System, [systemId, params]);
@@ -40,6 +43,7 @@ export function BandingView() {
   const handleCheckConvergence = () => {
     const initial = new Float64Array([1, 1, 1]);
     setConvergence(estimateConvergenceOrders(system, initial, dt, CONVERGENCE_CHECK_DURATION));
+    setConvergenceCheck(estimateConvergenceSeries(system, initial, dt, CONVERGENCE_CHECK_DURATION));
   };
 
   return (
@@ -62,11 +66,13 @@ export function BandingView() {
           onParamsChange={(next) => {
             setParams(next);
             setConvergence(undefined);
+            setConvergenceCheck(undefined);
           }}
           dt={dt}
           onDtChange={(next) => {
             setDt(next);
             setConvergence(undefined);
+            setConvergenceCheck(undefined);
           }}
           convergence={convergence}
           onCheckConvergence={handleCheckConvergence}
@@ -74,7 +80,7 @@ export function BandingView() {
           onToggleCollapsed={() => setCollapsed((c) => !c)}
         />
       </div>
-      <ComparisonSeparationPlot ref={separationPlotRef} />
+      <ComparisonSeparationPlot ref={separationPlotRef} convergenceCheck={convergenceCheck} />
       <ComparisonReadoutStrip
         dt={dt}
         elapsed={metrics.elapsed}
