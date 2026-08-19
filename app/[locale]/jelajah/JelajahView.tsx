@@ -17,11 +17,11 @@ import { downloadSvg } from '@/lib/export/download';
 import { useT } from '@/lib/i18n/LocaleProvider';
 import type { IntegratorId } from '@/lib/dynamics/integrate';
 import { classicSystem, type System, type SystemId } from '@/lib/dynamics/systems';
+import { INITIAL_STATE } from '@/lib/initial-state';
 import { decodeJelajahState, encodeJelajahState } from '@/lib/permalink';
 import { boundingBoxDiagonal, predictabilityHorizon, separationThreshold } from '@/lib/predictability';
 import type { ResultMessage, StartMessage as VerifyStartMessage, WorkerOutboundMessage as VerifyOutboundMessage } from '@/workers/verify.worker';
 
-const VERIFY_INITIAL_STATE: readonly [number, number, number] = [0.1, 0.1, 0.1];
 // Bounds the worker's compute: re-running at dt and dt/2 costs ~3x the
 // steps taken so far, and this is a one-shot check, not the streaming
 // render — no need to match the full run for the claim to be meaningful.
@@ -116,7 +116,7 @@ export function JelajahView() {
       type: 'start',
       system,
       integrator: integratorConfig,
-      initial: VERIFY_INITIAL_STATE,
+      initial: INITIAL_STATE,
       dt,
       steps,
     };

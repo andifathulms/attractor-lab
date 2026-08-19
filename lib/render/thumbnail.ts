@@ -2,6 +2,7 @@ import type { Integrator } from '../dynamics/integrate';
 import type { System } from '../dynamics/systems';
 import { integrateTrajectory } from '../dynamics/trajectory';
 import { simplifyToBudget, type Point2D } from '../export/simplify';
+import { INITIAL_STATE } from '../initial-state';
 import { project, type Rotation } from './projection';
 
 export type FlowThumbnail = {
@@ -14,12 +15,6 @@ const VIEW_SIZE = 200;
 const MARGIN = 10;
 const MAX_NODES = 500;
 
-// Deliberately asymmetric: Thomas and Halvorsen are cyclically symmetric
-// systems (x, y, z play interchangeable roles in their equations), so a
-// symmetric start like [0.1, 0.1, 0.1] never leaves the invariant x=y=z
-// diagonal and collapses to the fixed point on it instead of showing the
-// attractor. A perturbed start escapes that diagonal for every system.
-export const THUMBNAIL_INITIAL_STATE: readonly [number, number, number] = [0.1, 0.15, 0.12];
 export const THUMBNAIL_DT = 0.005;
 export const THUMBNAIL_STEPS = 12000;
 export const THUMBNAIL_INTEGRATOR: Integrator = { type: 'rk4' };
@@ -36,7 +31,7 @@ export function buildFlowThumbnail(system: System): FlowThumbnail {
   const trajectory = integrateTrajectory(
     system,
     THUMBNAIL_INTEGRATOR,
-    new Float64Array(THUMBNAIL_INITIAL_STATE),
+    new Float64Array(INITIAL_STATE),
     THUMBNAIL_DT,
     THUMBNAIL_STEPS
   );

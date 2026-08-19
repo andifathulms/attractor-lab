@@ -6,6 +6,7 @@ import type { Integrator } from '@/lib/dynamics/integrate';
 import type { System } from '@/lib/dynamics/systems';
 import type { ExportSnapshot } from '@/lib/export/plotter';
 import { useT } from '@/lib/i18n/LocaleProvider';
+import { INITIAL_STATE } from '@/lib/initial-state';
 import { REDUCED_MOTION_STEPS, usePrefersReducedMotion } from '@/lib/motion';
 import { TRAIL_COLORS } from '@/lib/render/trail-colors';
 import type {
@@ -31,7 +32,6 @@ export type AttractorCanvasHandle = {
   readonly getSnapshot: () => ExportSnapshot;
 };
 
-const INITIAL_STATE: readonly [number, number, number] = [0.1, 0.1, 0.1];
 const TRAJECTORY_ID = 'attractor';
 
 export const AttractorCanvas = forwardRef<AttractorCanvasHandle, AttractorCanvasProps>(

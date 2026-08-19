@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react';
 import type { LocalMaximaConfig } from '@/lib/dynamics/bifurcation';
 import type { System } from '@/lib/dynamics/systems';
+import { BIFURCATION_INITIAL_STATE } from '@/lib/initial-state';
 import { usePrefersReducedMotion } from '@/lib/motion';
 import { drawBifurcationPlot, xToParam, type BifurcationPoint } from '@/lib/render/bifurcation-plot';
 import type {
@@ -29,8 +30,6 @@ export type BifurcationPlotProps = {
   /** Called with the exact parameter value under a click — lets a caller jump to that live trajectory. */
   readonly onParamPick?: (paramValue: number) => void;
 };
-
-const INITIAL_STATE: readonly [number, number, number] = [1, 1, 1];
 
 export function BifurcationPlot({
   system,
@@ -104,7 +103,7 @@ export function BifurcationPlot({
       paramMin,
       paramMax,
       sampleCount,
-      initial: INITIAL_STATE,
+      initial: BIFURCATION_INITIAL_STATE,
       config,
       reducedMotion,
     };

@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import { TrajectoryCanvas, type TrajectoryCanvasHandle } from '@/components/canvas/TrajectoryCanvas';
 import type { System } from '@/lib/dynamics/systems';
 import { useT } from '@/lib/i18n/LocaleProvider';
+import { INITIAL_STATE } from '@/lib/initial-state';
 import { REDUCED_MOTION_STEPS, usePrefersReducedMotion } from '@/lib/motion';
 import { TRAIL_COLORS } from '@/lib/render/trail-colors';
 import type {
@@ -30,7 +31,6 @@ export type ComparisonCanvasProps = {
   readonly onReset?: () => void;
 };
 
-const INITIAL_STATE: readonly [number, number, number] = [0.1, 0.1, 0.1];
 const TRAJECTORY_EULER = 'euler';
 const TRAJECTORY_RK2 = 'rk2';
 const TRAJECTORY_RK4 = 'rk4';

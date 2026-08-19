@@ -12,6 +12,7 @@ import { AppNav } from '@/components/nav/AppNav';
 import { estimateConvergenceSeries, type ConvergenceCheckSeries } from '@/lib/convergence-series';
 import { estimateConvergenceOrders, type ConvergenceOrders } from '@/lib/dynamics/convergence';
 import { classicSystem, type System, type SystemId } from '@/lib/dynamics/systems';
+import { BIFURCATION_INITIAL_STATE } from '@/lib/initial-state';
 
 const CONVERGENCE_CHECK_DURATION = 0.2;
 
@@ -41,7 +42,7 @@ export function BandingView() {
   const system = useMemo(() => ({ type: systemId, params }) as System, [systemId, params]);
 
   const handleCheckConvergence = () => {
-    const initial = new Float64Array([1, 1, 1]);
+    const initial = new Float64Array(BIFURCATION_INITIAL_STATE);
     setConvergence(estimateConvergenceOrders(system, initial, dt, CONVERGENCE_CHECK_DURATION));
     setConvergenceCheck(estimateConvergenceSeries(system, initial, dt, CONVERGENCE_CHECK_DURATION));
   };
