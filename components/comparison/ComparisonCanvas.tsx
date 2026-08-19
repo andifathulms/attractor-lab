@@ -24,6 +24,12 @@ export type ComparisonCanvasProps = {
   readonly system: System;
   readonly dt: number;
   readonly onMetrics: (metrics: ComparisonMetrics) => void;
+  readonly onSeparationBatch?: (
+    times: readonly number[],
+    eulerVsRk4: readonly number[],
+    rk2VsRk4: readonly number[]
+  ) => void;
+  readonly onReset?: () => void;
 };
 
 const INITIAL_STATE: readonly [number, number, number] = [0.1, 0.1, 0.1];
@@ -32,7 +38,13 @@ const ZOOM_MAX = 60;
 const DRAG_SENSITIVITY = 0.005;
 const PITCH_LIMIT = Math.PI / 2 - 0.05;
 
-export function ComparisonCanvas({ system, dt, onMetrics }: ComparisonCanvasProps) {
+export function ComparisonCanvas({
+  system,
+  dt,
+  onMetrics,
+  onSeparationBatch,
+  onReset,
+}: ComparisonCanvasProps) {
   const t = useT();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const chunksEulerRef = useRef<Float64Array[]>([]);
@@ -84,6 +96,7 @@ export function ComparisonCanvas({ system, dt, onMetrics }: ComparisonCanvasProp
     lastPointRk2Ref.current = null;
     lastPointRk4Ref.current = null;
     clearBuffer(ctx, canvas.width, canvas.height);
+    onReset?.();
 
     const worker = new Worker(new URL('../../workers/compare.worker.ts', import.meta.url));
 
@@ -117,11 +130,18 @@ export function ComparisonCanvas({ system, dt, onMetrics }: ComparisonCanvasProp
         }
       }
 
+      const lastEulerVsRk4 = message.eulerVsRk4[message.eulerVsRk4.length - 1] as number;
+      const lastRk2VsRk4 = message.rk2VsRk4[message.rk2VsRk4.length - 1] as number;
       onMetrics({
         elapsed: message.elapsed,
-        eulerVsRk4: message.eulerVsRk4,
-        rk2VsRk4: message.rk2VsRk4,
+        eulerVsRk4: lastEulerVsRk4,
+        rk2VsRk4: lastRk2VsRk4,
       });
+      onSeparationBatch?.(
+        Array.from(message.times),
+        Array.from(message.eulerVsRk4),
+        Array.from(message.rk2VsRk4)
+      );
     };
 
     const startMessage: StartMessage = {

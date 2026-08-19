@@ -33,10 +33,10 @@ export const SeparationPlot = forwardRef<SeparationPlotHandle, SeparationPlotPro
       const canvas = canvasRef.current;
       const ctx = canvas?.getContext('2d');
       if (!canvas || !ctx) return;
-      drawSeparationPlot(ctx, seriesRef.current, {
+      drawSeparationPlot(ctx, [{ series: seriesRef.current, dash: [] }], {
         width: canvas.width,
         height: canvas.height,
-        epsilon,
+        floorLog10: Math.log10(epsilon) - 1,
       });
     };
 

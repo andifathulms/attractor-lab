@@ -1,9 +1,13 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { ComparisonCanvas, type ComparisonMetrics } from '@/components/comparison/ComparisonCanvas';
 import { ComparisonPanel } from '@/components/comparison/ComparisonPanel';
 import { ComparisonReadoutStrip } from '@/components/comparison/ComparisonReadoutStrip';
+import {
+  ComparisonSeparationPlot,
+  type ComparisonSeparationPlotHandle,
+} from '@/components/comparison/ComparisonSeparationPlot';
 import { AppNav } from '@/components/nav/AppNav';
 import { estimateConvergenceOrders, type ConvergenceOrders } from '@/lib/dynamics/convergence';
 import { classicSystem, type System, type SystemId } from '@/lib/dynamics/systems';
@@ -23,6 +27,7 @@ export function BandingView() {
     rk2VsRk4: 0,
   });
   const [convergence, setConvergence] = useState<ConvergenceOrders | undefined>(undefined);
+  const separationPlotRef = useRef<ComparisonSeparationPlotHandle | null>(null);
 
   const handleSystemChange = (id: SystemId) => {
     setSystemId(id);
@@ -41,7 +46,15 @@ export function BandingView() {
     <main id="main-content" className="flex min-h-dvh flex-col bg-night">
       <div className="relative h-[60vh] sm:h-auto sm:flex-1">
         <AppNav />
-        <ComparisonCanvas system={system} dt={dt} onMetrics={setMetrics} />
+        <ComparisonCanvas
+          system={system}
+          dt={dt}
+          onMetrics={setMetrics}
+          onSeparationBatch={(times, eulerVsRk4, rk2VsRk4) =>
+            separationPlotRef.current?.pushSamples(times, eulerVsRk4, rk2VsRk4)
+          }
+          onReset={() => separationPlotRef.current?.reset()}
+        />
         <ComparisonPanel
           systemId={systemId}
           onSystemChange={handleSystemChange}
@@ -61,6 +74,7 @@ export function BandingView() {
           onToggleCollapsed={() => setCollapsed((c) => !c)}
         />
       </div>
+      <ComparisonSeparationPlot ref={separationPlotRef} />
       <ComparisonReadoutStrip
         dt={dt}
         elapsed={metrics.elapsed}

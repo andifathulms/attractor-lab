@@ -19,9 +19,12 @@ export type BatchMessage = {
   readonly pointsEuler: Float64Array;
   readonly pointsRk2: Float64Array;
   readonly pointsRk4: Float64Array;
-  /** |Euler − RK4| and |RK2 − RK4| at the end of this batch — "agree, then part". */
-  readonly eulerVsRk4: number;
-  readonly rk2VsRk4: number;
+  /** |Euler − RK4| at each corresponding point, one entry per point — "agree, then part". */
+  readonly eulerVsRk4: Float64Array;
+  /** |RK2 − RK4| at each corresponding point, one entry per point. */
+  readonly rk2VsRk4: Float64Array;
+  /** Elapsed system time at each corresponding point, one entry per point. */
+  readonly times: Float64Array;
   readonly elapsed: number;
 };
 
@@ -61,6 +64,9 @@ async function run(message: StartMessage, myGeneration: number): Promise<void> {
     const pointsEuler = new Float64Array(reducedMotionSteps * 3);
     const pointsRk2 = new Float64Array(reducedMotionSteps * 3);
     const pointsRk4 = new Float64Array(reducedMotionSteps * 3);
+    const eulerVsRk4 = new Float64Array(reducedMotionSteps);
+    const rk2VsRk4 = new Float64Array(reducedMotionSteps);
+    const times = new Float64Array(reducedMotionSteps);
     let elapsed = 0;
 
     for (let i = 0; i < reducedMotionSteps; i++) {
@@ -78,6 +84,9 @@ async function run(message: StartMessage, myGeneration: number): Promise<void> {
       pointsRk4[i * 3] = stateRk4[0] as number;
       pointsRk4[i * 3 + 1] = stateRk4[1] as number;
       pointsRk4[i * 3 + 2] = stateRk4[2] as number;
+      eulerVsRk4[i] = distance(stateEuler, stateRk4);
+      rk2VsRk4[i] = distance(stateRk2, stateRk4);
+      times[i] = elapsed;
     }
 
     if (generation !== myGeneration) return;
@@ -86,14 +95,18 @@ async function run(message: StartMessage, myGeneration: number): Promise<void> {
       pointsEuler,
       pointsRk2,
       pointsRk4,
-      eulerVsRk4: distance(stateEuler, stateRk4),
-      rk2VsRk4: distance(stateRk2, stateRk4),
+      eulerVsRk4,
+      rk2VsRk4,
+      times,
       elapsed,
     };
     (self as unknown as Worker).postMessage(batchMessage, [
       pointsEuler.buffer,
       pointsRk2.buffer,
       pointsRk4.buffer,
+      eulerVsRk4.buffer,
+      rk2VsRk4.buffer,
+      times.buffer,
     ]);
     return;
   }
@@ -107,6 +120,9 @@ async function run(message: StartMessage, myGeneration: number): Promise<void> {
     const pointsEuler = new Float64Array(BATCH_SIZE * 3);
     const pointsRk2 = new Float64Array(BATCH_SIZE * 3);
     const pointsRk4 = new Float64Array(BATCH_SIZE * 3);
+    const eulerVsRk4 = new Float64Array(BATCH_SIZE);
+    const rk2VsRk4 = new Float64Array(BATCH_SIZE);
+    const times = new Float64Array(BATCH_SIZE);
 
     for (let i = 0; i < BATCH_SIZE; i++) {
       stateEuler = eulerStep(stateEuler, dt, f);
@@ -123,6 +139,9 @@ async function run(message: StartMessage, myGeneration: number): Promise<void> {
       pointsRk4[i * 3] = stateRk4[0] as number;
       pointsRk4[i * 3 + 1] = stateRk4[1] as number;
       pointsRk4[i * 3 + 2] = stateRk4[2] as number;
+      eulerVsRk4[i] = distance(stateEuler, stateRk4);
+      rk2VsRk4[i] = distance(stateRk2, stateRk4);
+      times[i] = elapsed;
     }
 
     const batchMessage: BatchMessage = {
@@ -130,14 +149,18 @@ async function run(message: StartMessage, myGeneration: number): Promise<void> {
       pointsEuler,
       pointsRk2,
       pointsRk4,
-      eulerVsRk4: distance(stateEuler, stateRk4),
-      rk2VsRk4: distance(stateRk2, stateRk4),
+      eulerVsRk4,
+      rk2VsRk4,
+      times,
       elapsed,
     };
     (self as unknown as Worker).postMessage(batchMessage, [
       pointsEuler.buffer,
       pointsRk2.buffer,
       pointsRk4.buffer,
+      eulerVsRk4.buffer,
+      rk2VsRk4.buffer,
+      times.buffer,
     ]);
 
     // Yield to the event loop so 'start' messages (a parameter change) can
