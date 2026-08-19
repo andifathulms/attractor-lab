@@ -26,7 +26,7 @@ export default function SistemIndexPage({
   const t = dictionaries[locale];
 
   return (
-    <main className="relative min-h-dvh bg-night px-6 py-16 text-readout">
+    <main id="main-content" className="relative min-h-dvh bg-night px-6 py-16 text-readout">
       <AppNav />
       <div className="mx-auto max-w-2xl">
         <h1 className="mb-8 font-display text-3xl font-medium">{t.sistem.indexTitle}</h1>

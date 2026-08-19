@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useLocale, useT } from '@/lib/i18n/LocaleProvider';
 import { BrandMark } from './BrandMark';
 
@@ -11,6 +12,7 @@ import { BrandMark } from './BrandMark';
 export function AppNav() {
   const locale = useLocale();
   const t = useT();
+  const pathname = usePathname();
 
   const links = [
     { href: `/${locale}/jelajah`, label: t.nav.jelajah },
@@ -30,11 +32,23 @@ export function AppNav() {
         </div>
       </Link>
       <nav className="flex flex-wrap gap-3 font-mono text-sm text-caption">
-        {links.map((link) => (
-          <Link key={link.href} href={link.href} className="transition-colors duration-fast hover:text-readout">
-            {link.label}
-          </Link>
-        ))}
+        {links.map((link) => {
+          const active = pathname?.startsWith(link.href);
+          return (
+            <Link
+              key={link.href}
+              href={link.href}
+              aria-current={active ? 'page' : undefined}
+              className={
+                active
+                  ? 'text-readout underline decoration-trail-a decoration-2 underline-offset-4'
+                  : 'transition-colors duration-fast hover:text-readout'
+              }
+            >
+              {link.label}
+            </Link>
+          );
+        })}
       </nav>
     </div>
   );

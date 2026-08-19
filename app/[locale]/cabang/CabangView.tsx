@@ -72,7 +72,7 @@ export function CabangView() {
   };
 
   return (
-    <main className="flex min-h-dvh flex-col bg-night">
+    <main id="main-content" className="flex min-h-dvh flex-col bg-night">
       <div className="relative h-[60vh] sm:h-auto sm:flex-1">
         <AppNav />
         <BifurcationPlot

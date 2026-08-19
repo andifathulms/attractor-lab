@@ -164,7 +164,7 @@ export function JelajahView() {
   };
 
   return (
-    <main ref={mainRef} tabIndex={-1} className="flex min-h-dvh flex-col bg-night">
+    <main id="main-content" ref={mainRef} tabIndex={-1} className="flex min-h-dvh flex-col bg-night">
       <div className="relative h-[60vh] sm:h-auto sm:flex-1">
         <AppNav />
         <OnboardingHint

@@ -109,6 +109,12 @@ export type Dictionary = {
     readonly divergenceHint: string;
     readonly dismiss: string;
   };
+  readonly notFound: {
+    readonly title: string;
+    readonly description: string;
+    readonly backLink: string;
+  };
+  readonly skipToContent: string;
 };
 
 const id: Dictionary = {
@@ -230,6 +236,12 @@ const id: Dictionary = {
       'Dua lintasan identik, dimulai dengan perbedaan sekecil 10⁻⁸. Amati saat keduanya menyimpang: ini kekacauan deterministik, bukan noise acak.',
     dismiss: 'Mengerti',
   },
+  notFound: {
+    title: 'Halaman tidak ditemukan',
+    description: 'Tautan ini tidak mengarah ke lintasan mana pun di Attractor Lab.',
+    backLink: 'Kembali ke Jelajah',
+  },
+  skipToContent: 'Langsung ke konten',
 };
 
 const en: Dictionary = {
@@ -351,6 +363,12 @@ const en: Dictionary = {
       "Two identical trajectories, started 10⁻⁸ apart. Watch them diverge: that's deterministic chaos, not random noise.",
     dismiss: 'Got it',
   },
+  notFound: {
+    title: 'Page not found',
+    description: "This link doesn't point to any trajectory in Attractor Lab.",
+    backLink: 'Back to Explore',
+  },
+  skipToContent: 'Skip to content',
 };
 
 export const dictionaries: Record<Locale, Dictionary> = { id, en };

@@ -29,10 +29,10 @@ export function buildMetadata({
   readonly description: string;
   readonly locale: Locale;
   readonly path: string;
-  /** Set false when `title` is already the full site title (the root route) — avoids "Attractor Lab — Attractor Lab". */
+  /** Set false when `title` is already the full site title (the root route) — avoids "Attractor Lab: Attractor Lab". */
   readonly suffixTitle?: boolean;
 }): Metadata {
-  const fullTitle = suffixTitle ? `${title} — Attractor Lab` : title;
+  const fullTitle = suffixTitle ? `${title}: Attractor Lab` : title;
   const url = `${SITE_URL}/${locale}${path}`;
 
   return {

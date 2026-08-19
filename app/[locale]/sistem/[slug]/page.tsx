@@ -45,7 +45,7 @@ export default function SistemSlugPage({
   const t = dictionaries[locale];
 
   return (
-    <main className="relative min-h-dvh bg-night px-6 py-16 text-readout">
+    <main id="main-content" className="relative min-h-dvh bg-night px-6 py-16 text-readout">
       <AppNav />
       <article className="mx-auto max-w-2xl">
         <h1 className="mb-1 font-display text-3xl font-medium">{reference.name}</h1>
