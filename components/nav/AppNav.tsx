@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useLocale, useT } from '@/lib/i18n/LocaleProvider';
+import { BrandMark } from './BrandMark';
 
 // Small and out of the way — this is an instrument with controls, not a
 // site with a navbar. DESIGN.md §6. The brand line is the one deliberately
@@ -21,9 +22,12 @@ export function AppNav() {
 
   return (
     <div className="absolute left-4 top-4 z-10 flex max-w-[calc(100vw-2rem)] flex-col gap-2">
-      <Link href={`/${locale}/jelajah`} className="block">
-        <p className="font-display text-lg font-medium leading-tight text-bloom">{t.brand.name}</p>
-        <p className="max-w-xs font-sans text-sm leading-snug text-caption">{t.brand.tagline}</p>
+      <Link href={`/${locale}/jelajah`} className="flex items-start gap-2">
+        <BrandMark />
+        <div>
+          <p className="font-display text-lg font-medium leading-tight text-bloom">{t.brand.name}</p>
+          <p className="max-w-xs font-sans text-sm leading-snug text-caption">{t.brand.tagline}</p>
+        </div>
       </Link>
       <nav className="flex flex-wrap gap-3 font-mono text-sm text-caption">
         {links.map((link) => (
