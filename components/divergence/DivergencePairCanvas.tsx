@@ -29,6 +29,8 @@ export type DivergencePairCanvasProps = {
   readonly onMetrics: (metrics: DivergenceMetrics) => void;
   readonly onSeparationBatch: (times: readonly number[], separations: readonly number[]) => void;
   readonly onReset: () => void;
+  /** A trajectory escaped its bounding region, or the worker itself failed — CLAUDE.md invariant 12. */
+  readonly onError?: () => void;
 };
 
 export type DivergencePairCanvasHandle = {
@@ -42,12 +44,13 @@ export const DivergencePairCanvas = forwardRef<
   DivergencePairCanvasHandle,
   DivergencePairCanvasProps
 >(function DivergencePairCanvas(
-  { system, integrator, dt, epsilon, onMetrics, onSeparationBatch, onReset },
+  { system, integrator, dt, epsilon, onMetrics, onSeparationBatch, onReset, onError },
   ref
 ) {
   const t = useT();
   const canvasRef = useRef<TrajectoryCanvasHandle | null>(null);
   const lastLyapunovRef = useRef<number | undefined>(undefined);
+  const workerRef = useRef<Worker | null>(null);
   const reducedMotion = usePrefersReducedMotion();
 
   useImperativeHandle(
@@ -66,6 +69,9 @@ export const DivergencePairCanvas = forwardRef<
     onReset();
 
     const worker = new Worker(new URL('../../workers/divergence.worker.ts', import.meta.url));
+    workerRef.current = worker;
+
+    worker.onerror = () => onError?.();
 
     worker.onmessage = (event: MessageEvent<WorkerOutboundMessage>) => {
       const message = event.data;
@@ -104,6 +110,11 @@ export const DivergencePairCanvas = forwardRef<
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(system), JSON.stringify(integrator), dt, epsilon, reducedMotion]);
 
+  const handleEscape = () => {
+    workerRef.current?.terminate();
+    onError?.();
+  };
+
   return (
     <TrajectoryCanvas
       ref={canvasRef}
@@ -112,6 +123,7 @@ export const DivergencePairCanvas = forwardRef<
         { id: TRAJECTORY_B, color: TRAIL_COLORS.trailB },
       ]}
       ariaLabel={t.canvas.label}
+      onEscape={handleEscape}
     />
   );
 });

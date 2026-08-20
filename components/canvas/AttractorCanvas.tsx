@@ -26,6 +26,8 @@ export type AttractorCanvasProps = {
   readonly integrator: Integrator;
   readonly dt: number;
   readonly onMetrics: (metrics: CanvasMetrics) => void;
+  /** A trajectory escaped its bounding region, or the worker itself failed — CLAUDE.md invariant 12. */
+  readonly onError?: () => void;
 };
 
 export type AttractorCanvasHandle = {
@@ -35,10 +37,11 @@ export type AttractorCanvasHandle = {
 const TRAJECTORY_ID = 'attractor';
 
 export const AttractorCanvas = forwardRef<AttractorCanvasHandle, AttractorCanvasProps>(
-  function AttractorCanvas({ system, integrator, dt, onMetrics }, ref) {
+  function AttractorCanvas({ system, integrator, dt, onMetrics, onError }, ref) {
     const t = useT();
     const canvasRef = useRef<TrajectoryCanvasHandle | null>(null);
     const lastLyapunovRef = useRef<number | undefined>(undefined);
+    const workerRef = useRef<Worker | null>(null);
     const reducedMotion = usePrefersReducedMotion();
 
     useImperativeHandle(
@@ -56,6 +59,9 @@ export const AttractorCanvas = forwardRef<AttractorCanvasHandle, AttractorCanvas
       lastLyapunovRef.current = undefined;
 
       const worker = new Worker(new URL('../../workers/integrate.worker.ts', import.meta.url));
+      workerRef.current = worker;
+
+      worker.onerror = () => onError?.();
 
       worker.onmessage = (event: MessageEvent<WorkerOutboundMessage>) => {
         const message = event.data;
@@ -90,11 +96,20 @@ export const AttractorCanvas = forwardRef<AttractorCanvasHandle, AttractorCanvas
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [JSON.stringify(system), JSON.stringify(integrator), dt, reducedMotion]);
 
+    // The escaping worker keeps running (and posting garbage) until told
+    // otherwise; TrajectoryCanvas already stops drawing once it sees a
+    // non-finite point, this just stops the compute behind it too.
+    const handleEscape = () => {
+      workerRef.current?.terminate();
+      onError?.();
+    };
+
     return (
       <TrajectoryCanvas
         ref={canvasRef}
         trajectories={[{ id: TRAJECTORY_ID, color: TRAIL_COLORS.trailA }]}
         ariaLabel={t.canvas.label}
+        onEscape={handleEscape}
       />
     );
   }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { AppNav } from '@/components/nav/AppNav';
 import { SectionCanvas, type SectionMetrics } from '@/components/section/SectionCanvas';
 import { SectionPanel } from '@/components/section/SectionPanel';
@@ -9,6 +9,7 @@ import { SectionReadoutStrip } from '@/components/section/SectionReadoutStrip';
 import { invariants } from '@/lib/dynamics/invariants';
 import type { Plane } from '@/lib/dynamics/section';
 import { classicSystem, type System, type SystemId } from '@/lib/dynamics/systems';
+import { useT } from '@/lib/i18n/LocaleProvider';
 
 function defaultPlane(systemId: SystemId): Plane {
   const box = invariants[systemId]?.boundingBox;
@@ -17,6 +18,7 @@ function defaultPlane(systemId: SystemId): Plane {
 }
 
 export function IrisanView() {
+  const t = useT();
   const [systemId, setSystemId] = useState<SystemId>('lorenz');
   const [params, setParams] = useState<Record<string, number>>({
     ...classicSystem.lorenz.params,
@@ -25,6 +27,7 @@ export function IrisanView() {
   const [plane, setPlane] = useState<Plane>(() => defaultPlane('lorenz'));
   const [collapsed, setCollapsed] = useState(false);
   const [metrics, setMetrics] = useState<SectionMetrics>({ elapsed: 0, crossingCount: 0 });
+  const [hasError, setHasError] = useState(false);
   const sectionPlotRef = useRef<SectionPlotHandle | null>(null);
 
   const handleSystemChange = (id: SystemId) => {
@@ -32,6 +35,13 @@ export function IrisanView() {
     setParams({ ...classicSystem[id].params });
     setPlane(defaultPlane(id));
   };
+
+  // Clears an escaped-trajectory notice as soon as anything that would
+  // start a fresh run changes.
+  useEffect(() => {
+    setHasError(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [systemId, JSON.stringify(params), dt, plane.axis, plane.offset]);
 
   const handlePlaneChange = (next: Plane) => {
     setPlane(next);
@@ -50,6 +60,7 @@ export function IrisanView() {
           plane={plane}
           onMetrics={setMetrics}
           onCrossings={(crossings) => sectionPlotRef.current?.pushCrossings(crossings)}
+          onError={() => setHasError(true)}
         />
         <SectionPanel
           systemId={systemId}
@@ -70,6 +81,9 @@ export function IrisanView() {
         elapsed={metrics.elapsed}
         plane={plane}
         crossingCount={metrics.crossingCount}
+        errorMessage={
+          hasError ? `${t.readout.escapedMessage} (${t.systemNames[systemId]}, dt=${dt.toExponential(1)})` : undefined
+        }
       />
     </main>
   );

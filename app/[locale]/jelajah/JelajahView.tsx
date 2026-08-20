@@ -46,6 +46,7 @@ export function JelajahView() {
     lyapunovMax: undefined,
   });
   const [latestSeparation, setLatestSeparation] = useState<number | undefined>(undefined);
+  const [hasError, setHasError] = useState(false);
   const separationPlotRef = useRef<SeparationPlotHandle | null>(null);
   const attractorCanvasRef = useRef<AttractorCanvasHandle | null>(null);
   const pairCanvasRef = useRef<DivergencePairCanvasHandle | null>(null);
@@ -87,6 +88,14 @@ export function JelajahView() {
     setSystemId(id);
     setParams({ ...classicSystem[id].params });
   };
+
+  // Clears an escaped-trajectory notice as soon as anything that would
+  // start a fresh run changes — the same triggers that make the canvases
+  // below clear their buffer and re-integrate.
+  useEffect(() => {
+    setHasError(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [systemId, JSON.stringify(params), integrator, dt, epsilon, pairMode]);
 
   const handleCopyLink = () => {
     if (typeof window === 'undefined') return;
@@ -189,6 +198,7 @@ export function JelajahView() {
               separationPlotRef.current?.reset();
               setLatestSeparation(undefined);
             }}
+            onError={() => setHasError(true)}
           />
         ) : (
           <AttractorCanvas
@@ -197,6 +207,7 @@ export function JelajahView() {
             integrator={integratorConfig}
             dt={dt}
             onMetrics={setMetrics}
+            onError={() => setHasError(true)}
           />
         )}
         <ControlPanel
@@ -236,23 +247,32 @@ export function JelajahView() {
         />
       )}
       <ReadoutStrip
-        fields={[
-          { label: t.readout.integrator, value: t.integratorNames[integrator] },
-          { label: t.readout.step, value: dt.toExponential(1) },
-          { label: t.readout.elapsedTime, value: metrics.elapsed.toFixed(2) },
-          {
-            label: t.readout.lyapunovMax,
-            value: metrics.lyapunovMax !== undefined ? metrics.lyapunovMax.toFixed(4) : '-',
-          },
-          ...(pairMode && epsilon !== undefined
+        fields={
+          hasError
             ? [
-                { label: t.readout.epsilon, value: epsilon.toExponential(1) },
-                { label: t.readout.horizon, value: horizon !== undefined ? horizon.toFixed(2) : '-' },
+                {
+                  label: t.readout.error,
+                  value: `${t.readout.escapedMessage} (${SYSTEM_LABEL[systemId]}, dt=${dt.toExponential(1)})`,
+                },
               ]
-            : []),
-        ]}
+            : [
+                { label: t.readout.integrator, value: t.integratorNames[integrator] },
+                { label: t.readout.step, value: dt.toExponential(1) },
+                { label: t.readout.elapsedTime, value: metrics.elapsed.toFixed(2) },
+                {
+                  label: t.readout.lyapunovMax,
+                  value: metrics.lyapunovMax !== undefined ? metrics.lyapunovMax.toFixed(4) : '-',
+                },
+                ...(pairMode && epsilon !== undefined
+                  ? [
+                      { label: t.readout.epsilon, value: epsilon.toExponential(1) },
+                      { label: t.readout.horizon, value: horizon !== undefined ? horizon.toFixed(2) : '-' },
+                    ]
+                  : []),
+              ]
+        }
         tags={
-          pairMode && epsilon !== undefined
+          !hasError && pairMode && epsilon !== undefined
             ? [
                 { label: 'A', swatchClassName: 'bg-trail-a' },
                 { label: 'B', swatchClassName: 'bg-trail-b' },

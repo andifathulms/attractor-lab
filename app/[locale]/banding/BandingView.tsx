@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ComparisonCanvas, type ComparisonMetrics } from '@/components/comparison/ComparisonCanvas';
 import { ComparisonPanel } from '@/components/comparison/ComparisonPanel';
 import { ComparisonReadoutStrip } from '@/components/comparison/ComparisonReadoutStrip';
@@ -12,11 +12,13 @@ import { AppNav } from '@/components/nav/AppNav';
 import { estimateConvergenceSeries, type ConvergenceCheckSeries } from '@/lib/convergence-series';
 import { estimateConvergenceOrders, type ConvergenceOrders } from '@/lib/dynamics/convergence';
 import { classicSystem, type System, type SystemId } from '@/lib/dynamics/systems';
+import { useT } from '@/lib/i18n/LocaleProvider';
 import { BIFURCATION_INITIAL_STATE } from '@/lib/initial-state';
 
 const CONVERGENCE_CHECK_DURATION = 0.2;
 
 export function BandingView() {
+  const t = useT();
   const [systemId, setSystemId] = useState<SystemId>('lorenz');
   const [params, setParams] = useState<Record<string, number>>({
     ...classicSystem.lorenz.params,
@@ -30,6 +32,7 @@ export function BandingView() {
   });
   const [convergence, setConvergence] = useState<ConvergenceOrders | undefined>(undefined);
   const [convergenceCheck, setConvergenceCheck] = useState<ConvergenceCheckSeries | undefined>(undefined);
+  const [hasError, setHasError] = useState(false);
   const separationPlotRef = useRef<ComparisonSeparationPlotHandle | null>(null);
 
   const handleSystemChange = (id: SystemId) => {
@@ -38,6 +41,13 @@ export function BandingView() {
     setConvergence(undefined);
     setConvergenceCheck(undefined);
   };
+
+  // Clears an escaped-trajectory notice as soon as anything that would
+  // start a fresh run changes.
+  useEffect(() => {
+    setHasError(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [systemId, JSON.stringify(params), dt]);
 
   const system = useMemo(() => ({ type: systemId, params }) as System, [systemId, params]);
 
@@ -59,6 +69,7 @@ export function BandingView() {
             separationPlotRef.current?.pushSamples(times, eulerVsRk4, rk2VsRk4)
           }
           onReset={() => separationPlotRef.current?.reset()}
+          onError={() => setHasError(true)}
         />
         <ComparisonPanel
           systemId={systemId}
@@ -87,6 +98,9 @@ export function BandingView() {
         elapsed={metrics.elapsed}
         eulerVsRk4={metrics.eulerVsRk4}
         rk2VsRk4={metrics.rk2VsRk4}
+        errorMessage={
+          hasError ? `${t.readout.escapedMessage} (${t.systemNames[systemId]}, dt=${dt.toExponential(1)})` : undefined
+        }
       />
     </main>
   );

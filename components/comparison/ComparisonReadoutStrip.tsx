@@ -6,6 +6,8 @@ export type ComparisonReadoutStripProps = {
   readonly elapsed: number;
   readonly eulerVsRk4: number | undefined;
   readonly rk2VsRk4: number | undefined;
+  /** Replaces the numeric fields with a single error field — CLAUDE.md invariant 12. */
+  readonly errorMessage?: string;
 };
 
 export function ComparisonReadoutStrip({
@@ -13,23 +15,28 @@ export function ComparisonReadoutStrip({
   elapsed,
   eulerVsRk4,
   rk2VsRk4,
+  errorMessage,
 }: ComparisonReadoutStripProps) {
   const t = useT();
 
   return (
     <ReadoutStrip
-      fields={[
-        { label: t.readout.step, value: dt.toExponential(1) },
-        { label: t.readout.elapsedTime, value: elapsed.toFixed(2) },
-        {
-          label: t.readout.separationA,
-          value: eulerVsRk4 !== undefined ? eulerVsRk4.toExponential(2) : '-',
-        },
-        {
-          label: t.readout.separationB,
-          value: rk2VsRk4 !== undefined ? rk2VsRk4.toExponential(2) : '-',
-        },
-      ]}
+      fields={
+        errorMessage
+          ? [{ label: t.readout.error, value: errorMessage }]
+          : [
+              { label: t.readout.step, value: dt.toExponential(1) },
+              { label: t.readout.elapsedTime, value: elapsed.toFixed(2) },
+              {
+                label: t.readout.separationA,
+                value: eulerVsRk4 !== undefined ? eulerVsRk4.toExponential(2) : '-',
+              },
+              {
+                label: t.readout.separationB,
+                value: rk2VsRk4 !== undefined ? rk2VsRk4.toExponential(2) : '-',
+              },
+            ]
+      }
     />
   );
 }

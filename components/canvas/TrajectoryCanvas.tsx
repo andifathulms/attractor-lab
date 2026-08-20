@@ -17,6 +17,15 @@ export type TrajectoryCanvasProps = {
   /** Optional discrete-event overlay (e.g. Poincaré-plane crossings) — a single colour, drawn as points rather than a connected line. */
   readonly markerColor?: string;
   readonly ariaLabel: string;
+  /**
+   * Called once if a pushed batch contains a non-finite value — a
+   * trajectory that has escaped its bounding region is a bug, not chaos
+   * (CLAUDE.md invariant 12), and RK4 divergence under an unstable
+   * parameter combination shows up as Infinity/NaN well before it would
+   * show up as "outside the known box". Latched: further batches for this
+   * run are dropped rather than drawn as garbage.
+   */
+  readonly onEscape?: () => void;
 };
 
 export type TrajectoryCanvasHandle = {
@@ -43,7 +52,7 @@ const PITCH_LIMIT = Math.PI / 2 - 0.05;
  * given via `pushPoints`/`pushMarkers`.
  */
 export const TrajectoryCanvas = forwardRef<TrajectoryCanvasHandle, TrajectoryCanvasProps>(
-  function TrajectoryCanvas({ trajectories, markerColor, ariaLabel }, ref) {
+  function TrajectoryCanvas({ trajectories, markerColor, ariaLabel, onEscape }, ref) {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const chunksRef = useRef<Map<string, Float64Array[]>>(new Map());
     const lastPointRef = useRef<Map<string, Float64Array | null>>(new Map());
@@ -53,7 +62,15 @@ export const TrajectoryCanvas = forwardRef<TrajectoryCanvasHandle, TrajectoryCan
     const draggingRef = useRef(false);
     const lastPointerRef = useRef({ x: 0, y: 0 });
     const redrawPendingRef = useRef(false);
+    const escapedRef = useRef(false);
     const reducedMotion = usePrefersReducedMotion();
+
+    const hasNonFinite = (points: Float64Array): boolean => {
+      for (let i = 0; i < points.length; i++) {
+        if (!Number.isFinite(points[i])) return true;
+      }
+      return false;
+    };
 
     const chunksFor = (id: string): Float64Array[] => {
       let chunks = chunksRef.current.get(id);
@@ -99,6 +116,12 @@ export const TrajectoryCanvas = forwardRef<TrajectoryCanvasHandle, TrajectoryCan
       ref,
       () => ({
         pushPoints: (id, points) => {
+          if (escapedRef.current) return;
+          if (hasNonFinite(points)) {
+            escapedRef.current = true;
+            onEscape?.();
+            return;
+          }
           chunksFor(id).push(points);
 
           // Reduced motion: the whole run arrived as one complete batch —
@@ -130,7 +153,12 @@ export const TrajectoryCanvas = forwardRef<TrajectoryCanvasHandle, TrajectoryCan
           lastPointRef.current.set(id, prevPoint);
         },
         pushMarkers: (points) => {
-          if (!markerColor) return;
+          if (!markerColor || escapedRef.current) return;
+          if (hasNonFinite(points)) {
+            escapedRef.current = true;
+            onEscape?.();
+            return;
+          }
           markerChunksRef.current.push(points);
 
           if (reducedMotion) {
@@ -152,6 +180,7 @@ export const TrajectoryCanvas = forwardRef<TrajectoryCanvasHandle, TrajectoryCan
           }
         },
         clear: () => {
+          escapedRef.current = false;
           for (const id of chunksRef.current.keys()) {
             chunksRef.current.set(id, []);
             lastPointRef.current.set(id, null);
@@ -167,7 +196,7 @@ export const TrajectoryCanvas = forwardRef<TrajectoryCanvasHandle, TrajectoryCan
         }),
       }),
       // eslint-disable-next-line react-hooks/exhaustive-deps
-      [reducedMotion, markerColor]
+      [reducedMotion, markerColor, onEscape]
     );
 
     useEffect(() => {

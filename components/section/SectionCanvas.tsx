@@ -25,14 +25,17 @@ export type SectionCanvasProps = {
   readonly plane: Plane;
   readonly onMetrics: (metrics: SectionMetrics) => void;
   readonly onCrossings: (crossings: Float64Array) => void;
+  /** A trajectory escaped its bounding region, or the worker itself failed — CLAUDE.md invariant 12. */
+  readonly onError?: () => void;
 };
 
 const TRAJECTORY_ID = 'section';
 
-export function SectionCanvas({ system, dt, plane, onMetrics, onCrossings }: SectionCanvasProps) {
+export function SectionCanvas({ system, dt, plane, onMetrics, onCrossings, onError }: SectionCanvasProps) {
   const t = useT();
   const canvasRef = useRef<TrajectoryCanvasHandle | null>(null);
   const crossingCountRef = useRef(0);
+  const workerRef = useRef<Worker | null>(null);
   const reducedMotion = usePrefersReducedMotion();
 
   // Re-integrates from scratch and clears the buffer — the only case that clears it.
@@ -41,6 +44,9 @@ export function SectionCanvas({ system, dt, plane, onMetrics, onCrossings }: Sec
     crossingCountRef.current = 0;
 
     const worker = new Worker(new URL('../../workers/section.worker.ts', import.meta.url));
+    workerRef.current = worker;
+
+    worker.onerror = () => onError?.();
 
     worker.onmessage = (event: MessageEvent<WorkerOutboundMessage>) => {
       handleBatch(event.data);
@@ -71,12 +77,18 @@ export function SectionCanvas({ system, dt, plane, onMetrics, onCrossings }: Sec
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(system), dt, plane.axis, plane.offset, reducedMotion]);
 
+  const handleEscape = () => {
+    workerRef.current?.terminate();
+    onError?.();
+  };
+
   return (
     <TrajectoryCanvas
       ref={canvasRef}
       trajectories={[{ id: TRAJECTORY_ID, color: TRAIL_COLORS.sectionTrajectory }]}
       markerColor={TRAIL_COLORS.section}
       ariaLabel={t.canvas.sectionLabel}
+      onEscape={handleEscape}
     />
   );
 }

@@ -87,6 +87,8 @@ export type Dictionary = {
     readonly separationA: string;
     readonly separationB: string;
     readonly horizon: string;
+    readonly error: string;
+    readonly escapedMessage: string;
   };
   readonly sistem: {
     readonly indexTitle: string;
@@ -212,6 +214,8 @@ const id: Dictionary = {
     separationA: '|euler − rk4|',
     separationB: '|rk2 − rk4|',
     horizon: 'cakrawala prediksi',
+    error: 'kesalahan',
+    escapedMessage: 'lintasan lepas dari kotak pembatasnya — kombinasi parameter ini kemungkinan tidak stabil',
   },
   sistem: {
     indexTitle: 'Sistem',
@@ -339,6 +343,8 @@ const en: Dictionary = {
     separationA: '|euler − rk4|',
     separationB: '|rk2 − rk4|',
     horizon: 'predictability horizon',
+    error: 'error',
+    escapedMessage: "the trajectory escaped its bounding region — this parameter combination is likely unstable",
   },
   sistem: {
     indexTitle: 'Systems',

@@ -13,3 +13,18 @@ body {
   outline: 3px solid theme('colors.trail-a');
   outline-offset: 2px;
 }
+
+/* DESIGN.md §1/§7: reduced motion gets a complete alternative, not a
+   degraded one. lib/motion.ts's usePrefersReducedMotion handles the
+   canvas's own accumulation animation; this covers everything else —
+   the transition-colors hover states on buttons, links and nav — so
+   the completeness claim holds for the whole app, not just the canvas. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
