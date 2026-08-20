@@ -55,6 +55,7 @@ export function VerifiedConstants({ systemId }: VerifiedConstantsProps) {
             <th className="py-2 pr-4 text-left font-sans font-normal" />
             <th className="py-2 pr-4 text-right font-sans font-normal">{t.sistem.published}</th>
             <th className="py-2 pr-4 text-right font-sans font-normal">{t.sistem.computed}</th>
+            <th className="py-2 pr-4 text-left font-sans font-normal" />
             <th className="py-2 text-right font-sans font-normal" />
           </tr>
         </thead>
@@ -108,9 +109,72 @@ function ConstantRow({
       <td className="py-2 pr-4 text-right text-readout [font-variant-numeric:tabular-nums]">
         {computed !== undefined ? computed.toFixed(4) : t.sistem.verifyingConstants}
       </td>
+      <td className="py-2 pr-4">
+        <ToleranceBand published={published} computed={computed} tolerance={tolerance} />
+      </td>
       <td className="py-2 text-right font-sans text-caption">
         {withinTolerance === undefined ? '' : withinTolerance ? t.sistem.withinTolerance : t.sistem.outsideTolerance}
       </td>
     </tr>
+  );
+}
+
+const BAND_WIDTH = 120;
+const BAND_HEIGHT = 16;
+const BAND_MARGIN = 4;
+
+/**
+ * The table cells are the precise, accessible reading (DESIGN.md §8) — this
+ * is added beside them, never instead: the tolerance band, the published
+ * value at its centre, and the computed value's position within it, so
+ * "within tolerance" is something seen, not just a word taken on trust.
+ * Purely decorative (aria-hidden): every value it plots is already in the
+ * row's text.
+ */
+function ToleranceBand({
+  published,
+  computed,
+  tolerance,
+}: {
+  readonly published: number;
+  readonly computed: number | undefined;
+  readonly tolerance: number;
+}) {
+  // The domain is wider than the tolerance band itself, so a computed value
+  // just outside tolerance still lands visibly off the band rather than
+  // pinned to its edge.
+  const domainMin = published - tolerance * 1.5;
+  const domainSpan = tolerance * 3;
+  const usableWidth = BAND_WIDTH - 2 * BAND_MARGIN;
+  const toX = (value: number): number => {
+    const fraction = (value - domainMin) / domainSpan;
+    const clamped = Math.max(0, Math.min(1, fraction));
+    return BAND_MARGIN + clamped * usableWidth;
+  };
+
+  const bandStartX = toX(published - tolerance);
+  const bandEndX = toX(published + tolerance);
+  const publishedX = toX(published);
+  const computedX = computed !== undefined ? toX(computed) : undefined;
+  const midY = BAND_HEIGHT / 2;
+
+  return (
+    <svg
+      width={BAND_WIDTH}
+      height={BAND_HEIGHT}
+      viewBox={`0 0 ${BAND_WIDTH} ${BAND_HEIGHT}`}
+      aria-hidden="true"
+      className="block"
+    >
+      <rect
+        x={bandStartX}
+        y={midY - 3}
+        width={bandEndX - bandStartX}
+        height={6}
+        className="fill-graticule"
+      />
+      <line x1={publishedX} y1={1} x2={publishedX} y2={BAND_HEIGHT - 1} strokeWidth="1" className="stroke-caption" />
+      {computedX !== undefined && <circle cx={computedX} cy={midY} r={3} className="fill-readout" />}
+    </svg>
   );
 }
