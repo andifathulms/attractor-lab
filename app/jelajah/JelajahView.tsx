@@ -114,7 +114,7 @@ export function JelajahView() {
     if (steps <= 0) return;
     setVerifying(true);
     setVerifyDelta(undefined);
-    const worker = new Worker(new URL('../../../workers/verify.worker.ts', import.meta.url));
+    const worker = new Worker(new URL('../../workers/verify.worker.ts', import.meta.url));
     worker.onmessage = (event: MessageEvent<VerifyOutboundMessage>) => {
       const message: ResultMessage = event.data;
       setVerifyDelta(message.delta);

@@ -1,5 +1,3 @@
-export type Locale = 'id' | 'en';
-
 export type Dictionary = {
   readonly brand: {
     readonly name: string;
@@ -119,136 +117,7 @@ export type Dictionary = {
   readonly skipToContent: string;
 };
 
-const id: Dictionary = {
-  brand: {
-    name: 'Attractor Lab',
-    tagline: 'Atraktor aneh, diintegrasi langkah demi langkah: amati dua lintasan nyaris identik menyimpang.',
-  },
-  canvas: {
-    label:
-      'Render lintasan 3D. Panah kiri/kanan memutar horizontal, panah atas/bawah memutar vertikal, +/− memperbesar/memperkecil.',
-    sectionLabel:
-      'Render lintasan 3D dengan bidang Poincaré (ungu) dan titik potongnya. Panah kiri/kanan memutar horizontal, panah atas/bawah memutar vertikal, +/− memperbesar/memperkecil.',
-    mapLabel: 'Render peta {name} dengan 200.000 titik iterasi.',
-  },
-  divergence: {
-    axisExplain:
-      'Garis di atas menelusuri jarak antara lintasan A dan B setiap saat. Kenaikan yang lurus berarti perpisahannya eksponensial, ciri kekacauan deterministik.',
-    rateLabel: 'laju kasar saat ini',
-    definitionNote:
-      'Ini definisi eksponen Lyapunov: |Δ(t)| ≈ ε·e^(λt). λ maks di bawah adalah estimasi yang lebih cermat (metode Benettin: dua lintasan, pertumbuhan log dirata-rata seiring waktu), bukan dihitung langsung dari dua titik ini.',
-    notYetDiverged: '|Δ| belum melewati ε. Perpisahan belum terlihat pada skala ini.',
-    horizonNote:
-      "Cakrawala prediksi di bawah menjawab: dengan λ dan ε ini, kapan |Δ| diperkirakan mencapai ambang 'tak berkaitan'? Rumusnya t ≈ ln(ambang/ε)/λ.",
-    horizonThresholdRule: 'Ambang itu dipilih sebagai 10% dari diagonal kotak pembatas sistem: patokan eksplisit, bukan konstanta sembarang',
-  },
-  nav: {
-    jelajah: 'Jelajah',
-    banding: 'Banding',
-    irisan: 'Irisan',
-    cabang: 'Cabang',
-    sistem: 'Sistem',
-  },
-  systemNames: {
-    lorenz: 'Lorenz',
-    rossler: 'Rössler',
-    thomas: 'Thomas',
-    halvorsen: 'Halvorsen',
-    aizawa: 'Aizawa',
-  },
-  integratorNames: {
-    euler: 'Euler',
-    rk2: 'RK2',
-    rk4: 'RK4',
-  },
-  panel: {
-    title: 'Kontrol',
-    intro: 'Setiap kombinasi sistem, integrator, dan langkah menghasilkan gambar yang berbeda.',
-    openPanel: 'Buka panel kontrol',
-    closePanel: 'Tutup panel kontrol',
-    system: 'Sistem',
-    integrator: 'Integrator',
-    step: 'Langkah (dt)',
-    parameters: 'Parameter',
-    pairMode: 'Pasangan divergensi',
-    epsilon: 'Epsilon (ε)',
-    exportSvg: 'Ekspor SVG',
-    copyLink: 'Salin tautan',
-    linkCopied: 'Tautan disalin',
-    verify: 'Verifikasi tampilan ini',
-    verifying: 'Menghitung…',
-    verifyDeltaLabel: 'Δ pada dt/2',
-    verifyDeltaScaleSuffix: 'dari skala sistem',
-    clickToJump: 'Klik diagram untuk melihat lintasannya',
-    jumpToTrajectory: 'Lompat ke lintasan',
-    bifurcationExplain:
-      'Setiap titik adalah satu maksimum lokal sumbu {axis} sepanjang lintasan, pada nilai parameter itu. Bukan lintasan penuh, hanya puncaknya. Satu titik di atas satu nilai parameter berarti periodik; sebaran vertikal (smear) berarti kacau.',
-    sectionExplain:
-      'Setiap kali lintasan menembus bidang irisan (dari satu sisi), posisi (u, v)-nya pada bidang itu digambar di sini. Tangle 3D yang rumit menjadi peta yang hampir satu dimensi. Ini adalah wawasan yang membuat kekacauan bisa dipelajari: struktur yang tersembunyi dalam kekusutan menjadi terlihat begitu diiris.',
-    tryCompareCuePrefix: 'Ingin lihat integrator gagal? Buka',
-    tryCompareCueSuffix: ', naikkan dt, dan bandingkan Euler, RK2, RK4 berdampingan.',
-    checkConvergence: 'Cek konvergensi',
-    convergenceOrder: 'orde konvergensi (dt → dt/2)',
-    convergenceExplain:
-      'Tiap integrator dijalankan pada dt dan dt/2, dibandingkan dengan referensi RK4 pada dt/64. Orde = log₂(error(dt) / error(dt/2)): Euler ≈1, RK2 ≈2, RK4 ≈4, sesuai perilaku pemotongan lokalnya.',
-    sweptParameter: 'Parameter yang disapu',
-    min: 'Min',
-    max: 'Maks',
-    sampleCount: 'Jumlah sampel',
-    localMaximaAxis: 'Sumbu maksima lokal',
-    plane: 'Bidang irisan',
-    axis: 'Sumbu',
-    offset: 'Offset',
-  },
-  readout: {
-    integrator: 'integrator',
-    step: 'langkah (dt)',
-    elapsedTime: 'waktu sistem',
-    lyapunovMax: 'λ maks',
-    epsilon: 'ε',
-    plane: 'bidang',
-    crossings: 'perpotongan',
-    sweep: 'sapuan',
-    progress: 'kemajuan',
-    done: 'selesai',
-    separationA: '|euler − rk4|',
-    separationB: '|rk2 − rk4|',
-    horizon: 'cakrawala prediksi',
-    error: 'kesalahan',
-    escapedMessage: 'lintasan lepas dari kotak pembatasnya — kombinasi parameter ini kemungkinan tidak stabil',
-  },
-  sistem: {
-    indexTitle: 'Sistem',
-    parameters: 'Parameter',
-    distinctiveness: 'Yang membedakannya',
-    flow: 'aliran (ODE)',
-    map: 'peta terulang',
-    checkedConstants: 'Konstanta terverifikasi',
-    computed: 'dihitung',
-    published: 'terpublikasi',
-    withinTolerance: 'sesuai toleransi',
-    outsideTolerance: 'di luar toleransi',
-    verifyingConstants: 'menghitung…',
-    kaplanYorkeDimension: 'dimensi Kaplan–Yorke',
-    constantsReady: 'Konstanta terverifikasi selesai dihitung.',
-    constantsExplain:
-      'λ maks mengukur seberapa cepat dua lintasan yang berdekatan berpisah (satuan 1/waktu). Dimensi Kaplan–Yorke memperkirakan dimensi fraktal atraktor dari spektrum Lyapunov penuh: D = j + (jumlah j eksponen teratas) / |eksponen berikutnya|, dengan j indeks terbesar yang jumlah parsialnya masih ≥0. Keduanya estimasi numerik, bukan nilai analitik tertutup, karena itu ada kolom toleransi di atas.',
-  },
-  onboarding: {
-    intro: 'Atraktor aneh, dihitung langkah demi langkah oleh integrator tulisan tangan.',
-    divergenceHint:
-      'Dua lintasan identik, dimulai dengan perbedaan sekecil 10⁻⁸. Amati saat keduanya menyimpang: ini kekacauan deterministik, bukan noise acak.',
-    dismiss: 'Mengerti',
-  },
-  notFound: {
-    title: 'Halaman tidak ditemukan',
-    description: 'Tautan ini tidak mengarah ke lintasan mana pun di Attractor Lab.',
-    backLink: 'Kembali ke Jelajah',
-  },
-  skipToContent: 'Langsung ke konten',
-};
-
-const en: Dictionary = {
+export const dictionary: Dictionary = {
   brand: {
     name: 'Attractor Lab',
     tagline: 'Strange attractors, integrated step by step: watch two near-identical trajectories diverge.',
@@ -376,5 +245,3 @@ const en: Dictionary = {
   },
   skipToContent: 'Skip to content',
 };
-
-export const dictionaries: Record<Locale, Dictionary> = { id, en };

@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { PanelShell } from '@/components/panel/PanelShell';
-import { useLocale, useT } from '@/lib/i18n/LocaleProvider';
+import { useT } from '@/lib/i18n/LocaleProvider';
 import type { IntegratorId } from '@/lib/dynamics/integrate';
 import type { SystemId } from '@/lib/dynamics/systems';
 
@@ -68,7 +68,6 @@ export function ControlPanel({
   canVerify,
 }: ControlPanelProps) {
   const t = useT();
-  const locale = useLocale();
 
   return (
     <PanelShell
@@ -122,7 +121,7 @@ export function ControlPanel({
       <p className="mb-4 text-sm leading-snug text-caption">
         {t.panel.tryCompareCuePrefix}{' '}
         <Link
-          href={`/${locale}/banding`}
+          href="/banding"
           className="text-readout underline decoration-rule underline-offset-2 transition-colors duration-fast hover:text-bloom hover:decoration-bloom"
         >
           {t.nav.banding}

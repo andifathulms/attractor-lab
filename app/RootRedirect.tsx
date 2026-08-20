@@ -7,7 +7,7 @@ export function RootRedirect() {
   const router = useRouter();
 
   useEffect(() => {
-    router.replace('/id/jelajah');
+    router.replace('/jelajah');
   }, [router]);
 
   return null;

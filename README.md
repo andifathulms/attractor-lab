@@ -30,7 +30,7 @@ There are a thousand attractor renderers. Most spin a Lorenz butterfly and stop 
 | **Cabang** (Bifurcation) | Sweep a parameter and watch the attractor be born: fixed point → limit cycle → period doubling → chaos |
 | **Sistem** (Systems) | Reference pages per system — equations hand-set as accessible SVG, parameters, and published constants checked live against what the app itself computes |
 
-Six systems (Lorenz, Rössler, Thomas, Halvorsen, Aizawa, plus the Clifford and De Jong iterated maps), plotter-ready SVG export, keyboard-operable throughout, bilingual (Indonesian first, English second).
+Six systems (Lorenz, Rössler, Thomas, Halvorsen, Aizawa, plus the Clifford and De Jong iterated maps), plotter-ready SVG export, keyboard-operable throughout.
 
 ## Why it's honest
 

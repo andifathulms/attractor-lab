@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import { Crimson_Pro, DM_Sans, JetBrains_Mono } from 'next/font/google';
 import type { ReactNode } from 'react';
-import { dictionaries } from '@/lib/i18n/dictionaries';
+import { Footer } from '@/components/footer/Footer';
+import { dictionary } from '@/lib/i18n/dictionaries';
 import { buildMetadata } from '@/lib/metadata';
 import './globals.css';
 
@@ -30,21 +31,31 @@ const jetBrainsMono = JetBrains_Mono({
   display: 'swap',
 });
 
-// Baseline for the bare root URL (redirects to /id/jelajah) — every other
-// route overrides this with its own generateMetadata. Reuses the same
-// brand tagline shown in AppNav on every page, not separately authored copy.
+// Baseline for the bare root URL (redirects to /jelajah) — every other
+// route overrides this with its own metadata. Reuses the same brand
+// tagline shown in AppNav on every page, not separately authored copy.
 export const metadata: Metadata = buildMetadata({
   title: 'Attractor Lab',
-  description: dictionaries.id.brand.tagline,
-  locale: 'id',
+  description: dictionary.brand.tagline,
   path: '',
   suffixTitle: false,
 });
 
 export default function RootLayout({ children }: { readonly children: ReactNode }) {
   return (
-    <html lang="id" className={`${crimsonPro.variable} ${dmSans.variable} ${jetBrainsMono.variable}`}>
-      <body className="bg-night font-sans text-readout antialiased">{children}</body>
+    <html lang="en" className={`${crimsonPro.variable} ${dmSans.variable} ${jetBrainsMono.variable}`}>
+      <body className="bg-night font-sans text-readout antialiased">
+        {/* Every page's <main> carries id="main-content" — this is the one
+            keyboard path to it, ahead of the nav links every page repeats. */}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-bloom focus:px-4 focus:py-2 focus:font-sans focus:text-sm focus:text-night"
+        >
+          {dictionary.skipToContent}
+        </a>
+        {children}
+        <Footer />
+      </body>
     </html>
   );
 }

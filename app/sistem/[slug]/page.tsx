@@ -6,9 +6,9 @@ import { MapPreview } from '@/components/maps/MapPreview';
 import { VerifiedConstants } from '@/components/sistem/VerifiedConstants';
 import type { MapId } from '@/lib/dynamics/maps';
 import type { SystemId } from '@/lib/dynamics/systems';
-import { dictionaries, type Locale } from '@/lib/i18n/dictionaries';
+import { dictionary } from '@/lib/i18n/dictionaries';
 import { buildMetadata } from '@/lib/metadata';
-import { getSystemReference, pick, systemReferences } from '../data';
+import { getSystemReference, systemReferences } from '../data';
 
 export function generateStaticParams(): { slug: string }[] {
   return systemReferences.map((s) => ({ slug: s.slug }));
@@ -17,18 +17,16 @@ export function generateStaticParams(): { slug: string }[] {
 export function generateMetadata({
   params,
 }: {
-  readonly params: { readonly locale: string; readonly slug: string };
+  readonly params: { readonly slug: string };
 }): Metadata {
   const reference = getSystemReference(params.slug);
   if (!reference) return {};
-  const locale: Locale = params.locale === 'en' ? 'en' : 'id';
   // title/description both come from the reference entry that renders this
   // exact page (data.tsx) — the same "distinctiveness" paragraph shown
   // on-page, not separately authored copy.
   return buildMetadata({
     title: reference.name,
-    description: pick(reference.distinctiveness, locale),
-    locale,
+    description: reference.distinctiveness,
     path: `/sistem/${reference.slug}`,
   });
 }
@@ -36,13 +34,12 @@ export function generateMetadata({
 export default function SistemSlugPage({
   params,
 }: {
-  readonly params: { readonly locale: string; readonly slug: string };
+  readonly params: { readonly slug: string };
 }) {
   const reference = getSystemReference(params.slug);
   if (!reference) notFound();
 
-  const locale: Locale = params.locale === 'en' ? 'en' : 'id';
-  const t = dictionaries[locale];
+  const t = dictionary;
 
   return (
     <main id="main-content" className="relative min-h-dvh bg-night px-6 py-16 text-readout">
@@ -50,7 +47,7 @@ export default function SistemSlugPage({
       <article className="mx-auto max-w-2xl">
         <h1 className="mb-1 font-display text-3xl font-medium">{reference.name}</h1>
         <p className="mb-8 font-mono text-sm text-caption">
-          {pick(reference.discoverer, locale)} · {reference.year}
+          {reference.discoverer} · {reference.year}
         </p>
 
         <section className="mb-10 space-y-3">
@@ -74,7 +71,7 @@ export default function SistemSlugPage({
               {reference.params.map((p) => (
                 <tr key={p.symbol} className="border-b border-rule">
                   <td className="py-2 pr-4 font-display italic">{p.symbol}</td>
-                  <td className="py-2 pr-4 font-sans text-readout">{pick(p.meaning, locale)}</td>
+                  <td className="py-2 pr-4 font-sans text-readout">{p.meaning}</td>
                   <td className="py-2 text-right [font-variant-numeric:tabular-nums]">
                     {p.classicValue}
                   </td>
@@ -88,10 +85,10 @@ export default function SistemSlugPage({
 
         <section className="mb-10">
           <h2 className="mb-3 font-display text-lg font-medium">{t.sistem.distinctiveness}</h2>
-          <p className="font-display text-base leading-relaxed">{pick(reference.distinctiveness, locale)}</p>
+          <p className="font-display text-base leading-relaxed">{reference.distinctiveness}</p>
         </section>
 
-        <p className="font-mono text-sm text-caption">{pick(reference.citation, locale)}</p>
+        <p className="font-mono text-sm text-caption">{reference.citation}</p>
       </article>
     </main>
   );

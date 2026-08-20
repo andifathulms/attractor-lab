@@ -8,7 +8,7 @@
 | **Owner** | Andi Fathul Mukminin Salahuddin |
 | **Type** | Personal portfolio project, open source, educational |
 | **Deployment** | GitHub Pages (static export, no server, no runtime network) |
-| **Language** | Indonesian-first UI; English secondary. Mathematical notation universal. |
+| **Language** | English UI. Mathematical notation universal. |
 | **Data dependency** | **None.** Pure computation. |
 | **Design** | See `DESIGN.md`. Authoritative for every visual decision. |
 

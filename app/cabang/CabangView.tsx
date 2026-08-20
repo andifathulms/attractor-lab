@@ -8,14 +8,13 @@ import { BifurcationReadoutStrip } from '@/components/bifurcation/BifurcationRea
 import { AppNav } from '@/components/nav/AppNav';
 import type { LocalMaximaConfig } from '@/lib/dynamics/bifurcation';
 import { classicSystem, type SystemId } from '@/lib/dynamics/systems';
-import { useLocale, useT } from '@/lib/i18n/LocaleProvider';
+import { useT } from '@/lib/i18n/LocaleProvider';
 import { encodeJelajahState } from '@/lib/permalink';
 
 const AXIS_LABEL = ['x', 'y', 'z'] as const;
 
 export function CabangView() {
   const router = useRouter();
-  const locale = useLocale();
   const t = useT();
   const [systemId, setSystemId] = useState<SystemId>('lorenz');
   const [paramName, setParamName] = useState('rho');
@@ -68,7 +67,7 @@ export function CabangView() {
       pairMode: true,
       epsilon: 1e-8,
     });
-    router.push(`/${locale}/jelajah?${search}`);
+    router.push(`/jelajah?${search}`);
   };
 
   return (

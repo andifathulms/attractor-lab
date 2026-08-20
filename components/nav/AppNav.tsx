@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useLocale, useT } from '@/lib/i18n/LocaleProvider';
+import { useT } from '@/lib/i18n/LocaleProvider';
 import { BrandMark } from './BrandMark';
 
 // Small and out of the way — this is an instrument with controls, not a
@@ -10,21 +10,20 @@ import { BrandMark } from './BrandMark';
 // larger text on screen: a first-time visitor's anchor for what this is,
 // before anything else competes for attention.
 export function AppNav() {
-  const locale = useLocale();
   const t = useT();
   const pathname = usePathname();
 
   const links = [
-    { href: `/${locale}/jelajah`, label: t.nav.jelajah },
-    { href: `/${locale}/banding`, label: t.nav.banding },
-    { href: `/${locale}/irisan`, label: t.nav.irisan },
-    { href: `/${locale}/cabang`, label: t.nav.cabang },
-    { href: `/${locale}/sistem`, label: t.nav.sistem },
+    { href: '/jelajah', label: t.nav.jelajah },
+    { href: '/banding', label: t.nav.banding },
+    { href: '/irisan', label: t.nav.irisan },
+    { href: '/cabang', label: t.nav.cabang },
+    { href: '/sistem', label: t.nav.sistem },
   ];
 
   return (
     <div className="absolute left-4 top-4 z-10 flex max-w-[calc(100vw-2rem)] flex-col gap-2">
-      <Link href={`/${locale}/jelajah`} className="flex items-start gap-2">
+      <Link href="/jelajah" className="flex items-start gap-2">
         <BrandMark />
         <div>
           <p className="font-display text-lg font-medium leading-tight text-bloom">{t.brand.name}</p>

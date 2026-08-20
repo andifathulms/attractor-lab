@@ -11,7 +11,7 @@ export default function RootPage() {
     <>
       <RootRedirect />
       <noscript>
-        <Link href="/id/jelajah">Attractor Lab</Link>
+        <Link href="/jelajah">Attractor Lab</Link>
       </noscript>
     </>
   );

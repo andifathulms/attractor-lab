@@ -47,12 +47,11 @@ pnpm lint
 
 ```
 app/
-  [locale]/                 # id (default), en
-    jelajah/                # the canvas + panel + readouts
-    sistem/[slug]/          # system reference — equations, constants, history
-    banding/                # integrator comparison
-    irisan/                 # Poincaré section
-    cabang/                 # parameter sweep + bifurcation
+  jelajah/                  # the canvas + panel + readouts
+  sistem/[slug]/            # system reference — equations, constants, history
+  banding/                  # integrator comparison
+  irisan/                   # Poincaré section
+  cabang/                   # parameter sweep + bifurcation
 components/
   canvas/                   # accumulating render buffer, orbit, zoom
   panel/                    # system, parameters, integrator, step
@@ -128,7 +127,7 @@ tests/
 - State vectors as `Float64Array`, never objects. Precision matters here in a way it does not elsewhere: this system amplifies error by design.
 - Comments cite the original paper and year for each system, and the source of any published constant.
 - System ids stable and readable: `lorenz`, `rossler`, `thomas`, `halvorsen`, `aizawa`, `clifford`, `dejong`. They appear in URLs and export captions.
-- Indonesian first in UI copy; mathematical notation universal.
+- English UI copy; mathematical notation universal.
 - Tailwind tokens exactly as in `DESIGN.md` — `night`, `graticule`, `trail-a`, `trail-b`, `bloom`, `section`, `readout`, `rule`. Never raw hex in components.
 
 ## Testing rules
@@ -154,7 +153,7 @@ Every render states its integrator and step size, and the method page explains w
 
 ## Current state
 
-Built past M0. Six routes exist under `app/[locale]/`, each in both `id` and `en`: `jelajah` (single trajectory / divergence pair), `banding` (integrator comparison), `irisan` (Poincaré section), `cabang` (bifurcation diagram + parameter sweep), `sistem` (system reference index) and `sistem/[slug]` (per-system reference page). The root `app/page.tsx` redirects to `/id/jelajah`.
+Built past M0. Six routes exist directly under `app/`: `jelajah` (single trajectory / divergence pair), `banding` (integrator comparison), `irisan` (Poincaré section), `cabang` (bifurcation diagram + parameter sweep), `sistem` (system reference index) and `sistem/[slug]` (per-system reference page). The root `app/page.tsx` redirects to `/jelajah`. English-only as of the locale removal below — no `[locale]` segment, no `id`/`en` route split.
 
 `lib/dynamics` is scaffolded and pure per invariant 1: `systems/` (Lorenz, Rössler, Thomas, Halvorsen, Aizawa), `maps/` (Clifford, De Jong), `integrate/` (Euler, RK2, RK4), plus `invariants.ts`, `lyapunov.ts`, `dimension.ts`, `convergence.ts`, `bifurcation.ts`, `section.ts`, `trajectory.ts`. Rendering exists on top of it. `components/canvas/TrajectoryCanvas.tsx` is the one canvas primitive — drag rotate, wheel/keyboard zoom, additive accumulation via `lib/render/accumulate.ts` — taking N labelled trajectories plus an optional marker overlay as props; `AttractorCanvas`, `DivergencePairCanvas`, `ComparisonCanvas` and `SectionCanvas` are now thin per-route wrappers around it that only own their worker's lifecycle (`workers/integrate`, `divergence`, `compare`, `section` — each has a different message shape, so the workers stayed separate) and translate batches into `pushPoints`/`pushMarkers` calls on a `TrajectoryCanvas` ref. `components/maps/MapPreview` iterates synchronously with no worker and isn't part of this — a static 2D map has no step-size question and nothing to stream. Two more workers exist for off-canvas computation: `constants.worker.ts` (drives `VerifiedConstants`) and `verify.worker.ts` (drives `ControlPanel`'s verify button). Export (`lib/export/plotter.ts`, `simplify.ts`) and the analytic/order/constants/export/bench suites are in place and gating.
 
@@ -165,3 +164,5 @@ Built past M0. Six routes exist under `app/[locale]/`, each in both `id` and `en
 `lib/initial-state.ts` is now the one place every non-`lib/dynamics` initial condition comes from — `INITIAL_STATE` (was `[0.1, 0.1, 0.1]`, used by `AttractorCanvas`, `DivergencePairCanvas`, `ComparisonCanvas`, `SectionCanvas`, `JelajahView`'s verify check, and the thumbnails) and `BIFURCATION_INITIAL_STATE` (was `[1, 1, 1]`, used by `BifurcationPlot`, `workers/constants.worker.ts`, and `BandingView`'s convergence check). Both were exactly on the invariant x=y=z diagonal that Thomas and Halvorsen (cyclically symmetric systems) collapse to a fixed point on instead of showing the attractor — every use of either constant across the whole app had this bug for those two systems, not just the thumbnails that surfaced it. Both are now deliberately asymmetric; `tests/dynamics/initial-state.test.ts` asserts neither constant is ever edited back onto the diagonal.
 
 `DESIGN-REWORK.md` §4 and §5 are done. `VerifiedConstants` (`components/sistem/VerifiedConstants.tsx`) draws a small tolerance-band strip beside each row — the tolerance band, the published value, and where the computed value landed — alongside the table, which stays the precise reading. `TrajectoryCanvas` now takes an `onEscape` callback and treats any non-finite (`NaN`/`Infinity`) value in a pushed batch as CLAUDE.md invariant 12's guard firing: RK4 divergence under an unstable parameter combination shows up as a numeric overflow well before it would show up as "outside the known box," so this is what implements that invariant at runtime, not just in the analytic suite. `AttractorCanvas`, `DivergencePairCanvas`, `ComparisonCanvas` and `SectionCanvas` all wire it (plus `worker.onerror`, for a worker failing outright) to an `onError` prop; `JelajahView`, `BandingView` and `IrisanView` swap their readout strip's normal fields for a single named error field when it fires, naming the system and step, and clear it on the same triggers that start a fresh run. `CabangView`/`BifurcationPlot` aren't wired to this — a bifurcation sweep hitting instability at some parameter values near a boundary is closer to expected behaviour than a single run's bug. `app/globals.css` now disables all CSS transitions under `prefers-reduced-motion: reduce`, covering the hover-state `transition-colors` utilities that `lib/motion.ts`'s canvas-specific handling didn't reach.
+
+**Indonesian was dropped; the app is English-only.** `app/[locale]/*` moved up to `app/*` directly (`jelajah`, `banding`, `cabang`, `irisan`, `sistem`) — no more locale segment, no `generateStaticParams` for it, half the static pages at build time. `lib/i18n/dictionaries.ts` now exports one `dictionary: Dictionary` constant (the old `en` object; the `id` object and the `Locale` type are gone); `lib/i18n/LocaleProvider.tsx` still exports `useT()` for call-site compatibility across every component that already used it, but it's now a plain function returning `dictionary` — no context, no provider, no `useLocale()`. `app/sistem/data.tsx`'s `LocalizedText`/`pick()` machinery is gone too — every `discoverer`/`citation`/`distinctiveness`/param `meaning` field is a plain string now. Nav links, the bifurcation "jump to trajectory" redirect, and the banding promo link in `ControlPanel` all lost their `${locale}/` prefix. `lib/metadata.ts`'s `buildMetadata` no longer takes a `locale` param or emits `hreflang` alternates. `app/not-found.tsx` shows one message instead of stacking both languages.
